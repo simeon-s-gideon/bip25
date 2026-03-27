@@ -691,41 +691,6 @@
       pointer-events: none;
     }
 
-    /* ── MOBILE JOYSTICK ── */
-    #joystick-zone {
-      position: absolute;
-      left: 16px; bottom: 56px;
-      z-index: 15;
-      display: none;
-    }
-    #joystick-base {
-      width: 100px; height: 100px; border-radius: 50%;
-      background: rgba(0,0,0,0.22);
-      border: 3px solid rgba(255,255,255,0.4);
-      position: relative; touch-action: none;
-    }
-    #joystick-stick {
-      width: 44px; height: 44px; border-radius: 50%;
-      background: rgba(0,0,128,0.6);
-      border: 3px solid rgba(255,255,255,0.6);
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%,-50%);
-      pointer-events: none;
-    }
-    #interact-btn-mobile {
-      position: absolute; right: 16px; bottom: 56px;
-      z-index: 15;
-      width: 64px; height: 64px; border-radius: 50%;
-      background: rgba(0,0,128,0.55);
-      border: 3px solid rgba(255,255,255,0.5);
-      color: white; font-size: 20px; font-weight: bold;
-      display: none; align-items: center; justify-content: center;
-      cursor: pointer;
-    }
-    @media (pointer: coarse), (any-pointer: coarse), (max-width: 860px) {
-      #joystick-zone, #interact-btn-mobile { display: flex !important; }
-    }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 860px) {
@@ -931,11 +896,6 @@
           <button class="map-corner-btn" id="legend-btn" title="Οδηγίες / Υπόμνημα">❓</button>
           <button class="map-corner-btn" id="glossary-corner-btn" title="Γλωσσάρι">📖</button>
         </div>
-        <!-- MOBILE JOYSTICK -->
-        <div id="joystick-zone">
-          <div id="joystick-base"><div id="joystick-stick"></div></div>
-        </div>
-        <div id="interact-btn-mobile">⬡</div>
       </div>
 
       <!-- DESKTOP SIDEBAR -->
@@ -1162,14 +1122,13 @@
         <div id="legend-body">
           <div class="legend-section">
             <div class="legend-section-title">🕹 Κίνηση</div>
-            <div class="legend-row"><span class="legend-icon">⬆⬇⬅➡</span><span class="legend-desc">Βελάκια / WASD: κίνηση χαρακτήρα</span></div>
-            <div class="legend-row"><span class="legend-icon">🖱</span><span class="legend-desc">Click στον χάρτη: μετακίνηση εκεί</span></div>
-            <div class="legend-row"><span class="legend-icon">joystick</span><span class="legend-desc">Touch joystick (κινητό) για κίνηση</span></div>
-            <div class="legend-row"><span class="legend-icon">SPACE / E</span><span class="legend-desc">Αλληλεπίδραση με κοντινό κτίριο ή NPC</span></div>
+            <div class="legend-row"><span class="legend-icon">⬆⬇⬅➡</span><span class="legend-desc">Βελάκια / WASD: κίνηση χαρακτήρα (desktop)</span></div>
+            <div class="legend-row"><span class="legend-icon">👆</span><span class="legend-desc">Tap στον χάρτη: μετακίνηση εκεί (κινητό)</span></div>
+            <div class="legend-row"><span class="legend-icon">🖱</span><span class="legend-desc">Click στον χάρτη: μετακίνηση εκεί (desktop)</span></div>
           </div>
           <div class="legend-section">
             <div class="legend-section-title">🏢 Κτίρια</div>
-            <div class="legend-row"><span class="legend-icon">🖱</span><span class="legend-desc">Click στο κτίριο ή SPACE/E κοντά του για είσοδο</span></div>
+            <div class="legend-row"><span class="legend-icon">👆 / 🖱</span><span class="legend-desc">Tap ή click στο κτίριο για είσοδο</span></div>
             <div class="legend-row"><span class="legend-icon">💡</span><span class="legend-desc">Λάμπα = έχεις όλα τα έγγραφα για κάτι εκεί</span></div>
             <div class="legend-row"><span class="legend-icon">⬜</span><span class="legend-desc">Λευκό περίγραμμα = βρίσκεσαι κοντά</span></div>
           </div>
@@ -1415,11 +1374,6 @@ const els = {
   progressBar: document.getElementById("progress-bar"),
   skipBtn: document.getElementById("skip-btn"),
   skipDesc: document.getElementById("skip-desc"),
-  // mobile
-  joystickZone: document.getElementById("joystick-zone"),
-  joystickBase: document.getElementById("joystick-base"),
-  joystickStick: document.getElementById("joystick-stick"),
-  interactBtnMobile: document.getElementById("interact-btn-mobile")
 };
 
 // ─────────────────────────────────────────────
@@ -2483,7 +2437,6 @@ class CityScene extends Phaser.Scene {
     this.createNPCs();
     this.createPlayer();
     this.createControls();
-    this.setupMobileJoystick();
   }
 
   setupScaling() {
@@ -2728,44 +2681,6 @@ class CityScene extends Phaser.Scene {
     });
   }
 
-  setupMobileJoystick() {
-    this.joystickVec = { x:0, y:0 };
-    const base = els.joystickBase, stick = els.joystickStick;
-    const radius = 50;
-    let active = false, baseX = 0, baseY = 0;
-
-    base.addEventListener("touchstart", e => {
-      e.preventDefault(); active = true;
-      const rect = base.getBoundingClientRect();
-      baseX = rect.left + rect.width/2; baseY = rect.top + rect.height/2;
-    }, { passive:false });
-
-    base.addEventListener("touchmove", e => {
-      e.preventDefault(); if (!active) return;
-      const t = e.touches[0];
-      const dx = t.clientX - baseX, dy = t.clientY - baseY;
-      const dist = Math.hypot(dx, dy);
-      const clamp = Math.min(dist, radius);
-      const angle = Math.atan2(dy, dx);
-      const nx = Math.cos(angle)*clamp, ny = Math.sin(angle)*clamp;
-      stick.style.transform = `translate(calc(-50% + ${nx}px), calc(-50% + ${ny}px))`;
-      const norm = dist > 5 ? clamp/radius : 0;
-      this.joystickVec = { x: Math.cos(angle)*norm, y: Math.sin(angle)*norm };
-    }, { passive:false });
-
-    const endTouch = e => {
-      e.preventDefault(); active = false;
-      stick.style.transform = "translate(-50%, -50%)";
-      this.joystickVec = { x:0, y:0 };
-    };
-    base.addEventListener("touchend", endTouch, { passive:false });
-    base.addEventListener("touchcancel", endTouch, { passive:false });
-
-    els.interactBtnMobile.addEventListener("touchstart", e => {
-      e.preventDefault(); this.openNearbyBuilding();
-    }, { passive:false });
-    els.interactBtnMobile.addEventListener("click", () => this.openNearbyBuilding());
-  }
 
   findBuildingAt(x, y) {
     return this.buildings.find(b => {
@@ -2968,10 +2883,6 @@ class CityScene extends Phaser.Scene {
     let vx=0, vy=0;
     if (left) vx-=1; if (right) vx+=1; if (up) vy-=1; if (down) vy+=1;
 
-    // joystick
-    if (this.joystickVec && (Math.abs(this.joystickVec.x)>0.05 || Math.abs(this.joystickVec.y)>0.05)) {
-      vx += this.joystickVec.x; vy += this.joystickVec.y;
-    }
 
     let movedByInput = false;
     if (vx!==0 || vy!==0) {
