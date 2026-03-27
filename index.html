@@ -1133,6 +1133,8 @@
     </div>
 
     <div id="toast" class="hidden"></div>
+    <button id="float-mute-btn" class="hidden" onclick="toggleMute()" title="Σίγαση / Ήχος"
+      style="position:absolute; top:8px; right:8px; z-index:60; font-size:15px; padding:3px 8px; min-width:34px; background:#1a3a6b !important; color:white !important; border-color:#4a7abf #0a1a3b #0a1a3b #4a7abf !important;">🔊</button>
 
     <!-- TREE DIAGRAM PANEL -->
     <div id="tree-panel" class="hidden">
@@ -1488,7 +1490,10 @@ function toggleMute() {
   const bgMusic = document.getElementById("bg-music");
   const btn = document.getElementById("mute-btn");
   if (bgMusic) bgMusic.muted = state.muted;
-  if (btn) btn.textContent = state.muted ? "🔇" : "🔊";
+  const icon = state.muted ? "🔇" : "🔊";
+  if (btn) btn.textContent = icon;
+  const floatBtn = document.getElementById("float-mute-btn");
+  if (floatBtn) floatBtn.textContent = icon;
 }
 function startBgMusic() {
   const bgMusic = document.getElementById("bg-music");
@@ -1498,11 +1503,13 @@ function startBgMusic() {
   bgMusic.loop = true;
   bgMusic.volume = 0.35;
   bgMusic.play().catch(() => {});
+  const floatBtn = document.getElementById("float-mute-btn");
+  if (floatBtn) floatBtn.classList.remove("hidden");
   // Every 30s, increase tempo by 5%
   clearInterval(state.musicTempoTimer);
   state.musicTempoTimer = setInterval(() => {
     if (!bgMusic) return;
-    bgMusic.playbackRate = Math.min(bgMusic.playbackRate * 1.05, 3.0);
+    bgMusic.playbackRate = Math.min(bgMusic.playbackRate * 1.03, 2.0);
   }, 30000);
 }
 function stopBgMusic() {
@@ -2351,6 +2358,7 @@ function startPrototype() {
   seedCharacterInventory();
   els.startScreen.classList.add("hidden");
   buildGlossary();
+  startBgMusic();
   showPreliminaryScreen();
 }
 
@@ -2452,10 +2460,11 @@ function enterCity() {
   els.prelimScreen.classList.add("hidden");
   state.started = true; state.trackedDoc = null;
   els.topBar.classList.remove("hidden");
+  const floatBtn = document.getElementById("float-mute-btn");
+  if (floatBtn) floatBtn.classList.add("hidden");
   if (!state.game) initGame();
   else if (state.scene) { state.scene.updatePlayerLabel(); state.scene.resetPlayer(); }
   updateUI();
-  startBgMusic();
   startDayTimer();
   showToast("Μόλις προσγειώθηκες στην Ελλάδα. Ξεκίνα από την Υπηρεσία Ασύλου.");
 }
