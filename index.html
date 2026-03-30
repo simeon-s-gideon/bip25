@@ -702,6 +702,18 @@
       #bar-requirements-row, #bar-tracked-row, .bar-wallet-row { display: none !important; }
     }
 
+    /* ── MOBILE TOP BAR & LAYOUT ── */
+    @media (max-width: 1023px) {
+      #bar-arrow-label, #bar-target { display: none !important; }
+      #req-toggle-btn { display: flex !important; align-items: center; }
+      #req-collapse { display: none; }
+      #req-collapse.open { display: block; }
+      .dropdown-btn { max-width: 120px; overflow: hidden; text-overflow: ellipsis; font-size: 11px; padding: 2px 18px 2px 5px; }
+      #top-bar { padding: 2px 4px; gap: 2px; }
+      .bar-row { gap: 3px; }
+      #map-corner-btns { top: auto; bottom: 26px; right: 8px; flex-direction: row; }
+    }
+
     /* ── RESET BUTTON ── */
     #bar-reset {
       background: #c0392b !important; color: white !important;
@@ -862,7 +874,7 @@
           <button class="dropdown-btn" id="bar-quest-btn">—</button>
           <div class="dropdown-menu" id="quest-dropdown-menu"></div>
         </div>
-        <span class="bar-label" style="margin-left:4px;">→</span>
+        <span id="bar-arrow-label" class="bar-label" style="margin-left:4px;">→</span>
         <strong id="bar-target" style="color:var(--win95-blue-a); font-size:12px;"></strong>
         <span style="flex-grow:1"></span>
         <span class="bar-label">📅</span>
@@ -870,17 +882,20 @@
         <button id="glossary-btn" style="font-size:11px; padding:2px 6px; display:none;">📖 Γλωσσάρι</button>
         <button id="mute-btn" title="Σίγαση / Ήχος" onclick="toggleMute()">🔊</button>
         <button id="bar-reset" title="Επανεκκίνηση">↺</button>
+        <button id="req-toggle-btn" onclick="toggleRequirementsPanel()" title="Απαιτούμενα έγγραφα" style="display:none; font-size:11px; padding:2px 6px;">📋▾</button>
       </div>
-      <!-- Requirements row (hidden on desktop, sidebar has them) -->
-      <div class="bar-row" id="bar-requirements-row" style="border-top:1px solid #ccc; padding-top:3px;">
-        <div id="bar-requirements" style="flex:1;"></div>
-      </div>
-      <div class="bar-row" id="bar-tracked-row" style="border-top:1px solid #ccc; padding-top:3px; display:none;">
-        <div id="bar-tracked-requirements" style="flex:1;"></div>
-      </div>
-      <div class="bar-row bar-wallet-row" style="border-top:1px solid #ccc; padding-top:3px;">
-        <span class="bar-label">🗂</span>
-        <div id="bar-wallet" style="display:flex; gap:4px; flex-wrap:wrap;"></div>
+      <div id="req-collapse">
+        <!-- Requirements row (hidden on desktop, sidebar has them) -->
+        <div class="bar-row" id="bar-requirements-row" style="border-top:1px solid #ccc; padding-top:3px;">
+          <div id="bar-requirements" style="flex:1;"></div>
+        </div>
+        <div class="bar-row" id="bar-tracked-row" style="border-top:1px solid #ccc; padding-top:3px; display:none;">
+          <div id="bar-tracked-requirements" style="flex:1;"></div>
+        </div>
+        <div class="bar-row bar-wallet-row" style="border-top:1px solid #ccc; padding-top:3px;">
+          <span class="bar-label">🗂</span>
+          <div id="bar-wallet" style="display:flex; gap:4px; flex-wrap:wrap;"></div>
+        </div>
       </div>
     </div>
 
@@ -1462,7 +1477,7 @@ function startBgMusic() {
   bgMusic.play().catch(() => {});
   const floatBtn = document.getElementById("float-mute-btn");
   if (floatBtn) floatBtn.classList.remove("hidden");
-  // Every 30s, increase tempo by 5%
+  // Every 30s, increase tempo by 3%
   clearInterval(state.musicTempoTimer);
   state.musicTempoTimer = setInterval(() => {
     if (!bgMusic) return;
@@ -1582,7 +1597,22 @@ function trackDocument(id) {
   const rule = getRule(id);
   if (!rule.location) { showToast(`${getDoc(id).name} — απομακρυσμένο βήμα.`); return; }
   state.trackedDoc = id; updateUI(); closeOffice();
+  if (window.matchMedia("(max-width: 1023px)").matches) {
+    const panel = document.getElementById("req-collapse");
+    if (panel && !panel.classList.contains("open")) {
+      panel.classList.add("open");
+      const btn = document.getElementById("req-toggle-btn");
+      if (btn) btn.textContent = "📋▴";
+    }
+  }
   showToast(`Παρακολούθηση: ${getDoc(id).name}.`);
+}
+function toggleRequirementsPanel() {
+  const panel = document.getElementById("req-collapse");
+  const btn = document.getElementById("req-toggle-btn");
+  if (!panel) return;
+  const isOpen = panel.classList.toggle("open");
+  if (btn) btn.textContent = isOpen ? "📋▴" : "📋▾";
 }
 
 // ─────────────────────────────────────────────
@@ -1746,10 +1776,7 @@ function updateUI() {
 
   // Mobile requirements row - mini-section style
   els.barRequirements.innerHTML = "";
-  const questLoc2 = getRule(quest.target).location ? getLocation(getRule(quest.target).location) : null;
-  const questDocName = getDoc(quest.target) ? `${getDoc(quest.target).name}${questLoc2 ? " @ "+questLoc2.name : ""}` : "";
   const miniSec = document.createElement("div"); miniSec.className = "bar-mini-section";
-  miniSec.innerHTML = `<div class="bar-mini-title">🎯 ${questDocName}</div>`;
   const miniReqs = document.createElement("div"); buildRequirementPills(quest.target, miniReqs);
   miniSec.appendChild(miniReqs);
   els.barRequirements.appendChild(miniSec);
@@ -1760,12 +1787,8 @@ function updateUI() {
   if (state.trackedDoc && state.trackedDoc !== quest.target && barTrackedRow) {
     barTrackedRow.style.display = "";
     barTrackedReqs.innerHTML = "";
-    const trackedDoc2 = getDoc(state.trackedDoc);
-    const trackedLoc2 = getRule(state.trackedDoc).location ? getLocation(getRule(state.trackedDoc).location) : null;
-    const trackedName = trackedDoc2 ? `${trackedDoc2.name}${trackedLoc2 ? " @ "+trackedLoc2.name : ""}` : "";
     const trackedSec = document.createElement("div"); trackedSec.className = "bar-mini-section";
     trackedSec.style.borderColor = "#d97706 var(--win95-light) var(--win95-light) #d97706";
-    trackedSec.innerHTML = `<div class="bar-mini-title" style="color:#b45309;">🔍 ${trackedName}</div>`;
     const trackedReqsDiv = document.createElement("div"); buildRequirementPills(state.trackedDoc, trackedReqsDiv);
     trackedSec.appendChild(trackedReqsDiv);
     barTrackedReqs.appendChild(trackedSec);
