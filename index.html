@@ -703,18 +703,18 @@
     }
 
     /* ── MOBILE REQUIREMENTS OVERLAY ── */
-    #req-toggle-row { display: none; }
+    #req-toggle-btn { display: none; }
     #req-collapse { display: none; }
 
     /* ── MOBILE TOP BAR & LAYOUT ── */
     @media (max-width: 1023px) {
       #bar-arrow-label, #bar-target { display: none !important; }
-      #req-toggle-row {
-        display: flex !important; align-items: center; gap: 6px;
-        border-top: 1px solid #aaa; padding: 3px 8px;
-        cursor: pointer; background: var(--win95-mid); user-select: none;
+      #req-toggle-btn {
+        display: inline-flex !important; align-items: center; gap: 4px;
+        font-size: 11px; padding: 2px 8px;
+        background: var(--win95-bg); cursor: pointer;
       }
-      #req-toggle-row:active { background: #d0e0ff; }
+      #req-toggle-btn.active { background: #d0e0ff; border-color: var(--win95-blue-a) var(--win95-light) var(--win95-light) var(--win95-blue-a); }
       #req-collapse {
         position: absolute; top: 0; left: 0; right: 0; z-index: 18;
         background: var(--win95-bg);
@@ -728,6 +728,14 @@
       #top-bar { padding: 2px 4px; gap: 2px; }
       .bar-row { gap: 3px; }
       #map-corner-btns { top: unset !important; bottom: 26px !important; right: 8px; flex-direction: row !important; z-index: 13; }
+      #map-area { background: #3a6ea5; }
+      #map-area #game-container canvas {
+        position: absolute !important;
+        bottom: 0 !important; top: auto !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        margin: 0 !important;
+      }
     }
 
     /* ── RESET BUTTON ── */
@@ -890,6 +898,7 @@
           <button class="dropdown-btn" id="bar-quest-btn">—</button>
           <div class="dropdown-menu" id="quest-dropdown-menu"></div>
         </div>
+        <button id="req-toggle-btn" onclick="toggleRequirementsPanel()">📋 Απαιτούμενα ▾</button>
         <span id="bar-arrow-label" class="bar-label" style="margin-left:4px;">→</span>
         <strong id="bar-target" style="color:var(--win95-blue-a); font-size:12px;"></strong>
         <span style="flex-grow:1"></span>
@@ -898,12 +907,6 @@
         <button id="glossary-btn" style="font-size:11px; padding:2px 6px; display:none;">📖 Γλωσσάρι</button>
         <button id="mute-btn" title="Σίγαση / Ήχος" onclick="toggleMute()">🔊</button>
         <button id="bar-reset" title="Επανεκκίνηση">↺</button>
-      </div>
-      <!-- Mobile: requirements toggle row -->
-      <div id="req-toggle-row" onclick="toggleRequirementsPanel()">
-        <span style="font-size:11px; font-weight:bold; color:var(--win95-blue-a);">📋 Απαιτούμενα έγγραφα</span>
-        <span style="flex-grow:1;"></span>
-        <button id="req-toggle-btn" style="font-size:11px; padding:2px 10px; pointer-events:none;">▾ Εμφάνιση</button>
       </div>
     </div>
 
@@ -1623,7 +1626,8 @@ function trackDocument(id) {
     if (panel && !panel.classList.contains("open")) {
       panel.classList.add("open");
       const btn = document.getElementById("req-toggle-btn");
-      if (btn) btn.textContent = "▴ Απόκρυψη";
+      if (btn) { btn.textContent = "📋 Απαιτούμενα ▴"; btn.classList.add("active"); }
+
     }
   }
   showToast(`Παρακολούθηση: ${getDoc(id).name}.`);
@@ -1633,7 +1637,10 @@ function toggleRequirementsPanel() {
   const btn = document.getElementById("req-toggle-btn");
   if (!panel) return;
   const isOpen = panel.classList.toggle("open");
-  if (btn) btn.textContent = isOpen ? "▴ Απόκρυψη" : "▾ Εμφάνιση";
+  if (btn) {
+    btn.textContent = isOpen ? "📋 Απαιτούμενα ▴" : "📋 Απαιτούμενα ▾";
+    btn.classList.toggle("active", isOpen);
+  }
 }
 
 // ─────────────────────────────────────────────
