@@ -702,16 +702,32 @@
       #bar-requirements-row, #bar-tracked-row, .bar-wallet-row { display: none !important; }
     }
 
+    /* ── MOBILE REQUIREMENTS OVERLAY ── */
+    #req-toggle-row { display: none; }
+    #req-collapse { display: none; }
+
     /* ── MOBILE TOP BAR & LAYOUT ── */
     @media (max-width: 1023px) {
       #bar-arrow-label, #bar-target { display: none !important; }
-      #req-toggle-btn { display: flex !important; align-items: center; }
-      #req-collapse { display: none; }
+      #req-toggle-row {
+        display: flex !important; align-items: center; gap: 6px;
+        border-top: 1px solid #aaa; padding: 3px 8px;
+        cursor: pointer; background: var(--win95-mid); user-select: none;
+      }
+      #req-toggle-row:active { background: #d0e0ff; }
+      #req-collapse {
+        position: absolute; top: 0; left: 0; right: 0; z-index: 18;
+        background: var(--win95-bg);
+        border: 2px solid;
+        border-color: var(--win95-light) var(--win95-dark) var(--win95-dark) var(--win95-light);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+        padding: 8px 10px; max-height: 55vh; overflow-y: auto;
+      }
       #req-collapse.open { display: block; }
       .dropdown-btn { max-width: 120px; overflow: hidden; text-overflow: ellipsis; font-size: 11px; padding: 2px 18px 2px 5px; }
       #top-bar { padding: 2px 4px; gap: 2px; }
       .bar-row { gap: 3px; }
-      #map-corner-btns { top: auto; bottom: 26px; right: 8px; flex-direction: row; }
+      #map-corner-btns { top: unset !important; bottom: 26px !important; right: 8px; flex-direction: row !important; z-index: 13; }
     }
 
     /* ── RESET BUTTON ── */
@@ -882,20 +898,12 @@
         <button id="glossary-btn" style="font-size:11px; padding:2px 6px; display:none;">📖 Γλωσσάρι</button>
         <button id="mute-btn" title="Σίγαση / Ήχος" onclick="toggleMute()">🔊</button>
         <button id="bar-reset" title="Επανεκκίνηση">↺</button>
-        <button id="req-toggle-btn" onclick="toggleRequirementsPanel()" title="Απαιτούμενα έγγραφα" style="display:none; font-size:11px; padding:2px 6px;">📋▾</button>
       </div>
-      <div id="req-collapse">
-        <!-- Requirements row (hidden on desktop, sidebar has them) -->
-        <div class="bar-row" id="bar-requirements-row" style="border-top:1px solid #ccc; padding-top:3px;">
-          <div id="bar-requirements" style="flex:1;"></div>
-        </div>
-        <div class="bar-row" id="bar-tracked-row" style="border-top:1px solid #ccc; padding-top:3px; display:none;">
-          <div id="bar-tracked-requirements" style="flex:1;"></div>
-        </div>
-        <div class="bar-row bar-wallet-row" style="border-top:1px solid #ccc; padding-top:3px;">
-          <span class="bar-label">🗂</span>
-          <div id="bar-wallet" style="display:flex; gap:4px; flex-wrap:wrap;"></div>
-        </div>
+      <!-- Mobile: requirements toggle row -->
+      <div id="req-toggle-row" onclick="toggleRequirementsPanel()">
+        <span style="font-size:11px; font-weight:bold; color:var(--win95-blue-a);">📋 Απαιτούμενα έγγραφα</span>
+        <span style="flex-grow:1;"></span>
+        <button id="req-toggle-btn" style="font-size:11px; padding:2px 10px; pointer-events:none;">▾ Εμφάνιση</button>
       </div>
     </div>
 
@@ -905,6 +913,19 @@
         <div id="game-container"></div>
         <!-- NPC BUBBLE OVERLAY -->
         <div class="npc-bubble-overlay hidden" id="npc-bubble-overlay"></div>
+        <!-- REQUIREMENTS OVERLAY (mobile, toggleable) -->
+        <div id="req-collapse">
+          <div id="bar-requirements-row">
+            <div id="bar-requirements"></div>
+          </div>
+          <div id="bar-tracked-row" style="display:none; border-top:1px solid #ccc; margin-top:6px; padding-top:4px;">
+            <div id="bar-tracked-requirements"></div>
+          </div>
+          <div class="bar-wallet-row" style="display:flex; align-items:center; gap:4px; flex-wrap:wrap; border-top:1px solid #ccc; margin-top:6px; padding-top:4px;">
+            <span class="bar-label">🗂</span>
+            <div id="bar-wallet" style="display:flex; gap:4px; flex-wrap:wrap;"></div>
+          </div>
+        </div>
         <!-- MAP CORNER BUTTONS -->
         <div id="map-corner-btns">
           <button class="map-corner-btn" id="tree-btn" title="Δέντρο εξαρτήσεων εγγράφων">🕸️</button>
@@ -1602,7 +1623,7 @@ function trackDocument(id) {
     if (panel && !panel.classList.contains("open")) {
       panel.classList.add("open");
       const btn = document.getElementById("req-toggle-btn");
-      if (btn) btn.textContent = "📋▴";
+      if (btn) btn.textContent = "▴ Απόκρυψη";
     }
   }
   showToast(`Παρακολούθηση: ${getDoc(id).name}.`);
@@ -1612,7 +1633,7 @@ function toggleRequirementsPanel() {
   const btn = document.getElementById("req-toggle-btn");
   if (!panel) return;
   const isOpen = panel.classList.toggle("open");
-  if (btn) btn.textContent = isOpen ? "📋▴" : "📋▾";
+  if (btn) btn.textContent = isOpen ? "▴ Απόκρυψη" : "▾ Εμφάνιση";
 }
 
 // ─────────────────────────────────────────────
@@ -1947,7 +1968,7 @@ function buildStoryHtml(sr) {
 
 function showWaitingFlow(id, sr, opts={}) {
   showEventModal({ title: sr.title, bodyHtml: buildStoryHtml(sr), showSpinner: true,
-    actions:[{ label:"ΠΑΡΑΛΗΨΗ", className:"warn", onClick:() => {
+    actions:[{ label:"ΠΑΡΑΛΕΙΨΗ", className:"warn", onClick:() => {
       const days = Math.floor(Math.random() * 400) + 40;
       showEventModal({ title: sr.title,
         body: `Αυτό θα μπορούσε να είχε διαρκέσει αρκετά μεγάλο χρονικό διάστημα. Ας υποθέσουμε οτι στην περίπτωσή σου διήρκησε ${days} ημέρες.`,
