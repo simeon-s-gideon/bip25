@@ -42,6 +42,10 @@
       width: 100vw; height: 100svh;
       display: flex; align-items: stretch; justify-content: center;
       padding: 8px;
+      padding-top: max(8px, env(safe-area-inset-top));
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+      padding-left: max(8px, env(safe-area-inset-left));
+      padding-right: max(8px, env(safe-area-inset-right));
     }
 
     #game-shell {
@@ -490,7 +494,7 @@
       position: fixed; top: 0; right: 0;
       width: min(360px, 94vw);
       height: 100%;
-      z-index: 30;
+      z-index: 45;
       overflow: hidden;
       display: flex; flex-direction: column;
     }
@@ -702,6 +706,17 @@
       #bar-requirements-row, #bar-tracked-row, .bar-wallet-row { display: none !important; }
     }
 
+    /* ── MOBILE START SCREEN: two-step ── */
+    .step1-summary { display: none; font-size: 12px; color: #2a6; font-weight: bold; padding: 4px 0; }
+    @media (max-width: 1023px) {
+      #start-step-2 { display: none; }
+      #start-step-2.visible { display: block; }
+      #start-step-1.collapsed .choice-grid { display: none; }
+      #start-step-1.collapsed .section-title { margin-bottom: 0; }
+      #start-step-1.collapsed .step1-summary { display: block; }
+      .start-card { overflow-y: auto; max-height: calc(100svh - 32px); }
+    }
+
     /* ── MOBILE REQUIREMENTS OVERLAY ── */
     #req-toggle-btn { display: none; }
     #req-collapse { display: none; }
@@ -711,7 +726,7 @@
       #bar-arrow-label, #bar-target { display: none !important; }
       #req-toggle-btn {
         display: inline-flex !important; align-items: center; gap: 4px;
-        font-size: 11px; padding: 2px 8px;
+        font-size: 11px; padding: 2px 6px;
         background: var(--win95-bg); cursor: pointer;
       }
       #req-toggle-btn.active { background: #d0e0ff; border-color: var(--win95-blue-a) var(--win95-light) var(--win95-light) var(--win95-blue-a); }
@@ -728,6 +743,7 @@
       #top-bar { padding: 2px 4px; gap: 2px; }
       .bar-row { gap: 3px; }
       #map-corner-btns { top: unset !important; bottom: 26px !important; right: 8px; flex-direction: row !important; z-index: 13; }
+      .map-corner-btn { width: 44px !important; height: 44px !important; font-size: 18px !important; }
       #map-area { background: #3a6ea5; }
       #map-area #game-container canvas {
         position: absolute !important;
@@ -737,6 +753,15 @@
         margin: 0 !important;
       }
     }
+
+    /* ── MODAL HEADER BUTTONS (?, G) ── */
+    .modal-hdr-btn {
+      background: var(--win95-bg); color: var(--win95-blue-a);
+      border: 1px solid; border-color: var(--win95-light) var(--win95-dark) var(--win95-dark) var(--win95-light);
+      font-size: 12px; font-weight: bold; padding: 0 4px; height: 18px; line-height: 1;
+      cursor: pointer; min-width: 20px;
+    }
+    .modal-hdr-btn:hover { background: #d0e0ff; }
 
     /* ── RESET BUTTON ── */
     #bar-reset {
@@ -994,15 +1019,16 @@
             Μετά από χρόνια σε άλλη ευρωπαϊκή χώρα, επιστρέφεσαι αναγκαστικά στην Ελλάδα. Μόλις προσγειώθηκες. Πρέπει να επιβιώσεις.<br>
             <strong>Επίλεξε χαρακτήρα, επίλεξε αποστολή, και ξεκίνα από το μηδέν.</strong>
           </p>
-          <div class="split">
-            <div class="section">
-              <div class="section-title">1. Επίλεξε χαρακτήρα</div>
-              <div id="character-choices" class="choice-grid"></div>
-            </div>
-            <div class="section">
-              <div class="section-title">2. Επίλεξε αποστολή</div>
-              <div id="quest-choices" class="choice-grid"></div>
-            </div>
+          <!-- Step 1: character (always visible, collapses on mobile after selection) -->
+          <div class="section" id="start-step-1">
+            <div class="section-title">1. Επίλεξε χαρακτήρα <span id="step1-change-link" style="display:none; font-size:11px; font-weight:normal; color:var(--win95-blue-a); cursor:pointer; text-decoration:underline;" onclick="expandStep1()">αλλαγή</span></div>
+            <div id="character-choices" class="choice-grid"></div>
+            <div class="step1-summary" id="step1-summary"></div>
+          </div>
+          <!-- Step 2: quest (hidden on mobile until character chosen) -->
+          <div class="section" id="start-step-2" style="margin-top:10px;">
+            <div class="section-title">2. Επίλεξε αποστολή</div>
+            <div id="quest-choices" class="choice-grid"></div>
           </div>
           <div class="inline-actions" style="margin-top:14px; justify-content:space-between; align-items:center;">
             <span class="small">Έτοιμος; Ακόμα και αν δεν είσαι, δεν έχεις επιλογή.</span>
@@ -1062,7 +1088,11 @@
       <div class="win-card" id="office-modal-wrap">
         <div class="win95-title">
           <span id="office-title-bar">Γραφείο</span>
-          <button id="close-office" style="background:#c00; color:white; border:1px solid #600; padding:0 6px; font-weight:bold;">✕</button>
+          <div style="display:flex; gap:3px; align-items:center; margin-left:auto;">
+            <button class="modal-hdr-btn" onclick="document.getElementById('legend-panel').classList.remove('hidden')" title="Οδηγίες">?</button>
+            <button class="modal-hdr-btn" onclick="els.glossaryPanel.classList.toggle('hidden')" title="Γλωσσάρι">📖</button>
+            <button id="close-office" style="background:#c00; color:white; border:1px solid #600; padding:0 6px; font-weight:bold;">✕</button>
+          </div>
         </div>
         <div class="win-card-body">
           <p id="office-subtitle" class="small" style="margin-bottom:10px;"></p>
@@ -1074,7 +1104,13 @@
     <!-- EVENT MODAL -->
     <div id="event-modal" class="overlay overlay-top hidden">
       <div class="win-card" id="event-modal-wrap">
-        <div class="win95-title"><span id="event-title-bar">Ενημέρωση</span><button id="event-close-btn" class="win95-close-btn hidden" title="Κλείσιμο">✕</button></div>
+        <div class="win95-title">
+          <span id="event-title-bar">Ενημέρωση</span>
+          <div style="display:flex; gap:3px; align-items:center; margin-left:auto;">
+            <button class="modal-hdr-btn" onclick="document.getElementById('glossary-panel').classList.toggle('hidden')" title="Γλωσσάρι">📖</button>
+            <button id="event-close-btn" class="win95-close-btn hidden" title="Κλείσιμο">✕</button>
+          </div>
+        </div>
         <div class="win-card-body" style="text-align:center; padding:16px;">
           <div id="event-spinner-shell" class="hidden">
             <div class="stuck-spinner"></div>
@@ -1091,7 +1127,11 @@
         <div class="win95-title" style="background:linear-gradient(90deg,#3a3a3a,#5a5a5a);"><span>📋 Βήμα ολοκληρώθηκε</span></div>
         <div class="win-card-body" style="padding:16px;">
           <p id="ending-title" style="font-weight:bold; font-size:14px; margin-bottom:8px; color:var(--win95-blue-a);"></p>
-          <p id="ending-body" style="font-size:12px; line-height:1.5; margin-bottom:14px; color:#444;"></p>
+          <p id="ending-body" style="font-size:12px; line-height:1.5; margin-bottom:10px; color:#444;"></p>
+          <div id="ending-cta" style="background:#e8f0fb; border:1px solid #9ab; padding:8px 10px; margin-bottom:12px; font-size:12px; line-height:1.5;">
+            Διάβασε την πλήρη έκθεση της RSA για τους αναγνωρισμένους πρόσφυγες στην Ελλάδα:<br>
+            <a id="ending-report-link" href="" target="_blank" rel="noopener" style="color:var(--win95-blue-a); font-weight:bold;"></a>
+          </div>
           <div class="inline-actions">
             <button id="ending-switch" class="primary">Αλλαγή αποστολής</button>
             <button id="ending-close">Συνέχεια εξερεύνησης</button>
@@ -1117,7 +1157,10 @@
       <div class="win-card" id="denial-modal-wrap">
         <div class="win95-title">
           <span>⛔ ΑΠΟΚΛΕΙΣΜΟΣ</span>
-          <button id="denial-title-close" style="background:#c00; color:white; border:1px solid #600; padding:0 6px; min-width:20px; font-weight:bold; font-size:12px;">✕</button>
+          <div style="display:flex; gap:3px; align-items:center; margin-left:auto;">
+            <button class="modal-hdr-btn" onclick="document.getElementById('glossary-panel').classList.toggle('hidden')" title="Γλωσσάρι">📖</button>
+            <button id="denial-title-close" style="background:#c00; color:white; border:1px solid #600; padding:0 6px; min-width:20px; font-weight:bold; font-size:12px;">✕</button>
+          </div>
         </div>
         <div style="padding:16px;">
           <p id="denial-body" style="font-size:12px; margin-bottom:14px; line-height:1.5;"></p>
@@ -1143,7 +1186,7 @@
       <div class="win-card" id="tree-panel-inner">
         <div class="win95-title">
           <span>🌳 Χάρτης Εγγράφων &amp; Απαιτήσεων</span>
-          <button onclick="document.getElementById('tree-panel').classList.add('hidden')" style="background:#c00;color:white;border:1px solid #600;padding:0 6px;font-weight:bold;">✕</button>
+          <button id="close-tree-panel" style="background:#c00;color:white;border:1px solid #600;padding:0 6px;font-weight:bold;">✕</button>
         </div>
         <div style="display:flex; gap:4px; padding:4px 8px; background:var(--win95-mid); border-bottom:1px solid var(--win95-shadow);">
           <button id="tree-view-map" class="primary" style="font-size:11px; padding:2px 10px;" onclick="setTreeView('map')">📋 Λίστα ανά κτίριο</button>
@@ -1159,7 +1202,7 @@
       <div class="win-card" id="legend-inner">
         <div class="win95-title">
           <span>❓ Οδηγίες &amp; Υπόμνημα</span>
-          <button onclick="document.getElementById('legend-panel').classList.add('hidden')" style="background:#c00;color:white;border:1px solid #600;padding:0 6px;font-weight:bold;">✕</button>
+          <button id="close-legend-panel" style="background:#c00;color:white;border:1px solid #600;padding:0 6px;font-weight:bold;">✕</button>
         </div>
         <div id="legend-body">
           <div class="legend-section">
@@ -1171,7 +1214,7 @@
           <div class="legend-section">
             <div class="legend-section-title">🏢 Κτίρια</div>
             <div class="legend-row"><span class="legend-icon">👆 / 🖱</span><span class="legend-desc">Tap ή click στο κτίριο για είσοδο</span></div>
-            <div class="legend-row"><span class="legend-icon">💡</span><span class="legend-desc">Λάμπα = έχεις όλα τα έγγραφα για κάτι εκεί</span></div>
+            <div class="legend-row"><span class="legend-icon">★</span><span class="legend-desc">Αστέρι = έχεις όλα τα έγγραφα για το κτίριο</span></div>
             <div class="legend-row"><span class="legend-icon">⬜</span><span class="legend-desc">Λευκό περίγραμμα = βρίσκεσαι κοντά</span></div>
           </div>
           <div class="legend-section">
@@ -1203,6 +1246,8 @@
 // ─────────────────────────────────────────────
 // DATA
 // ─────────────────────────────────────────────
+const RSA_REPORT_URL = "https://rsaegean.org/el/anagnorismenoi-prosfyges-2026";
+
 const DATA = {
   characters: [
     {
@@ -1301,12 +1346,12 @@ const DATA = {
   locationAccess: {},
   locations: [
     { id:"asylum_service", name:"Υπηρεσία Ασύλου", x:148, y:138, w:210, h:126, color:0x8aad98, docs:["adet","passport"] },
-    { id:"eforia", name:"Εφορία", x:478, y:138, w:240, h:130, color:0xd4c5e2, docs:["afm","taxisnet","updated_data","tax_clearance"] },
-    { id:"efka", name:"ΕΦΚΑ", x:818, y:138, w:240, h:130, color:0xbf8f00, docs:["inactive_amka","amka","ama"] },
+    { id:"eforia", name:"Εφορία", x:525, y:138, w:200, h:130, color:0xd4c5e2, docs:["afm","taxisnet","updated_data","tax_clearance"] },
+    { id:"efka", name:"ΕΦΚΑ", x:755, y:138, w:200, h:130, color:0xbf8f00, docs:["inactive_amka","amka","ama"] },
     { id:"dom", name:"ΔΟΜ", x:1138, y:138, w:185, h:126, color:0x9b8ed8, docs:["helios_plus","rent_subsidy"] },
     { id:"apartment", name:"Διαμέρισμα", x:148, y:570, w:225, h:130, color:0xcdc1c1, docs:["address","lease_contract"] },
-    { id:"dypa", name:"ΔΥΠΑ", x:478, y:570, w:210, h:126, color:0x5f9ea0, docs:["unemployment_card"] },
-    { id:"work", name:"Εργασία", x:818, y:570, w:225, h:126, color:0x7291bf, docs:["work_contract"] },
+    { id:"dypa", name:"ΔΥΠΑ", x:525, y:570, w:200, h:126, color:0x5f9ea0, docs:["unemployment_card"] },
+    { id:"work", name:"Εργασία", x:755, y:570, w:200, h:126, color:0x7291bf, docs:["work_contract"] },
     { id:"bank", name:"Τράπεζα", x:1138, y:570, w:205, h:130, color:0x9ab8b5, docs:["bank_account"] }
   ],
   // NPC characters — all positioned on walkable road zones:
@@ -1328,7 +1373,7 @@ const DATA = {
     { term:"HELIOS+", def:"Πρόγραμμα ενταξιακής υποστήριξης (ΔΟΜ, 2025–2028). Προϋπόθεση: ΑΔΕΤ εκδοθείσα εντός των τελευταίων 24 μηνών. Παρέχει επιδότηση ενοικίου — αλλά μόνο αν έχεις ήδη μισθωτήριο στο όνομά σου. Μόνο 4.323 θέσεις για 134.576 κατόχους ΑΔΕΤ." },
     { term:"Δελτίο Ανεργίας (ΔΥΠΑ)", def:"Εγγραφή ως άνεργου στη ΔΥΠΑ. Απαιτεί ΑΔΕΤ, ΑΦΜ, ανενεργό ΑΜΚΑ. Ασύμβατο με σύμβαση εργασίας. Προϋποτίθεται για το HELIOS+." },
     { term:"Εκκαθαριστικό σημείωμα", def:"Εκδίδεται μετά υποβολή φορολογικής δήλωσης — τουλάχιστον 3-4 μήνες μετά το τέλος φορολογικού έτους. Απαιτείται για τράπεζα και κοινωνικά επιδόματα." },
-    { term:"Υποστήριξη Προσφύγων στο Αιγαίο - RSA", def:"Παρέχει δωρεάν νομική βοήθεια και υποστήριξη σε αναγνωρισμένους πρόσφυγες. Υποστήριξε 50+ άτομα που επέστρεψαν στην Ελλάδα το 2025. Έκθεση 2026: <a href=\"https://rsaegean.org/el/anagnorismenoi-prosfyges-2026\" target=\"_blank\" style=\"color:var(--win95-blue-a)\">rsaegean.org/el/anagnorismenoi-prosfyges-2026</a>." },
+    { term:"Υποστήριξη Προσφύγων στο Αιγαίο - RSA", def:`Παρέχει δωρεάν νομική βοήθεια και υποστήριξη σε αναγνωρισμένους πρόσφυγες. Υποστήριξε 50+ άτομα που επέστρεψαν στην Ελλάδα το 2025. Έκθεση 2026: <a href="${RSA_REPORT_URL}" target="_blank" style="color:var(--win95-blue-a)">rsaegean.org/el/anagnorismenoi-prosfyges-2026</a>.` },
     { term:"ΕΕΕ (Ελάχιστο Εγγυημένο Εισόδημα)", def:"Βασικό επίδομα 216€/μήνα ανά νοικοκυριό + 108€ ανά επιπλέον ενήλικα. Απαιτεί ΑΔΕΤ, ΑΦΜ, TAXISnet, ενεργό ΑΜΚΑ και τραπεζικό λογαριασμό. Ασύμβατο με επιδότηση ενοικίου HELIOS+." },
     { term:"Επανεισδοχή", def:"Επιστροφή αναγνωρισμένων προσφύγων από άλλες ευρωπαϊκές χώρες στην Ελλάδα. Το 2025: 9.179 αιτήματα (+274% από το 2024), 725 απελάσεις. Επιστρέφοντες φτάνουν χωρίς ενημέρωση, χωρίς στέγη, χωρίς έγγραφα." },
     { term:"Βεβαίωση Δικαιούχου", def:"Εκδίδεται από την Υπηρεσία Ασύλου κατά την κατάθεση αίτησης ανανέωσης. Δεν αντικαθιστά την ΑΔΕΤ — οι περισσότερες αρχές δεν την αποδέχονται. Αγνοείται ακόμα και για νομικές πράξεις." },
@@ -1542,12 +1587,24 @@ function buildGlossary() {
 // ─────────────────────────────────────────────
 // RESET
 // ─────────────────────────────────────────────
+function confirmReset() {
+  if (!state.started) { resetGame(); return; }
+  showEventModal({
+    title: "Επανεκκίνηση;",
+    body: "Θα χάσεις όλα τα έγγραφα και την πρόοδό σου. Συνέχεια;",
+    actions: [
+      { label: "↺ Ναι, επανεκκίνηση", className: "warn", onClick: () => { closeEventModal(); resetGame(); } },
+      { label: "Άκυρο", className: "", onClick: closeEventModal }
+    ]
+  });
+}
+
 function resetGame() {
   stopBgMusic(); stopDayTimer();
   state.inventory = new Set(); state.inventoryOrder = [];
   state.inventorySeeded = false; state.trackedDoc = null;
   state.selectedCharacter = null; state.selectedQuest = null;
-  state.started = false; state.currentLocationId = null;
+  state.started = false; state.currentLocationId = null; state._tutorialShown = false;
   state.dayCount = 1;
   clearInterval(state.prelimTimer);
   closeEventModal();
@@ -1558,6 +1615,7 @@ function resetGame() {
   els.startScreen.classList.remove("hidden");
   els.glossaryPanel.classList.add("hidden");
   closeOffice({ skipDay: true }); hideEnding();
+  expandStep1();
   renderStartChoices(); updateStartButton();
   showToast("Επανεκκίνηση. Επίλεξε χαρακτήρα για να ξεκινήσεις.");
   if (state.scene) { state.scene.updatePlayerLabel(); state.scene.resetPlayer(); }
@@ -1570,19 +1628,40 @@ function showToast(msg) {
   els.toast.textContent = msg;
   els.toast.classList.remove("hidden");
   clearTimeout(state.toastTimer);
-  state.toastTimer = setTimeout(() => els.toast.classList.add("hidden"), 3200);
+  state.toastTimer = setTimeout(() => els.toast.classList.add("hidden"), 5500);
 }
 
 // ─────────────────────────────────────────────
 // START CHOICES
 // ─────────────────────────────────────────────
+function expandStep1() {
+  const step1 = document.getElementById("start-step-1");
+  const step2 = document.getElementById("start-step-2");
+  const changeLink = document.getElementById("step1-change-link");
+  if (step1) step1.classList.remove("collapsed");
+  if (step2) step2.classList.remove("visible");
+  if (changeLink) changeLink.style.display = "none";
+}
 function renderStartChoices() {
   els.characterChoices.innerHTML = "";
   DATA.characters.forEach(ch => {
     const btn = document.createElement("button");
     btn.className = `choice-button${state.selectedCharacter === ch.id ? " selected" : ""}`;
     btn.innerHTML = `<strong style="font-size:13px;">${ch.name}</strong><span class="small" style="font-weight:normal; white-space:normal;">${ch.description}</span>`;
-    btn.onclick = () => { state.selectedCharacter = ch.id; renderStartChoices(); updateStartButton(); };
+    btn.onclick = () => {
+      state.selectedCharacter = ch.id;
+      renderStartChoices(); updateStartButton();
+      if (window.matchMedia("(max-width: 1023px)").matches) {
+        const step1 = document.getElementById("start-step-1");
+        const step2 = document.getElementById("start-step-2");
+        const summary = document.getElementById("step1-summary");
+        const changeLink = document.getElementById("step1-change-link");
+        if (summary) summary.textContent = "✓ " + ch.name;
+        if (changeLink) changeLink.style.display = "inline";
+        if (step1) step1.classList.add("collapsed");
+        if (step2) { step2.classList.add("visible"); step2.scrollIntoView({ behavior:"smooth", block:"start" }); }
+      }
+    };
     els.characterChoices.appendChild(btn);
   });
   els.questChoices.innerHTML = "";
@@ -2220,7 +2299,6 @@ const BANK_OBSTACLES = [
   "Άρνηση ορισμένων τραπεζών να χορηγήσουν κωδικούς e-banking σε δικαιούχους διεθνούς προστασίας.",
   "Άρνηση ορισμένων τραπεζών να εξυπηρετήσουν πρόσφυγες παρά μόνο σε συγκεκριμένα υποκαταστήματα — συχνά μακριά από τον τόπο κατοικίας τους."
 ];
-const RSA_REPORT_URL = "https://rsaegean.org/el/anagnorismenoi-prosfyges-2026";
 const BUILDING_ENTRY_INFO = {
   bank: {
     title: "Τράπεζα — Πριν Μπεις",
@@ -2234,7 +2312,7 @@ const BUILDING_ENTRY_INFO = {
     ]
   },
   dom: {
-    title: "HELIOS+ — Πριν Μπεις",
+    title: "ΔΟΜ — Πριν Μπεις. Πληροφορίες για το Helios+",
     bodyHtml: `<div style="text-align:left;font-size:11px;line-height:1.6;"><p>Σύμφωνα με την Ευρωπαϊκή Επιτροπή, το πρόγραμμα HELIOS+ <em>«είναι το βασικό πρόγραμμα που στοχεύει στην ενίσχυση της ένταξης των πολιτών τρίτων χωρών στην ελληνική κοινωνία»</em>.</p><p style="margin-top:8px;">Ενώ ο αριθμός των ενεργών αδειών διαμονής διεθνούς και προσωρινής προστασίας ήταν <strong>134.576</strong> στα τέλη του περασμένου έτους, το HELIOS+ θέτει ως συνολικό στόχο <strong>4.323 δικαιούχοι</strong> να επωφεληθούν των υπηρεσιών υποστήριξής του από το 2025 ως το 2028.</p><p style="margin-top:8px;font-weight:bold;color:#b45309;">Δηλαδή περίπου το 3%.</p></div>`,
     actions: (onContinue) => [
       { label: "Συνέχεια →", className: "primary", onClick: () => { closeEventModal(); onContinue(); } },
@@ -2317,6 +2395,8 @@ function requestDocument(id, opts={}) {
 // ─────────────────────────────────────────────
 function showEnding(title, body) {
   els.endingTitle.textContent = title; els.endingBody.textContent = body;
+  const link = document.getElementById("ending-report-link");
+  if (link) { link.href = RSA_REPORT_URL; link.textContent = RSA_REPORT_URL.replace(/^https?:\/\//, ""); }
   els.endingModal.classList.remove("hidden");
 }
 function hideEnding() { els.endingModal.classList.add("hidden"); }
@@ -2345,7 +2425,7 @@ function checkQuestCompletion() {
   const q = getQuest();
   if (!hasDoc(q.target)) return;
   launchConfetti();
-  showEnding(`${getDoc(q.target).name} — ολοκληρώθηκε.`, `Κατάφερες να αποκτήσεις ${getDoc(q.target).name} μετά από ${state.dayCount} ημέρες. Στην πραγματικότητα, πολλοί δεν τα καταφέρνουν. Ο λαβύρινθος δεν σταματά εδώ.`);
+  showEnding(`${getDoc(q.target).name} — ολοκληρώθηκε.`, `Κατάφερες να αποκτήσεις ${getDoc(q.target).name} μετά από ${state.dayCount} ημέρες. Στην πραγματικότητα, πολλοί και πολλές δεν τα καταφέρνουν. Για τις ανάγκες του παιχνιδιού απλοποιήσαμε μια σειρά από πραγματικές δυσκολίες που στην πραγματική ζωή συχνά οδηγούν τους ανθρώπους σε απόγνωση και εγκλωβισμό. Ο λαβύρινθος δεν σταματά εδώ.`);
   if (q.followUpQuest && DATA.quests[q.followUpQuest]) {
     const fq = DATA.quests[q.followUpQuest];
     els.endingSwitch.textContent = `→ Επόμενη: ${fq.label}`;
@@ -2365,7 +2445,6 @@ const REQUIRED_TAPS = 28;
 function startPrototype() {
   seedCharacterInventory();
   els.startScreen.classList.add("hidden");
-  buildGlossary();
   startBgMusic();
   showPreliminaryScreen();
 }
@@ -2464,6 +2543,31 @@ els.skipBtn.onclick = () => {
   if (cb) cb(); else enterCity();
 };
 
+function showTutorial() {
+  const ch = getCharacter();
+  const isMobile = window.matchMedia("(max-width: 1023px)").matches;
+  const moveHint = isMobile
+    ? "Tap οπουδήποτε στον χάρτη για να μετακινηθείς."
+    : "Χρησιμοποίησε τα βελάκια / WASD ή click στον χάρτη για να κινηθείς.";
+  showEventModal({
+    title: "Καλώς ήρθες στην Ελλάδα",
+    bodyHtml: `<div style="text-align:left; font-size:12px; line-height:1.6;">
+      <p style="margin-bottom:10px;">Μόλις επέστρεψες αναγκαστικά. Δεν έχεις σπίτι, δεν έχεις δουλειά, και τα έγγραφά σου είναι ανεπαρκή ή ληγμένα.</p>
+      <p style="margin-bottom:10px;"><strong>Στόχος:</strong> Μάζεψε τα απαιτούμενα έγγραφα για να ολοκληρώσεις την αποστολή σου.</p>
+      <div style="background:#f0f4ff; border:1px solid #aac; padding:8px 10px; margin-bottom:10px;">
+        <div style="font-weight:bold; margin-bottom:4px; color:var(--win95-blue-a);">Πώς παίζεται</div>
+        <div style="margin-bottom:3px;">&#9654; ${moveHint}</div>
+        <div style="margin-bottom:3px;">&#9654; <strong>Tap / click πάνω σε κτίριο</strong> για να μπεις και να δεις τι μπορείς να κάνεις.</div>
+        <div style="margin-bottom:3px;">&#9654; Τα <span style="color:var(--win95-red)">&#10005; κόκκινα έγγραφα</span> λείπουν — click για να τα παρακολουθήσεις.</div>
+        <div style="margin-bottom:3px;">&#9654; Το <span style="color:var(--win95-blue-a)">📋 Απαιτούμενα</span> δείχνει τι χρειάζεσαι για την τρέχουσα αποστολή.</div>
+        <div>&#9654; Το <strong>❓</strong> (κάτω δεξιά) έχει πλήρεις οδηγίες.</div>
+      </div>
+      <p style="font-size:11px; color:var(--muted);">Αυτό το παιχνίδι βασίζεται σε πραγματικές υποθέσεις αναγνωρισμένων προσφύγων στην Ελλάδα το 2025-2026.</p>
+    </div>`,
+    actions: [{ label: "Ξεκινώ", className: "primary", onClick: closeEventModal }]
+  });
+}
+
 function enterCity() {
   els.prelimScreen.classList.add("hidden");
   state.started = true; state.trackedDoc = null;
@@ -2474,7 +2578,8 @@ function enterCity() {
   else if (state.scene) { state.scene.updatePlayerLabel(); state.scene.resetPlayer(); }
   updateUI();
   startDayTimer();
-  showToast("Μόλις προσγειώθηκες στην Ελλάδα. Ξεκίνα από την Υπηρεσία Ασύλου.");
+  if (!state._tutorialShown) { state._tutorialShown = true; showTutorial(); }
+  else showToast("Μόλις προσγειώθηκες στην Ελλάδα. Ξεκίνα από την Υπηρεσία Ασύλου.");
 }
 
 // ─────────────────────────────────────────────
@@ -2531,10 +2636,10 @@ class CityScene extends Phaser.Scene {
       g.lineBetween(this.sx(x), this.sy(360), this.sx(x+30), this.sy(360));
 
     // title
-    this.add.text(this.sx(28), this.sy(22), "Αναγνωρισμένοι Πρόσφυγες στην Ελλάδα — Μεγάλη Γραφειοκρατική Περιπέτεια 2026", {
-      fontFamily:"Courier, monospace", fontSize:this.fontPx(18),
-      color:"#ffffff", stroke:"#000000", strokeThickness:this.ss(4)
-    });
+    this.add.text(this.sx(640), this.sy(22), "Αναγνωρισμένοι Πρόσφυγες στην Ελλάδα — Μεγάλη Γραφειοκρατική Περιπέτεια 2026", {
+      fontFamily:"Arial, Helvetica, sans-serif", fontSize:this.fontPx(18),
+      color:"#ffffff", stroke:"#000000", strokeThickness:this.ss(4), align:"center"
+    }).setOrigin(0.5, 0);
 
 
     // Stats ticker — injected as HTML overlay (see #stats-ticker CSS)
@@ -2544,7 +2649,7 @@ class CityScene extends Phaser.Scene {
       tickerEl.id = "stats-ticker";
       const inner = document.createElement("div");
       inner.id = "stats-ticker-inner";
-      inner.innerHTML = `<a href="https://rsaegean.org/el/anagnorismenoi-prosfyges-2026" target="_blank">📊 96.438 ενεργές ΑΔΕΤ + 19.398 εκκρεμείς για πρώτη έκδοση   ◆   9.179 αιτήματα επανεισδοχής το 2025 — αύξηση 274% σε ένα χρόνο   ◆   725 απελάσεις αναγνωρισμένων προσφύγων το 2025, συμπεριλαμβανομένων οικογενειών με παιδιά   ◆   7.640 εκκρεμείς ανανεώσεις ΑΔΕΤ — 2.237 αναμένουν πάνω από 1 χρόνο   ◆   Μόνο 4.323 θέσεις στο HELIOS+ για 134.576 κατόχους ΑΔΕΤ και προσωρινής προστασίας   ◆   Οι επιστρέφοντες φτάνουν στο αεροδρόμιο χωρίς ενημέρωση, χωρίς στέγη, χωρίς έγγραφα   ◆   Τα ΚΕΠ σταμάτησαν να εκδίδουν ΑΜΚΑ από το 2024   ◆   1.515 εκκρεμείς αιτήσεις ταξιδιωτικού εγγράφου τέλη 2025   ◆   Χωρίς ενεργό ΑΜΚΑ: καμία πρόσβαση σε ΕΣΥ, επιδόματα, απασχόληση, συνταγογράφηση   ◆   Παιδιά γεννημένα στην Ελλάδα εγγράφονται συχνά με διαφορετικό Αριθμό Υπόθεσης από την οικογένεια   ◆   Οι εβδομαδιαίες λίστες παράδοσης ΑΔΕΤ υπάρχουν μόνο στα Ελληνικά, Αγγλικά και Γαλλικά   ◆   Πλήρης έκθεση RSA 2026: rsaegean.org/el/anagnorismenoi-prosfyges-2026</a>`;
+      inner.innerHTML = `<a href="${RSA_REPORT_URL}" target="_blank">📊 96.438 ενεργές ΑΔΕΤ + 19.398 εκκρεμείς για πρώτη έκδοση   ◆   9.179 αιτήματα επανεισδοχής το 2025 — αύξηση 274% σε ένα χρόνο   ◆   725 απελάσεις αναγνωρισμένων προσφύγων το 2025, συμπεριλαμβανομένων οικογενειών με παιδιά   ◆   7.640 εκκρεμείς ανανεώσεις ΑΔΕΤ — 2.237 αναμένουν πάνω από 1 χρόνο   ◆   Μόνο 4.323 θέσεις στο HELIOS+ για 134.576 κατόχους ΑΔΕΤ και προσωρινής προστασίας   ◆   Οι επιστρέφοντες φτάνουν στο αεροδρόμιο χωρίς ενημέρωση, χωρίς στέγη, χωρίς έγγραφα   ◆   Τα ΚΕΠ σταμάτησαν να εκδίδουν ΑΜΚΑ από το 2024   ◆   1.515 εκκρεμείς αιτήσεις ταξιδιωτικού εγγράφου τέλη 2025   ◆   Χωρίς ενεργό ΑΜΚΑ: καμία πρόσβαση σε ΕΣΥ, επιδόματα, απασχόληση, συνταγογράφηση   ◆   Παιδιά γεννημένα στην Ελλάδα εγγράφονται συχνά με διαφορετικό Αριθμό Υπόθεσης από την οικογένεια   ◆   Οι εβδομαδιαίες λίστες παράδοσης ΑΔΕΤ υπάρχουν μόνο στα Ελληνικά, Αγγλικά και Γαλλικά   ◆   Πλήρης έκθεση RSA 2026: rsaegean.org/el/anagnorismenoi-prosfyges-2026</a>`;
       tickerEl.appendChild(inner);
       // Touch: first tap pauses; second tap resumes (allows link clicks while paused)
       let tickerTouchPaused = false;
@@ -2574,34 +2679,40 @@ class CityScene extends Phaser.Scene {
       body.setStrokeStyle(this.ss(4), 0x000000, 1);
       const inner = this.add.rectangle(0, 0, w-this.sx(10), h-this.sy(10), 0x000000, 0.18);
 
-      // Greek temple ornament: columns + entablature + pediment
+      // Brutalist/70s concrete ornament: flat cornice + horizontal bands + window grid
       const decor = this.add.graphics();
-      const stoneLight = 0xdbd0a8;
-      const stoneMid  = 0xbfb288;
-      const colW = Math.max(this.ss(7), 5);
-      const xtra = this.ss(8);   // pediment/entablature overhang
-      const entH = this.sy(7);   // entablature height
-      const pedH = this.sy(18);  // pediment height
-      const numCols = Math.max(3, Math.round(w / this.sx(55)));
-      // columns (semi-transparent so building color shows through)
-      for (let i = 0; i < numCols; i++) {
-        const cx = -w/2 + (w / (numCols + 1)) * (i + 1);
-        decor.fillStyle(stoneLight, 0.55);
-        decor.fillRect(cx - colW/2, -h/2, colW, h);
-        decor.lineStyle(this.ss(0.5), 0x000000, 0.18);
-        decor.strokeRect(cx - colW/2, -h/2, colW, h);
-      }
-      // entablature band
-      decor.fillStyle(stoneMid, 1);
-      decor.fillRect(-w/2 - xtra, -h/2 - entH, w + xtra*2, entH);
-      decor.lineStyle(this.ss(1), 0x000000, 0.5);
-      decor.strokeRect(-w/2 - xtra, -h/2 - entH, w + xtra*2, entH);
-      // pediment (triangle)
-      const pedBot = -h/2 - entH;
-      decor.fillStyle(stoneLight, 1);
-      decor.fillTriangle(-w/2 - xtra, pedBot,  w/2 + xtra, pedBot,  0, pedBot - pedH);
-      decor.lineStyle(this.ss(1), 0x000000, 0.55);
-      decor.strokeTriangle(-w/2 - xtra, pedBot,  w/2 + xtra, pedBot,  0, pedBot - pedH);
+      const concreteShade = 0x888070;
+      const windowBlue   = 0x6090b8;
+      const windowFrame  = 0x303028;
+      // flat cornice (top overhang slab)
+      decor.fillStyle(concreteShade, 1);
+      decor.fillRect(-w/2 - this.ss(4), -h/2 - this.sy(7), w + this.ss(8), this.sy(7));
+      decor.lineStyle(this.ss(1), 0x000000, 0.4);
+      decor.strokeRect(-w/2 - this.ss(4), -h/2 - this.sy(7), w + this.ss(8), this.sy(7));
+      // horizontal concrete banding (2 bands across facade)
+      [0.3, 0.65].forEach(t => {
+        const by = -h/2 + h * t;
+        decor.fillStyle(concreteShade, 0.55);
+        decor.fillRect(-w/2, by, w, this.sy(5));
+      });
+      // window grid: 2 rows of evenly-spaced windows
+      const winCols = Math.max(2, Math.round(w / this.sx(46)));
+      const winW = this.sx(13); const winH = this.sy(13);
+      const colGap = w / (winCols + 1);
+      [-h * 0.26, h * 0.08].forEach(ry => {
+        for (let c = 0; c < winCols; c++) {
+          const wx = -w/2 + colGap * (c + 1) - winW/2;
+          const wy = ry - winH/2;
+          decor.fillStyle(windowFrame, 1);
+          decor.fillRect(wx - this.ss(1), wy - this.ss(1), winW + this.ss(2), winH + this.ss(2));
+          decor.fillStyle(windowBlue, 0.75);
+          decor.fillRect(wx, wy, winW, winH);
+          // window divider cross
+          decor.lineStyle(this.ss(0.8), windowFrame, 0.5);
+          decor.lineBetween(wx + winW/2, wy, wx + winW/2, wy + winH);
+          decor.lineBetween(wx, wy + winH/2, wx + winW, wy + winH/2);
+        }
+      });
 
       // White background label for better readability
       const titleBg = this.add.rectangle(0, -h*0.22, w - this.sx(12), this.sy(28), 0x000000, 0.45);
@@ -2618,7 +2729,7 @@ class CityScene extends Phaser.Scene {
       }).setOrigin(0.5);
       // Lamp: bright glow circle + emoji — placed at top-right corner of building
       const lampGlow = this.add.circle(w/2 + this.sx(2), -h/2 - this.sy(2), this.ss(14), 0xffff00, 0.85);
-      const lamp = this.add.text(w/2 + this.sx(2), -h/2 - this.sy(2), "💡", {
+      const lamp = this.add.text(w/2 + this.sx(2), -h/2 - this.sy(2), "★", {
         fontSize: this.fontPx(18), stroke:"#000000", strokeThickness: this.ss(2)
       }).setOrigin(0.5, 0.5).setDepth(65).setVisible(false);
       lampGlow.setDepth(64).setVisible(false);
@@ -2737,6 +2848,7 @@ class CityScene extends Phaser.Scene {
 
 
   findBuildingAt(x, y) {
+    if (this.isWalkable(x, y)) return null; // road tap → move, not building entry
     return this.buildings.find(b => {
       const l=b.x-b.w/2, r=b.x+b.w/2, t=b.y-b.h/2, bt=b.y+b.h/2+10;
       return x>=l && x<=r && y>=t && y<=bt;
@@ -2808,12 +2920,20 @@ class CityScene extends Phaser.Scene {
     return best;
   }
 
+  invalidateRectCache() {
+    this._cachedCanvasRect = null;
+    this._cachedOverlayRect = null;
+  }
+
   getNpcScreenPos(npcObj) {
-    const canvas = document.getElementById("game-shell").querySelector("canvas");
-    if (!canvas) return null;
-    const canvasRect = canvas.getBoundingClientRect();
-    const overlayRect = els.npcBubbleOverlay.getBoundingClientRect();
-    // Use GAME_CANVAS constants (the canvas buffer resolution) for reliable pixel mapping
+    if (!this._cachedCanvasRect) {
+      const canvas = document.getElementById("game-shell").querySelector("canvas");
+      if (!canvas) return null;
+      this._cachedCanvasRect = canvas.getBoundingClientRect();
+      this._cachedOverlayRect = els.npcBubbleOverlay.getBoundingClientRect();
+    }
+    const canvasRect = this._cachedCanvasRect;
+    const overlayRect = this._cachedOverlayRect;
     const scaleX = canvasRect.width  / GAME_CANVAS.width;
     const scaleY = canvasRect.height / GAME_CANVAS.height;
     return {
@@ -2986,6 +3106,7 @@ class CityScene extends Phaser.Scene {
 // INIT GAME
 // ─────────────────────────────────────────────
 function initGame() {
+  window.addEventListener("resize", () => { if (state.scene) state.scene.invalidateRectCache(); });
   state.game = new Phaser.Game({
     type: Phaser.AUTO,
     parent: "game-container",
@@ -3002,7 +3123,7 @@ function initGame() {
 // ─────────────────────────────────────────────
 els.startButton.addEventListener("click", startPrototype);
 els.closeOffice.addEventListener("click", closeOffice);
-els.barReset.addEventListener("click", resetGame);
+els.barReset.addEventListener("click", confirmReset);
 els.endingClose.addEventListener("click", hideEnding);
 // endingSwitch onclick is set dynamically in checkQuestCompletion
 els.endingSwitch.addEventListener("click", () => {
@@ -3042,7 +3163,9 @@ document.addEventListener("click", () => closeDropdowns());
 // Map corner buttons
 document.getElementById("tree-btn").addEventListener("click", e => { e.stopPropagation(); openTreePanel(); });
 document.getElementById("legend-btn").addEventListener("click", e => { e.stopPropagation(); document.getElementById("legend-panel").classList.remove("hidden"); });
+document.getElementById("close-tree-panel").addEventListener("click", () => document.getElementById("tree-panel").classList.add("hidden"));
 document.getElementById("tree-panel").addEventListener("click", e => { if (e.target === document.getElementById("tree-panel")) document.getElementById("tree-panel").classList.add("hidden"); });
+document.getElementById("close-legend-panel").addEventListener("click", () => document.getElementById("legend-panel").classList.add("hidden"));
 document.getElementById("legend-panel").addEventListener("click", e => { if (e.target === document.getElementById("legend-panel")) document.getElementById("legend-panel").classList.add("hidden"); });
 
 // ─────────────────────────────────────────────
