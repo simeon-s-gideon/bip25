@@ -282,6 +282,22 @@
     }
 
     /* ── MAIN AREA & SIDEBAR ── */
+    #map-title-bar {
+      display: none;
+      background: linear-gradient(90deg, #1a3a6a 0%, #2a5298 50%, #1a3a6a 100%);
+      color: #ffffff;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 13px; font-weight: bold;
+      text-align: center;
+      padding: 4px 10px;
+      border-bottom: 1px solid #facc15;
+      letter-spacing: 0.02em;
+      line-height: 1.3;
+      flex-shrink: 0;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+    }
+    #map-title-bar.visible { display: block; }
+
     #main-area {
       flex: 1; display: flex; flex-direction: row; overflow: hidden;
     }
@@ -743,7 +759,8 @@
       #top-bar { padding: 2px 4px; gap: 2px; }
       .bar-row { gap: 3px; }
       #map-corner-btns { top: unset !important; bottom: 26px !important; right: 8px; flex-direction: row !important; z-index: 13; }
-      .map-corner-btn { width: 44px !important; height: 44px !important; font-size: 18px !important; }
+      .map-corner-btn { width: 30px !important; height: 30px !important; font-size: 14px !important; }
+      #stats-ticker-inner { font-size: 16px; }
       #map-area { background: #3a6ea5; }
       #map-area #game-container canvas {
         position: absolute !important;
@@ -860,7 +877,7 @@
       white-space: nowrap;
       color: #facc15;
       font-family: "Courier New", Courier, monospace;
-      font-size: 12px;
+      font-size: 13px;
       padding-left: 100%;
       animation: ticker-scroll 90s linear infinite;
       cursor: default;
@@ -934,6 +951,9 @@
         <button id="bar-reset" title="Επανεκκίνηση">↺</button>
       </div>
     </div>
+
+    <!-- MAP TITLE BAR (shown when in city) -->
+    <div id="map-title-bar">Αναγνωρισμένοι Πρόσφυγες στην Ελλάδα — Μεγάλη Γραφειοκρατική Περιπέτεια 2026</div>
 
     <!-- MAIN AREA: MAP + SIDEBAR -->
     <div id="main-area">
@@ -1051,7 +1071,7 @@
               <div id="wheel" class="wheel"></div>
             </div>
             <div id="spin-controls">
-              <button id="spin-btn" class="primary" style="font-size:13px; padding:8px 24px;">🎲 Γύρισε τη ρουλέτα</button>
+              <button id="spin-btn" class="primary" style="font-size:13px; padding:8px 24px;">🎲 Γύρισε τον τροχό</button>
             </div>
             <div id="spin-result" class="hidden" style="margin-top:10px;">
               <p style="font-size:14px; font-weight:bold; color:var(--win95-blue-a);">Πήρες <span id="result-seconds"></span> δευτερόλεπτα!</p>
@@ -1357,10 +1377,10 @@ const DATA = {
   // NPC characters — all positioned on walkable road zones:
   // left road: x:300-420, y:0-720 | right road: x:860-980, y:0-720 | center road: x:0-1280, y:310-410
   npcs: [
-    { id:"npc1", x:360, y:80,  label:"Φαρζανέ*",       bubble:"Απέλαση μόνης γυναίκας από τη Σουηδία: Η Φαρζανέ*, αναγνωρισμένη πρόσφυγας από το Αφγανιστάν, απελάθηκε από τη Σουηδια στην Ελλάδα τον Ιούλιο του 2025. Οι δικηγόροι της RSA απευθύνθηκαν στην ΥπΥΤ, μεταξύ άλλων υπηρεσιών, ζητώντας επείγουσα στέγαση και συνδρομή της γυναίκας. Η ΥπΥΤ απάντησε στο αίτημα ως εξής: «Η εν θέματι π.τ.χ. δεν δύναται να στεγαστεί σε δομή ευθύνης της ΥΠΥΤ καθώς δεν είναι επιλέξιμη λόγω νομικού καθεστώτος». Με ανταπόκριση του ΕΜΕΑ της Γενικής Γραμματείας Ευάλωτων Πολιτών και Θεσμικής Προστασίας, δρομολογήθηκε η παραπομπή της Φαρζανέ* σε επείγουσα φιλοξενία σε ξενώνα εκτός αρμοδιότητας του Υπουργείου Μετανάστευσης και Ασύλου", color:0xd4879a },
-    { id:"npc2", x:190, y:360, label:"Μαρίελλα*", bubble:"Απέλαση μόνης γυναίκας από τη Γερμανία: Η Μαρίελλα*, αναγνωρισμένη τρανς πρόσφυγας από το Ιράν, απελάθηκε από τη Γερμανία στην Ελλάδα στα μέσα Απριλίου του 2025. Υπέβαλε αίτηση ανανέωσης της ΑΔΕΤ της στα μέσα Μαΐου, η οποία πρωτοκολλήθηκε από το ΑΚΑ Δικαιούχων Διεθνούς Προστασίας 19 ημέρες αργότερα και εκκρεμεί η διεκπεραίωσή της μέχρι σήμερα.", color:0xa07ab8 },
-    { id:"npc3", x:1080, y:360, label:"Νιλάμπ*",       bubble:"Απέλαση μονογονεϊκής οικογένειας από τη Γερμανία: Η Νιλάμπ*, μόνη μητέρα με αναπηρία από το Αφγανιστάν, απελάθηκε με τα τέσσερα παιδιά της στην Ελλάδα στα τέλη Ιανουαρίου του 2026 μετά από επτά χρόνια παραμονής στη Γερμανία, χωρίς έγκυρες Άδειες Διαμονής και Ταξιδιωτικά Έγγραφα και έχοντας χάσει τον ΑΦΜ και τον ΑΜΚΑ που της είχαν αποδοθεί πριν την αναχώρηση της οικογένειας από την Ελλάδα. Τον Μάρτιο του 2026, οι δικηγόροι της RSA απευθύνθηκαν σε ΚΕΠ για να ανακτήσουν τον ΑΦΜ και τον ΑΜΚΑ της Νιλάμπ*, ωστόσο το ΚΕΠ αδυνατούσε να εντοπίσει τα στοιχεία της", color:0x8aad98 },
-    { id:"npc4", x:920, y:90,  label:"Άστεγος Πρόσφυγας",          bubble:"Πολλές/οί άστεγες/οι πρόσφυγες, ιδίως όσες/οι επιστρέφονται στην Ελλάδα από άλλα κράτη, αδυνατούν να λάβουν πιστοποιητικό αστεγίας, το οποίο χρειάζονται ως αποδεικτικό της κατοικίας τους για τη διεκπεραίωση μίας σειράς από διαδικασίες και την κτήση αναγκαίων εγγράφων.", color:0xb0905a },
+    { id:"npc1", x:360, y:40,  label:"Φαρζανέ*",       bubble:"Απέλαση μόνης γυναίκας από τη Σουηδία: Η Φαρζανέ*, αναγνωρισμένη πρόσφυγας από το Αφγανιστάν, απελάθηκε από τη Σουηδια στην Ελλάδα τον Ιούλιο του 2025. Οι δικηγόροι της RSA απευθύνθηκαν στην ΥπΥΤ, μεταξύ άλλων υπηρεσιών, ζητώντας επείγουσα στέγαση και συνδρομή της γυναίκας. Η ΥπΥΤ απάντησε στο αίτημα ως εξής: «Η εν θέματι π.τ.χ. δεν δύναται να στεγαστεί σε δομή ευθύνης της ΥΠΥΤ καθώς δεν είναι επιλέξιμη λόγω νομικού καθεστώτος». Με ανταπόκριση του ΕΜΕΑ της Γενικής Γραμματείας Ευάλωτων Πολιτών και Θεσμικής Προστασίας, δρομολογήθηκε η παραπομπή της Φαρζανέ* σε επείγουσα φιλοξενία σε ξενώνα εκτός αρμοδιότητας του Υπουργείου Μετανάστευσης και Ασύλου", color:0xd4879a },
+    { id:"npc2", x:190, y:350, label:"Μαρίελλα*", bubble:"Απέλαση μόνης γυναίκας από τη Γερμανία: Η Μαρίελλα*, αναγνωρισμένη τρανς πρόσφυγας από το Ιράν, απελάθηκε από τη Γερμανία στην Ελλάδα στα μέσα Απριλίου του 2025. Υπέβαλε αίτηση ανανέωσης της ΑΔΕΤ της στα μέσα Μαΐου, η οποία πρωτοκολλήθηκε από το ΑΚΑ Δικαιούχων Διεθνούς Προστασίας 19 ημέρες αργότερα και εκκρεμεί η διεκπεραίωσή της μέχρι σήμερα.", color:0xa07ab8 },
+    { id:"npc3", x:1080, y:370, label:"Νιλάμπ*",       bubble:"Απέλαση μονογονεϊκής οικογένειας από τη Γερμανία: Η Νιλάμπ*, μόνη μητέρα με αναπηρία από το Αφγανιστάν, απελάθηκε με τα τέσσερα παιδιά της στην Ελλάδα στα τέλη Ιανουαρίου του 2026 μετά από επτά χρόνια παραμονής στη Γερμανία, χωρίς έγκυρες Άδειες Διαμονής και Ταξιδιωτικά Έγγραφα και έχοντας χάσει τον ΑΦΜ και τον ΑΜΚΑ που της είχαν αποδοθεί πριν την αναχώρηση της οικογένειας από την Ελλάδα. Τον Μάρτιο του 2026, οι δικηγόροι της RSA απευθύνθηκαν σε ΚΕΠ για να ανακτήσουν τον ΑΦΜ και τον ΑΜΚΑ της Νιλάμπ*, ωστόσο το ΚΕΠ αδυνατούσε να εντοπίσει τα στοιχεία της", color:0x8aad98 },
+    { id:"npc4", x:920, y:35,  label:"Άστεγος Πρόσφυγας",          bubble:"Πολλές/οί άστεγες/οι πρόσφυγες, ιδίως όσες/οι επιστρέφονται στην Ελλάδα από άλλα κράτη, αδυνατούν να λάβουν πιστοποιητικό αστεγίας, το οποίο χρειάζονται ως αποδεικτικό της κατοικίας τους για τη διεκπεραίωση μίας σειράς από διαδικασίες και την κτήση αναγκαίων εγγράφων.", color:0xb0905a },
     { id:"npc6", x:920, y:460,  label:"Ζακιά*",          bubble:"Ασφαλιστικά μέτρα ΕΔΔΑ για νεαρή γυναίκα με αναπηρία και χρόνια ασθένεια: Η Ζακιά*, νεαρή αναγνωρισμένη προσφύγισσα από τη Συρία, πάσχει από αναπηρία και σοβαρή χρόνια ασθένεια που καθιστά ζωτικής σημασίας την πρόσβασή της σε τακτική νοσηλεία και σε φάρμακα, την οποία λάμβανε σε νοσοκομείο της Αθήνας από την άφιξή της στη χώρα το φθινόπωρο του 2024. Αφότου έλαβε Άδεια Διαμονής, απενεργοποιήθηκε τον Ιανουάριο του 2026 ο ΠΑΑΥΠΑ που είχε ως αιτούσα άσυλο και χρειαζόταν πλέον Ενεργό ΑΜΚΑ για να συνεχίσει τη θεραπεία της. Η Ζακιά* χρειάστηκε να φτάσει έως το Ευρωπαϊκό Δικαστήριο Δικαιωμάτων του Ανθρώπου (ΕΔΔΑ) για να μπορέσει να συνεχίσει να λαμβάνει την απαραίτητη αγωγή για την επιβίωσή της (Omar κατά Ελλάδας, 4827/26).", color:0xb0905a },
   ],
   // Glossary data from the RSA report
@@ -1395,7 +1415,7 @@ const state = {
 };
 
 const MAP_BOUNDS = { width:1280, height:720 };
-const GAME_CANVAS = { width:900, height:1125 };
+let GAME_CANVAS = { width:900, height:1125 };
 
 // ─────────────────────────────────────────────
 // DOM REFS
@@ -2572,6 +2592,7 @@ function enterCity() {
   els.prelimScreen.classList.add("hidden");
   state.started = true; state.trackedDoc = null;
   els.topBar.classList.remove("hidden");
+  document.getElementById("map-title-bar").classList.add("visible");
   const floatBtn = document.getElementById("float-mute-btn");
   if (floatBtn) floatBtn.classList.add("hidden");
   if (!state.game) initGame();
@@ -2607,7 +2628,11 @@ class CityScene extends Phaser.Scene {
   sx(v) { return v * this.scaleXFactor; }
   sy(v) { return v * this.scaleYFactor; }
   ss(v) { return v * this.scaleScalar; }
-  fontPx(v) { return `${Math.max(11, Math.round(this.ss(v)))}px`; }
+  fontPx(v) {
+    const px = Math.round(this.ss(v));
+    const min = window.matchMedia("(max-width:1023px)").matches ? 13 : 11;
+    return `${Math.max(min, px)}px`;
+  }
 
   drawCity() {
     const g = this.add.graphics();
@@ -2635,11 +2660,7 @@ class CityScene extends Phaser.Scene {
     for (let x=0; x<MAP_BOUNDS.width; x+=60)
       g.lineBetween(this.sx(x), this.sy(360), this.sx(x+30), this.sy(360));
 
-    // title
-    this.add.text(this.sx(640), this.sy(22), "Αναγνωρισμένοι Πρόσφυγες στην Ελλάδα — Μεγάλη Γραφειοκρατική Περιπέτεια 2026", {
-      fontFamily:"Arial, Helvetica, sans-serif", fontSize:this.fontPx(18),
-      color:"#ffffff", stroke:"#000000", strokeThickness:this.ss(4), align:"center"
-    }).setOrigin(0.5, 0);
+    // title is now a DOM element (#map-title-bar) above the canvas
 
 
     // Stats ticker — injected as HTML overlay (see #stats-ticker CSS)
@@ -2714,18 +2735,22 @@ class CityScene extends Phaser.Scene {
         }
       });
 
-      // White background label for better readability
-      const titleBg = this.add.rectangle(0, -h*0.22, w - this.sx(12), this.sy(28), 0x000000, 0.45);
-      const title = this.add.text(0, -h*0.22, loc.name, {
-        fontFamily:"Arial, Helvetica, sans-serif", fontStyle:"bold", fontSize:this.fontPx(17),
-        align:"center", color:"#ffffff", stroke:"#000000", strokeThickness:this.ss(3),
-        wordWrap:{ width:w-this.sx(16) }
+      // Building name: floating label above the building exterior (dynamic height)
+      const title = this.add.text(0, 0, loc.name, {
+        fontFamily:"Arial, Helvetica, sans-serif", fontStyle:"bold", fontSize:this.fontPx(14),
+        align:"center", color:"#ffffff", stroke:"#000000", strokeThickness:this.ss(2.5),
+        wordWrap:{ width:w }
       }).setOrigin(0.5);
+      const bgH = title.height + this.sy(6);
+      const labelY = -h/2 - bgH/2 - this.sy(3);
+      title.setY(labelY);
+      const titleBg = this.add.rectangle(0, labelY, w + this.ss(4), bgH, 0x111122, 0.82);
+      // Docs: centered in building — full interior space now available
       const docsText = loc.docs.map(d => getDoc(d).name).join("\n");
-      const docs = this.add.text(0, h*0.12, docsText, {
+      const docs = this.add.text(0, 0, docsText, {
         fontFamily:"Arial, Helvetica, sans-serif", fontSize:this.fontPx(12),
         align:"center", color:"#fff9c4", stroke:"#000000", strokeThickness:this.ss(2.5),
-        wordWrap:{ width:w-this.sx(14) }, lineSpacing:this.sy(2)
+        wordWrap:{ width:w-this.sx(14) }, lineSpacing:this.sy(3)
       }).setOrigin(0.5);
       // Lamp: bright glow circle + emoji — placed at top-right corner of building
       const lampGlow = this.add.circle(w/2 + this.sx(2), -h/2 - this.sy(2), this.ss(14), 0xffff00, 0.85);
@@ -2742,7 +2767,8 @@ class CityScene extends Phaser.Scene {
   createNPCs() {
     this.npcObjects = DATA.npcs.map(npc => {
       const x = this.sx(npc.x), y = this.sy(npc.y);
-      const radius = this.ss(12);
+      const isMob = window.matchMedia("(max-width:1023px)").matches;
+      const radius = Math.max(isMob ? 18 : 12, this.ss(12));
 
       // Shadow
       const g = this.add.graphics();
@@ -2778,12 +2804,13 @@ class CityScene extends Phaser.Scene {
     const sx = this.sx(640), sy = this.sy(360);
     this.spawnPoint = { x:sx, y:sy };
     this.player = this.add.container(sx, sy);
-    const shoulders = this.add.rectangle(0, 0, this.sx(26), this.sy(14), 0x7c3f9f);
+    const isMob = window.matchMedia("(max-width:1023px)").matches;
+    const shoulders = this.add.rectangle(0, 0, Math.max(isMob?32:0, this.sx(26)), Math.max(isMob?18:0, this.sy(14)), 0x7c3f9f);
     shoulders.setStrokeStyle(Math.max(1,this.ss(1)), 0x000000);
-    const head = this.add.circle(0, 0, this.ss(6), 0xb79ad8);
+    const head = this.add.circle(0, 0, Math.max(isMob?9:0, this.ss(6)), 0xb79ad8);
     head.setStrokeStyle(Math.max(1,this.ss(1)), 0x000000);
     this.player.add([shoulders, head]);
-    this.playerOutline = this.add.circle(sx, sy, this.ss(22), 0x8b5cf6, 0.22);
+    this.playerOutline = this.add.circle(sx, sy, Math.max(isMob?24:0, this.ss(22)), 0x8b5cf6, 0.22);
     this.playerLabel = this.add.text(sx, sy-this.sy(34), "", {
       fontFamily:"Courier, monospace", fontWeight:"bold", fontSize:this.fontPx(16),
       color:"#000000", backgroundColor:"rgba(255,255,255,0.7)",
@@ -3034,8 +3061,9 @@ class CityScene extends Phaser.Scene {
       });
     }
 
-    // interact prompt: prefer NPC prompt over building prompt
-    if (!modalOpen) {
+    // interact prompt: prefer NPC prompt over building prompt (keyboard only — hide on mobile)
+    const isMobileDevice = window.matchMedia("(max-width:1023px)").matches;
+    if (!modalOpen && !isMobileDevice) {
       if (nearNpc) {
         this.interactPrompt.setPosition(nearNpc.x, nearNpc.y - this.ss(48)).setVisible(true);
         this.interactPrompt.setText(`SPACE: ${nearNpc.npc.label}`);
@@ -3106,6 +3134,12 @@ class CityScene extends Phaser.Scene {
 // INIT GAME
 // ─────────────────────────────────────────────
 function initGame() {
+  const container = document.getElementById("game-container");
+  const rect = container.getBoundingClientRect();
+  if (rect.width > 50 && rect.height > 50) {
+    GAME_CANVAS.width  = Math.round(rect.width);
+    GAME_CANVAS.height = Math.round(rect.height);
+  }
   window.addEventListener("resize", () => { if (state.scene) state.scene.invalidateRectCache(); });
   state.game = new Phaser.Game({
     type: Phaser.AUTO,
@@ -3113,6 +3147,7 @@ function initGame() {
     width: GAME_CANVAS.width,
     height: GAME_CANVAS.height,
     backgroundColor: "#e2e8f0",
+    resolution: window.devicePixelRatio || 1,
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
     scene: [CityScene]
   });
@@ -3139,6 +3174,10 @@ els.endingSwitch.addEventListener("click", () => {
 });
 els.denialClose.addEventListener("click", () => els.denialModal.classList.add("hidden"));
 document.getElementById("denial-title-close").addEventListener("click", () => els.denialModal.classList.add("hidden"));
+// Tap outside overlay to close (mobile)
+els.officeModal.addEventListener("click",  e => { if (e.target === els.officeModal)  closeOffice(); });
+els.endingModal.addEventListener("click",  e => { if (e.target === els.endingModal)  hideEnding(); });
+els.denialModal.addEventListener("click",  e => { if (e.target === els.denialModal)  els.denialModal.classList.add("hidden"); });
 els.glossaryBtn.addEventListener("click", () => els.glossaryPanel.classList.toggle("hidden"));
 document.getElementById("glossary-corner-btn").addEventListener("click", e => { e.stopPropagation(); els.glossaryPanel.classList.toggle("hidden"); });
 els.closeGlossary.addEventListener("click", () => els.glossaryPanel.classList.add("hidden"));
