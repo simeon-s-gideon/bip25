@@ -3773,27 +3773,31 @@ function launchDocEaterGame(canvas, statusEl, onWin, onLose) {
 // SNAKE MINI-CHALLENGE
 // ─────────────────────────────────────────────
 const _SN_COLS=18, _SN_ROWS=13;
-function _snCell(canvas){return Math.max(14,Math.floor(Math.min(canvas.width/_SN_COLS,canvas.height/_SN_ROWS)));}
+function _snCell(){
+  return Math.max(14,Math.floor(Math.min(
+    (Math.min(window.innerWidth,500)-36)/_SN_COLS,
+    (window.innerHeight-280)/_SN_ROWS,
+    28
+  )));
+}
 
 function _drawSnakePreview(canvas){
-  const ctx=canvas.getContext("2d");
-  const CELL=_snCell(canvas);
+  const CELL=_snCell();
   const W=_SN_COLS*CELL, H=_SN_ROWS*CELL;
-  const ox=Math.floor((canvas.width-W)/2), oy=Math.floor((canvas.height-H)/2);
-  ctx.fillStyle="#00001c"; ctx.fillRect(0,0,canvas.width,canvas.height);
-  // subtle border only (no wall cells — wrap-around arena)
+  canvas.width=W; canvas.height=H;
+  const ctx=canvas.getContext("2d");
+  ctx.fillStyle="#00001c"; ctx.fillRect(0,0,W,H);
   ctx.strokeStyle="#2244aa"; ctx.lineWidth=2;
-  ctx.strokeRect(ox+1,oy+1,W-2,H-2);
-  // preview snake (3 segments horizontal)
+  ctx.strokeRect(1,1,W-2,H-2);
   const midR=Math.floor(_SN_ROWS/2);
   const seg=[{c:6,r:midR},{c:5,r:midR},{c:4,r:midR}];
   for(let i=1;i<seg.length;i++){
     const t=i/(seg.length);
     ctx.fillStyle=`hsl(270,60%,${30+20*t}%)`;
-    ctx.fillRect(ox+seg[i].c*CELL+2,oy+seg[i].r*CELL+2,CELL-4,CELL-4);
+    ctx.fillRect(seg[i].c*CELL+2,seg[i].r*CELL+2,CELL-4,CELL-4);
   }
-  _drawCharFigure(ctx,ox+seg[0].c*CELL+CELL/2,oy+seg[0].r*CELL+CELL/2,CELL);
-  _drawDocIcon(ctx,ox+10*CELL+CELL/2,oy+midR*CELL+CELL/2,CELL);
+  _drawCharFigure(ctx,seg[0].c*CELL+CELL/2,seg[0].r*CELL+CELL/2,CELL);
+  _drawDocIcon(ctx,10*CELL+CELL/2,midR*CELL+CELL/2,CELL);
 }
 
 function _showSnakeOverlay(){
@@ -3812,9 +3816,9 @@ function _showSnakeOverlay(){
 }
 
 function launchSnakeGame(canvas,statusEl,onWin,onLose){
-  const CELL=_snCell(canvas);
+  const CELL=_snCell();
   const W=_SN_COLS*CELL, H=_SN_ROWS*CELL;
-  const ox=Math.floor((canvas.width-W)/2), oy=Math.floor((canvas.height-H)/2);
+  canvas.width=W; canvas.height=H;
   const TARGET=10;
   let snake=[{c:5,r:Math.floor(_SN_ROWS/2)},{c:4,r:Math.floor(_SN_ROWS/2)},{c:3,r:Math.floor(_SN_ROWS/2)}];
   let dir={dc:1,dr:0}, nextDir={dc:1,dr:0};
@@ -3830,22 +3834,18 @@ function launchSnakeGame(canvas,statusEl,onWin,onLose){
   placeDoc();
 
   function drawScene(ctx){
-    ctx.fillStyle="#00001c"; ctx.fillRect(0,0,canvas.width,canvas.height);
-    // subtle border (wrap-around arena — no wall cells)
+    ctx.fillStyle="#00001c"; ctx.fillRect(0,0,W,H);
     ctx.strokeStyle="#2244aa"; ctx.lineWidth=2;
-    ctx.strokeRect(ox+1,oy+1,W-2,H-2);
-    // docs
-    for(const d of docs) _drawDocIcon(ctx,ox+d.c*CELL+CELL/2,oy+d.r*CELL+CELL/2,CELL);
-    // snake body segments (tail to neck)
+    ctx.strokeRect(1,1,W-2,H-2);
+    for(const d of docs) _drawDocIcon(ctx,d.c*CELL+CELL/2,d.r*CELL+CELL/2,CELL);
     for(let i=snake.length-1;i>0;i--){
       const t=i/snake.length;
       ctx.fillStyle=`hsl(270,60%,${25+20*(1-t)}%)`;
       const s=snake[i];
-      ctx.fillRect(ox+s.c*CELL+2,oy+s.r*CELL+2,CELL-4,CELL-4);
+      ctx.fillRect(s.c*CELL+2,s.r*CELL+2,CELL-4,CELL-4);
     }
-    // head = character figure
     const h=snake[0];
-    _drawCharFigure(ctx,ox+h.c*CELL+CELL/2,oy+h.r*CELL+CELL/2,CELL);
+    _drawCharFigure(ctx,h.c*CELL+CELL/2,h.r*CELL+CELL/2,CELL);
     statusEl.textContent=`📄 ${docsEaten} / ${TARGET}`;
   }
 
