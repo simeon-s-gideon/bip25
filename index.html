@@ -3400,6 +3400,7 @@ function initGame() {
 // ─────────────────────────────────────────────
 let _miniChallengeActive = false;
 let _challengeNext = 0; // 0 = DocumentEater, 1 = Snake
+let _activeDirHandler = null; // set by active mini-game, called by D-pad & overlay swipe
 
 function triggerMiniChallenge() {
   if (_miniChallengeActive || !state.started || !els.startScreen.classList.contains("hidden")) return;
@@ -3417,20 +3418,70 @@ function triggerMiniChallenge() {
 // ── Shared helpers ──
 function _challengeOverlay(gendered, hint) {
   const overlay = document.createElement("div");
-  overlay.style.cssText = "position:fixed;inset:0;z-index:10000;background:rgba(0,0,18,0.94);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:14px;box-sizing:border-box;font-family:Arial,sans-serif;";
+  overlay.style.cssText = "position:fixed;inset:0;z-index:10000;background:rgba(0,0,18,0.94);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:14px 14px 10px;box-sizing:border-box;font-family:Arial,sans-serif;";
+
+  // Permanent skip — always visible
+  const skipPerm = document.createElement("button");
+  skipPerm.textContent = "✕ Παράλειψη";
+  skipPerm.style.cssText = "position:absolute;top:8px;right:8px;font-size:11px;padding:5px 9px;background:rgba(20,20,50,0.9);border:1px solid #334466;color:#8899bb;border-radius:3px;cursor:pointer;z-index:2;";
+  skipPerm.onclick = () => { _miniChallengeActive=false; _activeDirHandler=null; overlay.remove(); _scheduleMiniChallenge(); };
+  overlay.appendChild(skipPerm);
+
   const titleEl = document.createElement("div");
   titleEl.style.cssText = "color:#facc15;font-size:13px;font-weight:bold;text-align:center;max-width:400px;line-height:1.5;text-shadow:0 0 8px rgba(250,204,21,0.6);border:2px solid #facc15;padding:8px 12px;border-radius:3px;background:rgba(0,0,0,0.5);";
   titleEl.textContent = `Είσαι ${gendered} στην Ελλάδα, διαρκώς προκύπτουν δυσκολίες που το παιχνίδι δεν μπορεί να εξαντλήσει. Ξεπέρασε αυτή τη δοκιμασία για να μπορέσεις να συνεχίσεις την αποστολή σου`;
+
   const canvas = document.createElement("canvas");
   canvas.style.cssText = "display:block;border:2px solid #2244aa;border-radius:2px;touch-action:none;";
   canvas.setAttribute("tabindex","0");
+
   const statusEl = document.createElement("div");
   statusEl.style.cssText = "color:#88aaff;font-size:12px;text-align:center;min-height:18px;";
+
   const hintEl = document.createElement("div");
   hintEl.style.cssText = "color:#445566;font-size:11px;text-align:center;";
   hintEl.textContent = hint;
-  overlay.appendChild(titleEl); overlay.appendChild(canvas);
-  overlay.appendChild(statusEl); overlay.appendChild(hintEl);
+
+  // D-pad for mobile
+  const dpad = document.createElement("div");
+  dpad.style.cssText = "display:grid;grid-template:repeat(3,44px)/repeat(3,44px);gap:3px;margin-top:2px;";
+  [[null,{l:'▲',dc:0,dr:-1},null],
+   [{l:'◀',dc:-1,dr:0},null,{l:'▶',dc:1,dr:0}],
+   [null,{l:'▼',dc:0,dr:1},null]].forEach(row => row.forEach(b => {
+    if (b) {
+      const btn = document.createElement("button");
+      btn.textContent = b.l;
+      btn.style.cssText = "font-size:17px;background:rgba(20,20,70,0.92);border:1px solid #334488;color:#8899cc;border-radius:6px;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;";
+      const fire = () => { if(_activeDirHandler) _activeDirHandler({dc:b.dc,dr:b.dr}); };
+      btn.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); fire(); }, {passive:false});
+      btn.addEventListener('mousedown', fire);
+      dpad.appendChild(btn);
+    } else { dpad.appendChild(document.createElement("div")); }
+  }));
+
+  // Overlay-wide swipe (anywhere on screen)
+  let _swStart = null;
+  overlay.addEventListener('touchstart', e => {
+    if (e.target.closest('button')) return;
+    _swStart = {x:e.touches[0].clientX, y:e.touches[0].clientY};
+  }, {passive:true});
+  overlay.addEventListener('touchend', e => {
+    if (!_swStart) return;
+    const dx = e.changedTouches[0].clientX - _swStart.x;
+    const dy = e.changedTouches[0].clientY - _swStart.y;
+    _swStart = null;
+    if (Math.abs(dx)<18 && Math.abs(dy)<18) return;
+    if (_activeDirHandler) {
+      const d = Math.abs(dx)>Math.abs(dy) ? (dx>0?{dc:1,dr:0}:{dc:-1,dr:0}) : (dy>0?{dc:0,dr:1}:{dc:0,dr:-1});
+      _activeDirHandler(d);
+    }
+  }, {passive:true});
+
+  overlay.appendChild(titleEl);
+  overlay.appendChild(canvas);
+  overlay.appendChild(statusEl);
+  overlay.appendChild(hintEl);
+  overlay.appendChild(dpad);
   return { overlay, canvas, statusEl };
 }
 function _addStartBtns(overlay, canvas, statusEl, launchFn) {
@@ -3439,10 +3490,7 @@ function _addStartBtns(overlay, canvas, statusEl, launchFn) {
   const go = document.createElement("button");
   go.className = "primary"; go.textContent = "Έναρξη";
   go.onclick = () => { row.remove(); canvas.focus(); launchFn(); };
-  const skip = document.createElement("button");
-  skip.textContent = "Παράλειψη";
-  skip.onclick = () => { _miniChallengeActive = false; overlay.remove(); _scheduleMiniChallenge(); };
-  row.appendChild(go); row.appendChild(skip);
+  row.appendChild(go);
   overlay.appendChild(row);
 }
 function _addLoseBtns(overlay, canvas, statusEl, launchFn) {
@@ -3453,10 +3501,7 @@ function _addLoseBtns(overlay, canvas, statusEl, launchFn) {
   const rb = document.createElement("button");
   rb.className = "primary"; rb.textContent = "↺ Ξαναπαίξτε";
   rb.onclick = () => { row.remove(); statusEl.textContent = ""; canvas.focus(); launchFn(); };
-  const sb = document.createElement("button");
-  sb.textContent = "Παράλειψη";
-  sb.onclick = () => { _miniChallengeActive = false; overlay.remove(); _scheduleMiniChallenge(); };
-  row.appendChild(rb); row.appendChild(sb);
+  row.appendChild(rb);
   overlay.appendChild(row);
 }
 function _drawWallCell(ctx, c, r, CELL) {
@@ -3544,7 +3589,7 @@ function _drawDocEaterPreview(canvas) {
 function _showDocEaterOverlay() {
   const ch=getCharacter();
   const gendered=(ch&&ch.id==="hasan")?"αναγνωρισμένος πρόσφυγας":"αναγνωρισμένη πρόσφυγισσα";
-  const {overlay,canvas,statusEl}=_challengeOverlay(gendered,"⬆⬇⬅➡ ή WASD · σύρε · μάζεψε όλα τα έγγραφα χωρίς να σε πιάσουν οι υπάλληλοι");
+  const {overlay,canvas,statusEl}=_challengeOverlay(gendered,"⬆⬇⬅➡ ή WASD · σύρε οπουδήποτε ή πάτα τα βέλη · μάζεψε όλα τα έγγραφα χωρίς να σε πιάσουν οι υπάλληλοι");
   _drawDocEaterPreview(canvas);
   function launchRound() {
     launchDocEaterGame(canvas,statusEl,
@@ -3656,22 +3701,11 @@ function launchDocEaterGame(canvas, statusEl, onWin, onLose) {
              w:{dr:-1,dc:0},s:{dr:1,dc:0},a:{dr:0,dc:-1},d:{dr:0,dc:1}};
     if(m[e.key]){player.nDir=m[e.key];e.preventDefault();}
   };
-  let tStart=null;
-  const tStartH=e=>{tStart={x:e.touches[0].clientX,y:e.touches[0].clientY};e.preventDefault();};
-  const tEndH=e=>{
-    if(!tStart)return;
-    const dx=e.changedTouches[0].clientX-tStart.x,dy=e.changedTouches[0].clientY-tStart.y;
-    if(Math.abs(dx)>10||Math.abs(dy)>10)
-      player.nDir=Math.abs(dx)>Math.abs(dy)?(dx>0?{dr:0,dc:1}:{dr:0,dc:-1}):(dy>0?{dr:1,dc:0}:{dr:-1,dc:0});
-    tStart=null; e.preventDefault();
-  };
+  _activeDirHandler = (d) => { player.nDir = d; };
   document.addEventListener("keydown",keyH);
-  canvas.addEventListener("touchstart",tStartH,{passive:false});
-  canvas.addEventListener("touchend",tEndH,{passive:false});
   function cleanup(){
     document.removeEventListener("keydown",keyH);
-    canvas.removeEventListener("touchstart",tStartH);
-    canvas.removeEventListener("touchend",tEndH);
+    _activeDirHandler=null;
     if(animId)cancelAnimationFrame(animId);
   }
   function loop(ts) {
@@ -3765,7 +3799,7 @@ function _drawSnakePreview(canvas){
 function _showSnakeOverlay(){
   const ch=getCharacter();
   const gendered=(ch&&ch.id==="hasan")?"αναγνωρισμένος πρόσφυγας":"αναγνωρισμένη πρόσφυγισσα";
-  const {overlay,canvas,statusEl}=_challengeOverlay(gendered,"⬆⬇⬅➡ ή WASD · σύρε · μάζεψε 10 έγγραφα χωρίς να χτυπήσεις στο σώμα σου · τα άκρα συνδέονται");
+  const {overlay,canvas,statusEl}=_challengeOverlay(gendered,"⬆⬇⬅➡ ή WASD · σύρε οπουδήποτε ή πάτα τα βέλη · μάζεψε 10 έγγραφα χωρίς να χτυπήσεις στο σώμα σου · τα άκρα συνδέονται");
   _drawSnakePreview(canvas);
   function launchRound(){
     launchSnakeGame(canvas,statusEl,
@@ -3830,7 +3864,7 @@ function launchSnakeGame(canvas,statusEl,onWin,onLose){
       ctx.fillStyle="rgba(0,0,24,0.72)"; ctx.fillRect(0,0,canvas.width,canvas.height);
       ctx.fillStyle="#ef4444"; ctx.font=`bold ${CELL*1.6}px Arial`;
       ctx.textAlign="center"; ctx.textBaseline="middle";
-      ctx.fillText("💥 Αυτοσύγκρουση!",canvas.width/2,canvas.height/2);
+      ctx.fillText("💥 Συγκρούστηκες με τον ευατό σου!",canvas.width/2,canvas.height/2);
       setTimeout(onLose,1100); return;
     }
     const ate=docs.findIndex(d=>d.c===head.c&&d.r===head.r);
@@ -3878,29 +3912,15 @@ function launchSnakeGame(canvas,statusEl,onWin,onLose){
              w:{dr:-1,dc:0},s:{dr:1,dc:0},a:{dr:0,dc:-1},d:{dr:0,dc:1}};
     if(m[e.key]){
       const nd=m[e.key];
-      // prevent reversing
       if(nd.dc!==-dir.dc||nd.dr!==-dir.dr) nextDir=nd;
       e.preventDefault();
     }
   };
-  let tStart2=null;
-  const tStartH2=e=>{tStart2={x:e.touches[0].clientX,y:e.touches[0].clientY};e.preventDefault();};
-  const tEndH2=e=>{
-    if(!tStart2) return;
-    const dx=e.changedTouches[0].clientX-tStart2.x,dy=e.changedTouches[0].clientY-tStart2.y;
-    if(Math.abs(dx)>10||Math.abs(dy)>10){
-      const nd=Math.abs(dx)>Math.abs(dy)?(dx>0?{dr:0,dc:1}:{dr:0,dc:-1}):(dy>0?{dr:1,dc:0}:{dr:-1,dc:0});
-      if(nd.dc!==-dir.dc||nd.dr!==-dir.dr) nextDir=nd;
-    }
-    tStart2=null; e.preventDefault();
-  };
+  _activeDirHandler = (nd) => { if(nd.dc!==-dir.dc||nd.dr!==-dir.dr) nextDir=nd; };
   document.addEventListener("keydown",keyH);
-  canvas.addEventListener("touchstart",tStartH2,{passive:false});
-  canvas.addEventListener("touchend",tEndH2,{passive:false});
-  // cleanup on win/lose wrapped
   const origOnWin=onWin, origOnLose=onLose;
-  onWin=()=>{document.removeEventListener("keydown",keyH);canvas.removeEventListener("touchstart",tStartH2);canvas.removeEventListener("touchend",tEndH2);if(animId)cancelAnimationFrame(animId);origOnWin();};
-  onLose=()=>{document.removeEventListener("keydown",keyH);canvas.removeEventListener("touchstart",tStartH2);canvas.removeEventListener("touchend",tEndH2);if(animId)cancelAnimationFrame(animId);origOnLose();};
+  onWin=()=>{document.removeEventListener("keydown",keyH);_activeDirHandler=null;if(animId)cancelAnimationFrame(animId);origOnWin();};
+  onLose=()=>{document.removeEventListener("keydown",keyH);_activeDirHandler=null;if(animId)cancelAnimationFrame(animId);origOnLose();};
   animId=requestAnimationFrame(loop);
 }
 
