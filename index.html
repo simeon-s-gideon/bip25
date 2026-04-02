@@ -1079,7 +1079,7 @@
 
           <div id="tap-panel" class="hidden" style="margin-top:14px;">
             <div class="win95-inset" style="text-align:left; margin-bottom:10px; font-size:11px; line-height:1.5;">
-              <strong>Οδηγίες Tap Test:</strong> Κάνε κλικ/tap στη μπλε μπάρα για να τη γεμίσεις πριν τελειώσει ο χρόνος.
+              <strong>Οδηγίες Tap Test:</strong> Κάνε κλικ/tap στην μπάρα για να τη γεμίσεις πριν τελειώσει ο χρόνος.
             </div>
             <div id="tap-action-slot">
               <button id="start-tap-btn" class="success" style="width:100%; padding:10px; font-size:13px;">▶ Ξεκίνα</button>
@@ -1380,6 +1380,7 @@ const DATA = {
     { id:"npc3", x:1080, y:370, label:"Νιλάμπ*",       bubble:"Απέλαση μονογονεϊκής οικογένειας από τη Γερμανία: Η Νιλάμπ*, μόνη μητέρα με αναπηρία από το Αφγανιστάν, απελάθηκε με τα τέσσερα παιδιά της στην Ελλάδα στα τέλη Ιανουαρίου του 2026 μετά από επτά χρόνια παραμονής στη Γερμανία, χωρίς έγκυρες Άδειες Διαμονής και Ταξιδιωτικά Έγγραφα και έχοντας χάσει τον ΑΦΜ και τον ΑΜΚΑ που της είχαν αποδοθεί πριν την αναχώρηση της οικογένειας από την Ελλάδα. Τον Μάρτιο του 2026, οι δικηγόροι της RSA απευθύνθηκαν σε ΚΕΠ για να ανακτήσουν τον ΑΦΜ και τον ΑΜΚΑ της Νιλάμπ*, ωστόσο το ΚΕΠ αδυνατούσε να εντοπίσει τα στοιχεία της", color:0x8aad98 },
     { id:"npc4", x:820, y:310,  label:"Άστεγος Πρόσφυγας",          bubble:"Πολλές/οί άστεγες/οι πρόσφυγες, ιδίως όσες/οι επιστρέφονται στην Ελλάδα από άλλα κράτη, αδυνατούν να λάβουν πιστοποιητικό αστεγίας, το οποίο χρειάζονται ως αποδεικτικό της κατοικίας τους για τη διεκπεραίωση μίας σειράς από διαδικασίες και την κτήση αναγκαίων εγγράφων.", color:0xb0905a },
     { id:"npc6", x:920, y:460,  label:"Ζακιά*",          bubble:"Ασφαλιστικά μέτρα ΕΔΔΑ για νεαρή γυναίκα με αναπηρία και χρόνια ασθένεια: Η Ζακιά*, νεαρή αναγνωρισμένη προσφύγισσα από τη Συρία, πάσχει από αναπηρία και σοβαρή χρόνια ασθένεια που καθιστά ζωτικής σημασίας την πρόσβασή της σε τακτική νοσηλεία και σε φάρμακα, την οποία λάμβανε σε νοσοκομείο της Αθήνας από την άφιξή της στη χώρα το φθινόπωρο του 2024. Αφότου έλαβε Άδεια Διαμονής, απενεργοποιήθηκε τον Ιανουάριο του 2026 ο ΠΑΑΥΠΑ που είχε ως αιτούσα άσυλο και χρειαζόταν πλέον Ενεργό ΑΜΚΑ για να συνεχίσει τη θεραπεία της. Η Ζακιά* χρειάστηκε να φτάσει έως το Ευρωπαϊκό Δικαστήριο Δικαιωμάτων του Ανθρώπου (ΕΔΔΑ) για να μπορέσει να συνεχίσει να λαμβάνει την απαραίτητη αγωγή για την επιβίωσή της (Omar κατά Ελλάδας, 4827/26).", color:0xb0905a },
+    { id:"npc7", x:370, y:620, label:"Πρόσφυγας με αναπηρία", bubble:"Για να αποκτήσουν Δελτίο Ανεργίας από τη Δημόσια Υπηρεσία Απασχόλησης (ΔΥΠΑ), οι αναγνωρισμένες/οι πρόσφυγες με αναπηρία πρέπει να έχουν λάβει Πιστοποίηση Αναπηρίας για να καταχωρηθούν ως άνεργα άτομα με αναπηρία. Για να ζητήσουν, όμως, πιστοποίηση αναπηρίας, πρέπει να έχουν Ενεργό ΑΜΚΑ, για τον οποίο αποτελεί προαπαιτούμενο η εξασφάλιση νόμιμης Απασχόλησης και η προσκόμιση σύμβασης εργασίας ή βεβαίωσης πρόσληψης από εργοδότη. 🤷‍♀️", color:0x6a9ab0 },
   ],
   // Glossary data from the RSA report
   glossary: [
@@ -1408,7 +1409,7 @@ const state = {
   inventoryOrder: [], inventorySeeded: false,
   started: false, currentLocationId: null,
   game: null, scene: null,
-  prelimTimer: null, toastTimer: null, dayTimer: null, pacmanTimer: null, musicTempoTimer: null,
+  prelimTimer: null, toastTimer: null, dayTimer: null, challengeTimer: null, musicTempoTimer: null,
   dayCount: 1, muted: false, _prelimOnSuccess: null
 };
 
@@ -1576,19 +1577,22 @@ function stopBgMusic() {
   if (bgMusic) { bgMusic.pause(); bgMusic.currentTime = 0; bgMusic.playbackRate = 1.0; }
   clearInterval(state.musicTempoTimer);
 }
+function _scheduleMiniChallenge() {
+  clearTimeout(state.challengeTimer);
+  state.challengeTimer = setTimeout(() => {
+    if (state.started && !_miniChallengeActive) triggerMiniChallenge();
+  }, 150000);
+}
 function startDayTimer() {
   clearInterval(state.dayTimer);
   state.dayTimer = setInterval(() => {
     if (state.started) addDays(1, true);
   }, 30000);
-  clearInterval(state.pacmanTimer);
-  state.pacmanTimer = setInterval(() => {
-    if (state.started && !_pacmanActive) triggerPacmanChallenge();
-  }, 150000);
+  _scheduleMiniChallenge();
 }
 function stopDayTimer() {
   clearInterval(state.dayTimer); state.dayTimer = null;
-  clearInterval(state.pacmanTimer); state.pacmanTimer = null;
+  clearTimeout(state.challengeTimer); state.challengeTimer = null;
 }
 
 // ─────────────────────────────────────────────
@@ -1630,7 +1634,7 @@ function resetGame() {
   state.selectedCharacter = null; state.selectedQuest = null;
   state.started = false; state.currentLocationId = null; state._tutorialShown = false;
   state.dayCount = 1; state.questSelectMode = false;
-  _pacmanActive = false;
+  _miniChallengeActive = false;
   clearInterval(state.prelimTimer);
   closeEventModal();
   els.denialModal.classList.add("hidden");
@@ -2438,7 +2442,7 @@ function showThirdPartySlot(onSuccess) {
   spinBtn.addEventListener("click", doSpin, { once:true });
 }
 
-function show1055Slot(onSuccess) {
+function show1555Slot(onSuccess) {
   const FACES = [
     { label:"Μιλώ Ελληνικά",                      icon:"🇬🇷", success:true,  bg:"#0d2233", fg:"#93c5fd" },
     { label:"Μιλώ Αγγλικά",                        icon:"🇬🇧", success:true,  bg:"#0d2233", fg:"#93c5fd" },
@@ -2479,11 +2483,11 @@ function show1055Slot(onSuccess) {
         <div style="color:#facc15;font-size:22px;text-shadow:0 0 10px #facc15;line-height:1;">◀</div>
       </div>
       <div id="slot-result-msg" style="display:none;font-size:12px;margin-bottom:10px;padding:8px 10px;border-radius:5px;line-height:1.4;box-sizing:border-box;width:100%;"></div>
-      <button id="slot-spin-btn" style="background:linear-gradient(180deg,#d97706,#b45309);color:#fff;border:none;border-bottom:3px solid #78350f;border-radius:20px;padding:8px 22px;font-size:13px;cursor:pointer;font-family:Tahoma,sans-serif;font-weight:bold;letter-spacing:0.03em;box-shadow:0 3px 8px rgba(0,0,0,0.4);width:100%;">📞 Κλήση 1055</button>
+      <button id="slot-spin-btn" style="background:linear-gradient(180deg,#d97706,#b45309);color:#fff;border:none;border-bottom:3px solid #78350f;border-radius:20px;padding:8px 22px;font-size:13px;cursor:pointer;font-family:Tahoma,sans-serif;font-weight:bold;letter-spacing:0.03em;box-shadow:0 3px 8px rgba(0,0,0,0.4);width:100%;">📞 Κλήση 1555</button>
     </div>
   </div>`;
 
-  showEventModal({ title:"Κλήση 1055 — Γλωσσική Εξυπηρέτηση", bodyHtml, closeable:true, actions:[] });
+  showEventModal({ title:"Κλήση 1555 — Γλωσσική Εξυπηρέτηση", bodyHtml, closeable:true, actions:[] });
 
   const spinBtn  = document.getElementById("slot-spin-btn");
   const strip    = document.getElementById("slot-strip");
@@ -2500,7 +2504,7 @@ function show1055Slot(onSuccess) {
       spinBtn.style.opacity = "1";
       if (result.success) {
         resultEl.style.cssText = "display:block;background:#14532d;border:1px solid #86efac;color:#bbf7d0;font-size:12px;margin-bottom:10px;padding:8px 10px;border-radius:5px;line-height:1.4;";
-        resultEl.innerHTML = `<strong>✓ ${result.label}!</strong><br>Μπορείς να εξυπηρετηθείς στο 1055.`;
+        resultEl.innerHTML = `<strong>✓ ${result.label}!</strong><br>Μπορείς να εξυπηρετηθείς στο 1555.`;
         spinBtn.style.background = "linear-gradient(180deg,#16a34a,#15803d)";
         spinBtn.style.borderBottom = "3px solid #14532d";
         spinBtn.textContent = "Συνέχεια →";
@@ -2508,10 +2512,10 @@ function show1055Slot(onSuccess) {
         spinBtn.onclick = () => { closeEventModal(); onSuccess(); };
       } else {
         resultEl.style.cssText = "display:block;background:#7f1d1d;border:1px solid #fca5a5;color:#fecaca;font-size:12px;margin-bottom:10px;padding:8px 10px;border-radius:5px;line-height:1.4;";
-        resultEl.innerHTML = `<strong>Δυστυχώς δεν κατάφερες να εξυπηρετηθείς στο 1055.</strong><br><span style="color:#fca5a5;font-size:11px;">Μπορείς να δοκιμάσεις ξανά.</span>`;
+        resultEl.innerHTML = `<strong>Δυστυχώς δεν κατάφερες να εξυπηρετηθείς στο 1555.</strong><br><span style="color:#fca5a5;font-size:11px;">Μπορείς να δοκιμάσεις ξανά.</span>`;
         spinBtn.textContent = "📞 Δοκίμασε ξανά";
         spinBtn.disabled = false;
-        spinBtn.onclick = () => { closeEventModal(); show1055Slot(onSuccess); };
+        spinBtn.onclick = () => { closeEventModal(); show1555Slot(onSuccess); };
       }
     }, { once:true });
   }
@@ -2567,9 +2571,9 @@ const BUILDING_ENTRY_INFO = {
   efka: {
     skip: () => hasDoc("taxisnet") && (hasDoc("amka") || hasDoc("inactive_amka")),
     title: "ΕΦΚΑ — Πριν Μπεις",
-    bodyHtml: `<div style="text-align:left;font-size:11px;line-height:1.6;"><p>Για να κλείσεις ραντεβού στον ΕΦΚΑ, χρειάζεσαι <strong>TAXISnet</strong> και <strong>ΑΜΚΑ</strong> (ενεργό ή ανενεργό). Εφόσον δεν τα έχεις, πρέπει να κλείσεις ραντεβού τηλεφωνικά στο <strong>1055</strong>.</p><p style="margin-top:8px;">Όμως το 1055 υποστηρίζει μόνο <strong>Ελληνικά και Αγγλικά</strong>. Έτσι η πρόσβαση για πολλές και πολλούς πρόσφυγες γίνεται πολύ δύσκολη.</p><p style="margin-top:8px;font-style:italic;">Μιλάς Ελληνικά ή Αγγλικά ή βρήκες κάποιο άτομο να σου μεταφράσει;</p></div>`,
+    bodyHtml: `<div style="text-align:left;font-size:11px;line-height:1.6;"><p>Για να κλείσεις ραντεβού στον ΕΦΚΑ, χρειάζεσαι <strong>TAXISnet</strong> και <strong>ΑΜΚΑ</strong> (ενεργό ή ανενεργό). Εφόσον δεν τα έχεις, πρέπει να κλείσεις ραντεβού τηλεφωνικά στο <strong>1555</strong>.</p><p style="margin-top:8px;">Όμως το 1555 υποστηρίζει μόνο <strong>Ελληνικά και Αγγλικά</strong>. Έτσι η πρόσβαση για πολλές και πολλούς πρόσφυγες γίνεται πολύ δύσκολη.</p><p style="margin-top:8px;font-style:italic;">Μιλάς Ελληνικά ή Αγγλικά ή βρήκες κάποιο άτομο να σου μεταφράσει;</p></div>`,
     actions: (onContinue) => [
-      { label: "Κλήση 1055", className: "primary", onClick: () => { closeEventModal(); show1055Slot(onContinue); } },
+      { label: "Κλήση 1555", className: "primary", onClick: () => { closeEventModal(); show1555Slot(onContinue); } },
       { label: "↗ Διαβάστε Περισσότερα", className: "btn-track", onClick: () => window.open(RSA_REPORT_URL, "_blank") }
     ]
   }
@@ -3392,19 +3396,26 @@ function initGame() {
 }
 
 // ─────────────────────────────────────────────
-// PAC-MAN MINI-CHALLENGE
+// MINI-CHALLENGES (DocumentEater + Snake)
 // ─────────────────────────────────────────────
-let _pacmanActive = false;
+let _miniChallengeActive = false;
+let _challengeNext = 0; // 0 = DocumentEater, 1 = Snake
 
-function triggerPacmanChallenge() {
-  if (_pacmanActive || !state.started || !els.startScreen.classList.contains("hidden")) return;
+function triggerMiniChallenge() {
+  if (_miniChallengeActive || !state.started || !els.startScreen.classList.contains("hidden")) return;
   const anyOpen = !els.eventModal.classList.contains("hidden") ||
                   !els.officeModal.classList.contains("hidden") ||
                   !els.endingModal.classList.contains("hidden");
-  if (anyOpen) { setTimeout(triggerPacmanChallenge, 5000); return; }
-  _pacmanActive = true;
-  const ch = getCharacter();
-  const gendered = (ch && ch.id === "hasan") ? "αναγνωρισμένος πρόσφυγας" : "αναγνωρισμένη πρόσφυγισσα";
+  if (anyOpen) { setTimeout(triggerMiniChallenge, 5000); return; }
+  _miniChallengeActive = true;
+  const type = _challengeNext;
+  _challengeNext = 1 - _challengeNext;
+  if (type === 0) _showDocEaterOverlay();
+  else _showSnakeOverlay();
+}
+
+// ── Shared helpers ──
+function _challengeOverlay(gendered, hint) {
   const overlay = document.createElement("div");
   overlay.style.cssText = "position:fixed;inset:0;z-index:10000;background:rgba(0,0,18,0.94);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:14px;box-sizing:border-box;font-family:Arial,sans-serif;";
   const titleEl = document.createElement("div");
@@ -3413,50 +3424,88 @@ function triggerPacmanChallenge() {
   const canvas = document.createElement("canvas");
   canvas.style.cssText = "display:block;border:2px solid #2244aa;border-radius:2px;touch-action:none;";
   canvas.setAttribute("tabindex","0");
-  const statusEl2 = document.createElement("div");
-  statusEl2.style.cssText = "color:#88aaff;font-size:12px;text-align:center;min-height:18px;";
+  const statusEl = document.createElement("div");
+  statusEl.style.cssText = "color:#88aaff;font-size:12px;text-align:center;min-height:18px;";
   const hintEl = document.createElement("div");
   hintEl.style.cssText = "color:#445566;font-size:11px;text-align:center;";
-  hintEl.textContent = "⬆⬇⬅➡ ή WASD · σύρε στην οθόνη αφής · μάζεψε όλα τα έγγραφα";
-  overlay.appendChild(titleEl);
-  overlay.appendChild(canvas);
-  overlay.appendChild(statusEl2);
-  overlay.appendChild(hintEl);
-  // Draw static preview of maze before game starts
-  _drawMazePreview(canvas);
-  // "Έναρξη" button
-  const startRow = document.createElement("div");
-  startRow.style.cssText = "display:flex;gap:12px;margin-top:2px;";
-  const startBtn = document.createElement("button");
-  startBtn.className = "primary"; startBtn.textContent = "Έναρξη";
-  startBtn.onclick = () => { startRow.remove(); canvas.focus(); launchRound(); };
-  const skipEarlyBtn = document.createElement("button");
-  skipEarlyBtn.textContent = "Παράλειψη";
-  skipEarlyBtn.onclick = () => { _pacmanActive = false; overlay.remove(); };
-  startRow.appendChild(startBtn); startRow.appendChild(skipEarlyBtn);
-  overlay.appendChild(startRow);
-  document.body.appendChild(overlay);
-  function launchRound() {
-    launchPacmanGame(canvas, statusEl2,
-      () => { _pacmanActive = false; overlay.remove(); showToast("Τα κατάφερες! Συνέχισε την αποστολή σου."); },
-      () => {
-        const existing = overlay.querySelector(".pm-btns");
-        if (existing) existing.remove();
-        const br = document.createElement("div");
-        br.className = "pm-btns"; br.style.cssText = "display:flex;gap:12px;margin-top:4px;";
-        const rb = document.createElement("button");
-        rb.className = "primary"; rb.textContent = "↺ Ξαναπαίξτε";
-        rb.onclick = () => { br.remove(); statusEl2.textContent = ""; canvas.focus(); launchRound(); };
-        const sb = document.createElement("button");
-        sb.textContent = "Παράλειψη";
-        sb.onclick = () => { _pacmanActive = false; overlay.remove(); };
-        br.appendChild(rb); br.appendChild(sb);
-        overlay.appendChild(br);
-      }
-    );
+  hintEl.textContent = hint;
+  overlay.appendChild(titleEl); overlay.appendChild(canvas);
+  overlay.appendChild(statusEl); overlay.appendChild(hintEl);
+  return { overlay, canvas, statusEl };
+}
+function _addStartBtns(overlay, canvas, statusEl, launchFn) {
+  const row = document.createElement("div");
+  row.style.cssText = "display:flex;gap:12px;margin-top:2px;";
+  const go = document.createElement("button");
+  go.className = "primary"; go.textContent = "Έναρξη";
+  go.onclick = () => { row.remove(); canvas.focus(); launchFn(); };
+  const skip = document.createElement("button");
+  skip.textContent = "Παράλειψη";
+  skip.onclick = () => { _miniChallengeActive = false; overlay.remove(); _scheduleMiniChallenge(); };
+  row.appendChild(go); row.appendChild(skip);
+  overlay.appendChild(row);
+}
+function _addLoseBtns(overlay, canvas, statusEl, launchFn) {
+  const existing = overlay.querySelector(".mc-lose-btns");
+  if (existing) existing.remove();
+  const row = document.createElement("div");
+  row.className = "mc-lose-btns"; row.style.cssText = "display:flex;gap:12px;margin-top:4px;";
+  const rb = document.createElement("button");
+  rb.className = "primary"; rb.textContent = "↺ Ξαναπαίξτε";
+  rb.onclick = () => { row.remove(); statusEl.textContent = ""; canvas.focus(); launchFn(); };
+  const sb = document.createElement("button");
+  sb.textContent = "Παράλειψη";
+  sb.onclick = () => { _miniChallengeActive = false; overlay.remove(); _scheduleMiniChallenge(); };
+  row.appendChild(rb); row.appendChild(sb);
+  overlay.appendChild(row);
+}
+function _drawWallCell(ctx, c, r, CELL) {
+  ctx.fillStyle = "#172060"; ctx.fillRect(c*CELL, r*CELL, CELL, CELL);
+  ctx.strokeStyle = "#3355bb"; ctx.lineWidth = 1;
+  ctx.strokeRect(c*CELL+0.5, r*CELL+0.5, CELL-1, CELL-1);
+}
+function _drawDocIcon(ctx, x, y, CELL) {
+  const w=CELL*0.34,h=CELL*0.40,fold=w*0.28;
+  ctx.fillStyle="#fffaed";
+  ctx.beginPath();
+  ctx.moveTo(x-w/2,y-h/2); ctx.lineTo(x+w/2-fold,y-h/2);
+  ctx.lineTo(x+w/2,y-h/2+fold); ctx.lineTo(x+w/2,y+h/2);
+  ctx.lineTo(x-w/2,y+h/2); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle="#ccbb88"; ctx.lineWidth=0.6; ctx.stroke();
+  ctx.fillStyle="#e8d8aa";
+  ctx.beginPath();
+  ctx.moveTo(x+w/2-fold,y-h/2); ctx.lineTo(x+w/2,y-h/2+fold);
+  ctx.lineTo(x+w/2-fold,y-h/2+fold); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle="#bbb"; ctx.lineWidth=0.7;
+  for (let i=0;i<3;i++){
+    const ly=y-h/2+fold+(h-fold)*(0.3+i*0.22);
+    ctx.beginPath(); ctx.moveTo(x-w/2+2,ly); ctx.lineTo(x+w/2-3,ly); ctx.stroke();
   }
 }
+function _drawCharFigure(ctx, x, y, CELL) {
+  const r=CELL*0.32;
+  ctx.fillStyle="#7c3f9f";
+  ctx.fillRect(x-r*0.65,y-r*0.15,r*1.3,r*0.9);
+  ctx.fillStyle="#b79ad8";
+  ctx.beginPath(); ctx.arc(x,y-r*0.6,r*0.44,0,Math.PI*2); ctx.fill();
+}
+function _drawBureaucrat(ctx, x, y, CELL, color) {
+  const r=CELL*0.36;
+  ctx.fillStyle=color;
+  ctx.fillRect(x-r*0.65,y-r*0.2,r*1.3,r*1.0);
+  ctx.fillStyle="#e8e0d0";
+  ctx.fillRect(x-r*0.18,y-r*0.2,r*0.36,r*0.36);
+  ctx.fillStyle="#f5c5a0";
+  ctx.beginPath(); ctx.arc(x,y-r*0.72,r*0.42,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle="#cc0000"; ctx.lineWidth=Math.max(1,CELL*0.06);
+  ctx.beginPath(); ctx.arc(x+r*0.33,y+r*0.25,r*0.27,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x+r*0.12,y+r*0.04); ctx.lineTo(x+r*0.54,y+r*0.46);
+  ctx.moveTo(x+r*0.54,y+r*0.04); ctx.lineTo(x+r*0.12,y+r*0.46);
+  ctx.stroke();
+}
 
+// ─── DocumentEater ───
 const _PM_MAZE = [
   [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
@@ -3480,34 +3529,34 @@ function _pmCell(canvas) {
   )));
 }
 
-function _drawMazePreview(canvas) {
+function _drawDocEaterPreview(canvas) {
   const CELL = _pmCell(canvas);
   canvas.width = _PM_COLS * CELL; canvas.height = _PM_ROWS * CELL;
   const ctx = canvas.getContext("2d");
-  ctx.fillStyle = "#00001c"; ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle="#00001c"; ctx.fillRect(0,0,canvas.width,canvas.height);
   for (let r=0;r<_PM_ROWS;r++) for (let c=0;c<_PM_COLS;c++) {
-    if (_PM_MAZE[r][c]===1) {
-      ctx.fillStyle="#172060"; ctx.fillRect(c*CELL,r*CELL,CELL,CELL);
-      ctx.strokeStyle="#3355bb"; ctx.lineWidth=1;
-      ctx.strokeRect(c*CELL+0.5,r*CELL+0.5,CELL-1,CELL-1);
-    }
+    if (_PM_MAZE[r][c]===1) _drawWallCell(ctx,c,r,CELL);
+    else _drawDocIcon(ctx,c*CELL+CELL/2,r*CELL+CELL/2,CELL);
   }
-  const dr=Math.max(1.5,CELL*0.11);
-  ctx.fillStyle="#facc15";
-  for (let r=0;r<_PM_ROWS;r++) for (let c=0;c<_PM_COLS;c++) {
-    if (_PM_MAZE[r][c]===0) {
-      ctx.beginPath(); ctx.arc(c*CELL+CELL/2,r*CELL+CELL/2,dr,0,Math.PI*2); ctx.fill();
-    }
-  }
-  // Draw player at start position
-  const px=(1+0.5)*CELL, py=(9+0.5)*CELL, pr=CELL*0.4;
-  ctx.fillStyle="#facc15";
-  ctx.beginPath(); ctx.moveTo(px,py);
-  ctx.arc(px,py,pr,0.3,Math.PI*2-0.3,false);
-  ctx.closePath(); ctx.fill();
+  _drawCharFigure(ctx,(1+0.5)*CELL,(9+0.5)*CELL,CELL);
 }
 
-function launchPacmanGame(canvas, statusEl, onWin, onLose) {
+function _showDocEaterOverlay() {
+  const ch=getCharacter();
+  const gendered=(ch&&ch.id==="hasan")?"αναγνωρισμένος πρόσφυγας":"αναγνωρισμένη πρόσφυγισσα";
+  const {overlay,canvas,statusEl}=_challengeOverlay(gendered,"⬆⬇⬅➡ ή WASD · σύρε · μάζεψε όλα τα έγγραφα χωρίς να σε πιάσουν οι υπάλληλοι");
+  _drawDocEaterPreview(canvas);
+  function launchRound() {
+    launchDocEaterGame(canvas,statusEl,
+      ()=>{_miniChallengeActive=false;overlay.remove();_scheduleMiniChallenge();showToast("Τα κατάφερες! Συνέχισε την αποστολή σου.");},
+      ()=>_addLoseBtns(overlay,canvas,statusEl,launchRound)
+    );
+  }
+  _addStartBtns(overlay,canvas,statusEl,launchRound);
+  document.body.appendChild(overlay);
+}
+
+function launchDocEaterGame(canvas, statusEl, onWin, onLose) {
   const CELL = _pmCell(canvas);
   const COLS = _PM_COLS, ROWS = _PM_ROWS;
   const MAZE = _PM_MAZE;
@@ -3587,42 +3636,18 @@ function launchPacmanGame(canvas, statusEl, onWin, onLose) {
         ctx.strokeRect(c*CELL+0.5,r*CELL+0.5,CELL-1,CELL-1);
       }
     }
-    const dr=Math.max(1.5,CELL*0.11);
-    ctx.fillStyle="#facc15";
     for (const k of docs) {
       const [rr,cc]=k.split(",").map(Number);
-      ctx.beginPath(); ctx.arc(cc*CELL+CELL/2,rr*CELL+CELL/2,dr,0,Math.PI*2); ctx.fill();
+      _drawDocIcon(ctx,cc*CELL+CELL/2,rr*CELL+CELL/2,CELL);
     }
     for (const g of ghosts) {
       if (g.delay>0) continue;
-      const {x,y}=exy(g),gr=CELL*0.38,bot=y+gr*0.72;
-      ctx.fillStyle=g.color;
-      ctx.beginPath();
-      ctx.arc(x,y-gr*0.08,gr,Math.PI,0,false);
-      ctx.lineTo(x+gr,bot);
-      ctx.quadraticCurveTo(x+gr*0.67,bot+gr*0.38,x+gr*0.33,bot);
-      ctx.quadraticCurveTo(x,bot+gr*0.38,x-gr*0.33,bot);
-      ctx.quadraticCurveTo(x-gr*0.67,bot+gr*0.38,x-gr,bot);
-      ctx.closePath(); ctx.fill();
-      for (const ox of [-gr*0.3,gr*0.3]) {
-        ctx.fillStyle="#fff"; ctx.beginPath();
-        ctx.ellipse(x+ox,y-gr*0.18,gr*0.19,gr*0.26,0,0,Math.PI*2); ctx.fill();
-        ctx.fillStyle="#0000cc"; ctx.beginPath();
-        ctx.arc(x+ox+gr*0.06,y-gr*0.08,gr*0.1,0,Math.PI*2); ctx.fill();
-      }
+      const {x,y}=exy(g);
+      _drawBureaucrat(ctx,x,y,CELL,g.color);
     }
     if (!player.dead) {
-      const {x,y}=exy(player),pr=CELL*0.41;
-      const facing=Math.atan2(player.dir.dr,player.dir.dc);
-      const m=0.22+0.18*Math.abs(Math.sin(ts*0.008));
-      ctx.fillStyle="#facc15";
-      ctx.beginPath(); ctx.moveTo(x,y);
-      ctx.arc(x,y,pr,facing+m,facing+Math.PI*2-m,false);
-      ctx.closePath(); ctx.fill();
-      const ex=x+Math.cos(facing-0.85)*pr*0.48;
-      const ey=y+Math.sin(facing-0.85)*pr*0.48;
-      ctx.fillStyle="#00001c"; ctx.beginPath();
-      ctx.arc(ex,ey,pr*0.13,0,Math.PI*2); ctx.fill();
+      const {x,y}=exy(player);
+      _drawCharFigure(ctx,x,y,CELL);
     }
     statusEl.textContent=`📄 ${totalDocs-docs.size} / ${totalDocs}`;
   }
@@ -3707,6 +3732,175 @@ function launchPacmanGame(canvas, statusEl, onWin, onLose) {
     }
     animId=requestAnimationFrame(loop);
   }
+  animId=requestAnimationFrame(loop);
+}
+
+// ─────────────────────────────────────────────
+// SNAKE MINI-CHALLENGE
+// ─────────────────────────────────────────────
+const _SN_COLS=18, _SN_ROWS=13;
+function _snCell(canvas){return Math.max(14,Math.floor(Math.min(canvas.width/_SN_COLS,canvas.height/_SN_ROWS)));}
+
+function _drawSnakePreview(canvas){
+  const ctx=canvas.getContext("2d");
+  const CELL=_snCell(canvas);
+  const W=_SN_COLS*CELL, H=_SN_ROWS*CELL;
+  const ox=Math.floor((canvas.width-W)/2), oy=Math.floor((canvas.height-H)/2);
+  ctx.fillStyle="#00001c"; ctx.fillRect(0,0,canvas.width,canvas.height);
+  // subtle border only (no wall cells — wrap-around arena)
+  ctx.strokeStyle="#2244aa"; ctx.lineWidth=2;
+  ctx.strokeRect(ox+1,oy+1,W-2,H-2);
+  // preview snake (3 segments horizontal)
+  const midR=Math.floor(_SN_ROWS/2);
+  const seg=[{c:6,r:midR},{c:5,r:midR},{c:4,r:midR}];
+  for(let i=1;i<seg.length;i++){
+    const t=i/(seg.length);
+    ctx.fillStyle=`hsl(270,60%,${30+20*t}%)`;
+    ctx.fillRect(ox+seg[i].c*CELL+2,oy+seg[i].r*CELL+2,CELL-4,CELL-4);
+  }
+  _drawCharFigure(ctx,ox+seg[0].c*CELL+CELL/2,oy+seg[0].r*CELL+CELL/2,CELL);
+  _drawDocIcon(ctx,ox+10*CELL+CELL/2,oy+midR*CELL+CELL/2,CELL);
+}
+
+function _showSnakeOverlay(){
+  const ch=getCharacter();
+  const gendered=(ch&&ch.id==="hasan")?"αναγνωρισμένος πρόσφυγας":"αναγνωρισμένη πρόσφυγισσα";
+  const {overlay,canvas,statusEl}=_challengeOverlay(gendered,"⬆⬇⬅➡ ή WASD · σύρε · μάζεψε 10 έγγραφα χωρίς να χτυπήσεις στο σώμα σου · τα άκρα συνδέονται");
+  _drawSnakePreview(canvas);
+  function launchRound(){
+    launchSnakeGame(canvas,statusEl,
+      ()=>{_miniChallengeActive=false;overlay.remove();_scheduleMiniChallenge();showToast("Τα κατάφερες! Συνέχισε την αποστολή σου.");},
+      ()=>_addLoseBtns(overlay,canvas,statusEl,launchRound)
+    );
+  }
+  _addStartBtns(overlay,canvas,statusEl,launchRound);
+  document.body.appendChild(overlay);
+}
+
+function launchSnakeGame(canvas,statusEl,onWin,onLose){
+  const CELL=_snCell(canvas);
+  const W=_SN_COLS*CELL, H=_SN_ROWS*CELL;
+  const ox=Math.floor((canvas.width-W)/2), oy=Math.floor((canvas.height-H)/2);
+  const TARGET=10;
+  let snake=[{c:5,r:Math.floor(_SN_ROWS/2)},{c:4,r:Math.floor(_SN_ROWS/2)},{c:3,r:Math.floor(_SN_ROWS/2)}];
+  let dir={dc:1,dr:0}, nextDir={dc:1,dr:0};
+  let docs=[], docsEaten=0, dead=false, animId=null, lastStep=null, countdown=3;
+
+  function placeDoc(){
+    const free=[];
+    for(let r=0;r<_SN_ROWS;r++) for(let c=0;c<_SN_COLS;c++){
+      if(!snake.some(s=>s.c===c&&s.r===r)) free.push({c,r});
+    }
+    if(free.length>0){const p=free[Math.floor(Math.random()*free.length)];docs.push(p);}
+  }
+  placeDoc();
+
+  function drawScene(ctx){
+    ctx.fillStyle="#00001c"; ctx.fillRect(0,0,canvas.width,canvas.height);
+    // subtle border (wrap-around arena — no wall cells)
+    ctx.strokeStyle="#2244aa"; ctx.lineWidth=2;
+    ctx.strokeRect(ox+1,oy+1,W-2,H-2);
+    // docs
+    for(const d of docs) _drawDocIcon(ctx,ox+d.c*CELL+CELL/2,oy+d.r*CELL+CELL/2,CELL);
+    // snake body segments (tail to neck)
+    for(let i=snake.length-1;i>0;i--){
+      const t=i/snake.length;
+      ctx.fillStyle=`hsl(270,60%,${25+20*(1-t)}%)`;
+      const s=snake[i];
+      ctx.fillRect(ox+s.c*CELL+2,oy+s.r*CELL+2,CELL-4,CELL-4);
+    }
+    // head = character figure
+    const h=snake[0];
+    _drawCharFigure(ctx,ox+h.c*CELL+CELL/2,oy+h.r*CELL+CELL/2,CELL);
+    statusEl.textContent=`📄 ${docsEaten} / ${TARGET}`;
+  }
+
+  function step(){
+    if(dead) return;
+    dir=nextDir;
+    // wrap-around on all 4 edges
+    const head={
+      c:((snake[0].c+dir.dc)%_SN_COLS+_SN_COLS)%_SN_COLS,
+      r:((snake[0].r+dir.dr)%_SN_ROWS+_SN_ROWS)%_SN_ROWS
+    };
+    // self collision
+    if(snake.some(s=>s.c===head.c&&s.r===head.r)){
+      dead=true; if(animId) cancelAnimationFrame(animId);
+      const ctx=canvas.getContext("2d"); drawScene(ctx);
+      ctx.fillStyle="rgba(0,0,24,0.72)"; ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle="#ef4444"; ctx.font=`bold ${CELL*1.6}px Arial`;
+      ctx.textAlign="center"; ctx.textBaseline="middle";
+      ctx.fillText("💥 Αυτοσύγκρουση!",canvas.width/2,canvas.height/2);
+      setTimeout(onLose,1100); return;
+    }
+    const ate=docs.findIndex(d=>d.c===head.c&&d.r===head.r);
+    snake.unshift(head);
+    if(ate>=0){
+      docs.splice(ate,1); docsEaten++;
+      if(docsEaten>=TARGET){
+        dead=true; if(animId) cancelAnimationFrame(animId);
+        const ctx=canvas.getContext("2d"); drawScene(ctx);
+        ctx.fillStyle="rgba(0,0,24,0.72)"; ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle="#22c55e"; ctx.font=`bold ${CELL*1.4}px Arial`;
+        ctx.textAlign="center"; ctx.textBaseline="middle";
+        ctx.fillText("✅ Τα μάζεψες όλα!",canvas.width/2,canvas.height/2);
+        setTimeout(onWin,1200); return;
+      }
+      if(docs.length===0) placeDoc();
+    } else {
+      snake.pop();
+    }
+  }
+
+  const STEP_MS=200;
+  function loop(ts){
+    if(dead) return;
+    if(!lastStep) lastStep=ts;
+    if(countdown>-0.5){
+      countdown-=(ts-(lastStep||ts))/1000;
+      lastStep=ts;
+      const ctx=canvas.getContext("2d");
+      drawScene(ctx);
+      ctx.fillStyle="rgba(0,0,24,0.65)"; ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle="#facc15"; ctx.font=`bold ${Math.round(CELL*2)}px Arial`;
+      ctx.textAlign="center"; ctx.textBaseline="middle";
+      ctx.fillText(countdown>0?String(Math.ceil(countdown)):"Πάμε!",canvas.width/2,canvas.height/2);
+      animId=requestAnimationFrame(loop); return;
+    }
+    if(ts-lastStep>=STEP_MS){step();lastStep=ts;}
+    if(dead) return;
+    const ctx=canvas.getContext("2d"); drawScene(ctx);
+    animId=requestAnimationFrame(loop);
+  }
+
+  const keyH=e=>{
+    const m={ArrowUp:{dr:-1,dc:0},ArrowDown:{dr:1,dc:0},ArrowLeft:{dr:0,dc:-1},ArrowRight:{dr:0,dc:1},
+             w:{dr:-1,dc:0},s:{dr:1,dc:0},a:{dr:0,dc:-1},d:{dr:0,dc:1}};
+    if(m[e.key]){
+      const nd=m[e.key];
+      // prevent reversing
+      if(nd.dc!==-dir.dc||nd.dr!==-dir.dr) nextDir=nd;
+      e.preventDefault();
+    }
+  };
+  let tStart2=null;
+  const tStartH2=e=>{tStart2={x:e.touches[0].clientX,y:e.touches[0].clientY};e.preventDefault();};
+  const tEndH2=e=>{
+    if(!tStart2) return;
+    const dx=e.changedTouches[0].clientX-tStart2.x,dy=e.changedTouches[0].clientY-tStart2.y;
+    if(Math.abs(dx)>10||Math.abs(dy)>10){
+      const nd=Math.abs(dx)>Math.abs(dy)?(dx>0?{dr:0,dc:1}:{dr:0,dc:-1}):(dy>0?{dr:1,dc:0}:{dr:-1,dc:0});
+      if(nd.dc!==-dir.dc||nd.dr!==-dir.dr) nextDir=nd;
+    }
+    tStart2=null; e.preventDefault();
+  };
+  document.addEventListener("keydown",keyH);
+  canvas.addEventListener("touchstart",tStartH2,{passive:false});
+  canvas.addEventListener("touchend",tEndH2,{passive:false});
+  // cleanup on win/lose wrapped
+  const origOnWin=onWin, origOnLose=onLose;
+  onWin=()=>{document.removeEventListener("keydown",keyH);canvas.removeEventListener("touchstart",tStartH2);canvas.removeEventListener("touchend",tEndH2);if(animId)cancelAnimationFrame(animId);origOnWin();};
+  onLose=()=>{document.removeEventListener("keydown",keyH);canvas.removeEventListener("touchstart",tStartH2);canvas.removeEventListener("touchend",tEndH2);if(animId)cancelAnimationFrame(animId);origOnLose();};
   animId=requestAnimationFrame(loop);
 }
 
