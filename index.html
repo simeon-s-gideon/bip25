@@ -968,6 +968,13 @@
       background:rgba(0,0,0,0.5);
     }
     .ch-canvas { display:block; border:2px solid #2244aa; border-radius:2px; touch-action:none; }
+    .ch-canvas-wrap { position:relative; display:inline-flex; }
+    .mc-btn-row {
+      position:absolute; inset:0;
+      display:flex; align-items:center; justify-content:center; gap:12px;
+      pointer-events:none;
+    }
+    .mc-btn-row button { pointer-events:auto; }
     .ch-status  { color:#88aaff; font-size:12px; text-align:center; min-height:18px; }
     .ch-hint    { color:#445566; font-size:11px; text-align:center; }
     .ch-dpad {
@@ -1483,19 +1490,18 @@ const DATA = {
   // Glossary data from the RSA report
   glossary: [
     { term:"ΑΔΕΤ", def:"Άδεια Διαμονής Ενιαίου Τύπου. Εκδίδεται από την Υπηρεσία Ασύλου. Τριετής ισχύς για πρόσφυγες, μονοετής για επικουρική προστασία. Αρμόδια για ανανέωση το ΑΚΑ Δικαιούχων Διεθνούς Προστασίας της Υπηρεσίας Ασύλου. Στα τέλη 2025 εκκρεμούσαν 7.640 αιτήσεις ανανέωσης." },
-    { term:"ΑΦΜ (Αριθμός Φορολογικού Μητρώου)", def:"Μοναδικός αριθμός απαραίτητος για κάθε συναλλαγή με το δημόσιο. Εκδίδεται από την ΑΑΔΕ. Αποδίδεται αυτόματα κατά την πλήρη καταγραφή αίτησης ασύλου." },
-    { term:"TAXISnet (Κλειδάριθμος)", def:"Κωδικοί πρόσβασης στη φορολογική πύλη ΑΑΔΕ. Χωρίς κλειδάριθμο δεν γίνεται επικαιροποίηση στοιχείων. Χωρίς επικαιροποίηση δεν εκδίδεται κλειδάριθμος — κλασικό 'Catch-22'." },
     { term:"ΑΜΚΑ (Αριθμός Μητρώου Κοινωνικής Ασφάλισης)", def:"Αριθμός κοινωνικής ασφάλισης. Ανενεργός μέχρι την υπογραφή σύμβασης εργασίας ή βεβαίωση πρόσληψης. Χωρίς ενεργό ΑΜΚΑ δεν υπάρχει πρόσβαση στο ΕΣΥ, σε επιδόματα όπως το ΕΕΕ" },
     { term:"ΑΜΑ (Αριθμός Μητρώου Ασφαλισμένου)", def:"Αριθμός εγγραφής στον ΕΦΚΑ. Απαραίτητος για επίσημη απασχόληση. Εκδίδεται από τον ΕΦΚΑ και απαιτεί ΑΔΕΤ, ανενεργό ΑΜΚΑ και αποδεικτικό διεύθυνσης κατοικίας." },
-    { term:"HELIOS+", def:"Πρόγραμμα ενταξιακής υποστήριξης (ΔΟΜ, 2025–2028). Προϋπόθεση: Χορήγηση ασύλου εντός των τελευταίων 24 μηνών. Παρέχει επιδότηση ενοικίου — αλλά μόνο αν έχεις ήδη μισθωτήριο στο όνομά σου. Μόνο 4.323 θέσεις για 134.576 κατόχους ΑΔΕΤ." },
-    { term:"Δελτίο Ανεργίας (ΔΥΠΑ)", def:"Εγγραφή ως άνεργου στη ΔΥΠΑ. Απαιτεί ΑΔΕΤ, ΑΦΜ, ανενεργό ΑΜΚΑ. Ασύμβατο με σύμβαση εργασίας. Προϋποτίθεται για το HELIOS+." },
-    { term:"Εκκαθαριστικό σημείωμα", def:"Εκδίδεται μετά υποβολή φορολογικής δήλωσης — τουλάχιστον 3-4 μήνες μετά το τέλος φορολογικού έτους. Απαιτείται για τράπεζα και κοινωνικά επιδόματα." },
-    { term:"ΕΕΕ (Ελάχιστο Εγγυημένο Εισόδημα)", def:"Βασικό επίδομα 216€/μήνα ανά νοικοκυριό + 108€ ανά επιπλέον ενήλικα. Απαιτεί ΑΔΕΤ, ΑΦΜ, TAXISnet, ενεργό ΑΜΚΑ και τραπεζικό λογαριασμό. Ασύμβατο με επιδότηση ενοικίου HELIOS+." },
-    { term:"Επανεισδοχή", def:"Επιστροφή αναγνωρισμένων προσφύγων από άλλες ευρωπαϊκές χώρες στην Ελλάδα. Το 2025: 9.179 αιτήματα (+274% από το 2024), 725 απελάσεις. Επιστρέφοντες φτάνουν χωρίς ενημέρωση, χωρίς στέγη, χωρίς έγγραφα." },
+    { term:"ΑΦΜ (Αριθμός Φορολογικού Μητρώου)", def:"Μοναδικός αριθμός απαραίτητος για κάθε συναλλαγή με το δημόσιο. Εκδίδεται από την ΑΑΔΕ. Αποδίδεται αυτόματα κατά την πλήρη καταγραφή αίτησης ασύλου." },
     { term:"Βεβαίωση Δικαιούχου", def:"Εκδίδεται από την Υπηρεσία Ασύλου αν ζητηθεί μετά την κατάθεση αίτησης ανανέωσης. Δεν αντικαθιστά την ΑΔΕΤ - οι περισσότερες αρχές δεν την αποδέχονται. Αγνοείται ακόμα και για νομικές πράξεις." },
+    { term:"Δελτίο Ανεργίας (ΔΥΠΑ)", def:"Εγγραφή ως άνεργου στη ΔΥΠΑ. Απαιτεί ΑΔΕΤ, ΑΦΜ, ανενεργό ΑΜΚΑ. Ασύμβατο με σύμβαση εργασίας. Προϋποτίθεται για το HELIOS+." },
+    { term:"ΕΕΕ (Ελάχιστο Εγγυημένο Εισόδημα)", def:"Βασικό επίδομα 216€/μήνα ανά νοικοκυριό + 108€ ανά επιπλέον ενήλικα. Απαιτεί ΑΔΕΤ, ΑΦΜ, TAXISnet, ενεργό ΑΜΚΑ και τραπεζικό λογαριασμό. Ασύμβατο με επιδότηση ενοικίου HELIOS+." },
+    { term:"Εκκαθαριστικό σημείωμα", def:"Εκδίδεται μετά υποβολή φορολογικής δήλωσης — τουλάχιστον 3-4 μήνες μετά το τέλος φορολογικού έτους. Απαιτείται για τράπεζα και κοινωνικά επιδόματα." },
+    { term:"Επανεισδοχή", def:"Επιστροφή αναγνωρισμένων προσφύγων από άλλες ευρωπαϊκές χώρες στην Ελλάδα. Το 2025: 9.179 αιτήματα (+274% από το 2024), 725 απελάσεις. Επιστρέφοντες φτάνουν χωρίς ενημέρωση, χωρίς στέγη, χωρίς έγγραφα." },
+    { term:"HELIOS+", def:"Πρόγραμμα ενταξιακής υποστήριξης (ΔΟΜ, 2025–2028). Προϋπόθεση: Χορήγηση ασύλου εντός των τελευταίων 24 μηνών. Παρέχει επιδότηση ενοικίου — αλλά μόνο αν έχεις ήδη μισθωτήριο στο όνομά σου. Μόνο 4.323 θέσεις για 134.576 κατόχους ΑΔΕΤ." },
     { term:"ΠΑΑΥΠΑ", def:"Προσωρινός Αριθμός Ασφάλισης και Υγειονομικής Περίθαλψης Αλλοδαπού. Εκδίδεται σε αιτούντες άσυλο. Πρέπει να μετατραπεί σε ΑΜΚΑ εντός ενός μήνα από τη λήψη ΑΔΕΤ - αλλά αυτό δεν γίνεται αυτόματα." },
+    { term:"TAXISnet (Κλειδάριθμος)", def:"Κωδικοί πρόσβασης στη φορολογική πύλη ΑΑΔΕ. Χωρίς κλειδάριθμο δεν γίνεται επικαιροποίηση στοιχείων. Χωρίς επικαιροποίηση δεν εκδίδεται κλειδάριθμος — κλασικό 'Catch-22'." },
     { term:"Υποστήριξη Προσφύγων στο Αιγαίο - RSA", def:`Παρέχει δωρεάν νομική βοήθεια και υποστήριξη σε αναγνωρισμένους πρόσφυγες. Υποστήριξε 50+ άτομα που επέστρεψαν στην Ελλάδα το 2025. Έκθεση 2026: <a href="${RSA_REPORT_URL}" target="_blank" style="color:var(--win95-blue-a)">rsaegean.org/el/anagnorismenoi-prosfyges-2026</a>.` },
-
   ]
 };
 
@@ -3609,12 +3615,16 @@ function _challengeOverlay(gendered, hint) {
     }
   }, {passive:true});
 
+  const canvasWrap = document.createElement("div");
+  canvasWrap.className = "ch-canvas-wrap";
+  canvasWrap.appendChild(canvas);
+
   overlay.appendChild(titleEl);
-  overlay.appendChild(canvas);
+  overlay.appendChild(canvasWrap);
   overlay.appendChild(statusEl);
   overlay.appendChild(hintEl);
   overlay.appendChild(dpad);
-  return { overlay, canvas, statusEl };
+  return { overlay, canvas, statusEl, canvasWrap };
 }
 function _makeSkipInlineBtn(overlay) {
   const sk = document.createElement("button");
@@ -3623,26 +3633,28 @@ function _makeSkipInlineBtn(overlay) {
   return sk;
 }
 function _addStartBtns(overlay, canvas, statusEl, launchFn) {
+  const canvasWrap = overlay.querySelector(".ch-canvas-wrap");
   const row = document.createElement("div");
-  row.style.cssText = "display:flex;gap:12px;margin-top:2px;align-items:center;";
+  row.className = "mc-btn-row";
   const go = document.createElement("button");
   go.className = "primary"; go.textContent = "▶ Έναρξη";
   go.onclick = () => { row.remove(); canvas.focus(); launchFn(); };
   row.appendChild(go);
   row.appendChild(_makeSkipInlineBtn(overlay));
-  overlay.appendChild(row);
+  canvasWrap.appendChild(row);
 }
 function _addLoseBtns(overlay, canvas, statusEl, launchFn) {
-  const existing = overlay.querySelector(".mc-lose-btns");
+  const canvasWrap = overlay.querySelector(".ch-canvas-wrap");
+  const existing = canvasWrap.querySelector(".mc-lose-btns");
   if (existing) existing.remove();
   const row = document.createElement("div");
-  row.className = "mc-lose-btns"; row.style.cssText = "display:flex;gap:12px;margin-top:4px;align-items:center;";
+  row.className = "mc-btn-row mc-lose-btns";
   const rb = document.createElement("button");
   rb.className = "primary"; rb.textContent = "↺ Ξαναπαίξε";
   rb.onclick = () => { row.remove(); statusEl.textContent = ""; canvas.focus(); launchFn(); };
   row.appendChild(rb);
   row.appendChild(_makeSkipInlineBtn(overlay));
-  overlay.appendChild(row);
+  canvasWrap.appendChild(row);
 }
 function _drawWallCell(ctx, c, r, CELL) {
   ctx.fillStyle = "#172060"; ctx.fillRect(c*CELL, r*CELL, CELL, CELL);
