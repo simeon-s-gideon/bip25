@@ -1447,7 +1447,7 @@ const DATA = {
     updated_data: { location:"eforia", routes:[{id:"1",requires:["taxisnet","adet"]},{id:"2",requires:["third_party_authorization"]}] },
     ama: { location:"efka", routes:[{id:"1",requires:["adet","inactive_amka","address"]}] },
     inactive_amka: { location:"efka", routes:[{id:"1",requires:["adet","afm"]}] },
-    address: { location:"apartment", routes:[{id:"Pop",requires:[],popup:{title:"Δ/νση Κατοικίας",body:"Για να έχεις διεύθυνση κατοικίας, πρέπει είτε να έχεις δική σου ιδιοκτησία (πράγμα ασυνήθιστο για πρόσφυγες/ισσες), είτε μισθωτήριο στο όνομά σου ή φιλοξενία καταχωρημένη στο Taxisnet. Κανονικά για αυτά χρειάζεσαι ΑΔΕΤ, ΑΦΜ και TAXISnet για να προχωρήσεις. Έχεις κάτι από τα παραπάνω; Επισημαίνουμε ότι ο νόμος επιβάλλει πρόστιμο σε περίπτωση παράλειψης δήλωσης ή αναληθούς δήλωσης μισθωτηρίου στην ΑΑΔΕ. Ακόμα, η εν γνώσει δήλωση ψευδών στοιχείων ή απόκρυψη της αλήθειας κατά την εξέταση από οποιαδήποτε αρχή διώκεται ποινικά και τιμωρείται με ποινή φυλάκισης",confirmLabel:"Ας υποθέσουμε ότι βρήκα κάποιον τρόπο.",reportLink:true}}] },
+    address: { location:"apartment", routes:[{id:"Pop",requires:[],popup:{title:"Δ/νση Κατοικίας",body:"Λογικά είσαι εδώ γιατί χρειάζεσαι Διεύθυνση Κατοικίας για να βγάλεις ΑΦΜ. Όμως για να έχεις διεύθυνση κατοικίας, πρέπει είτε να έχεις δική σου ιδιοκτησία (πράγμα ασυνήθιστο για πρόσφυγες/ισσες), είτε μισθωτήριο στο όνομά σου ή φιλοξενία καταχωρημένη στο Taxisnet. Κανονικά για αυτά χρειάζεσαι ΑΔΕΤ, ΑΦΜ και TAXISnet για να προχωρήσεις. Έχεις κάτι από τα παραπάνω; Επισημαίνουμε ότι ο νόμος επιβάλλει πρόστιμο σε περίπτωση παράλειψης δήλωσης ή αναληθούς δήλωσης μισθωτηρίου στην ΑΑΔΕ. Ακόμα, η εν γνώσει δήλωση ψευδών στοιχείων ή απόκρυψη της αλήθειας κατά την εξέταση από οποιαδήποτε αρχή διώκεται ποινικά και τιμωρείται με ποινή φυλάκισης",confirmLabel:"Ας υποθέσουμε ότι βρήκα κάποιον τρόπο.",reportLink:true}}] },
     amka: { location:"efka", routes:[{id:"1",requires:["adet","work_contract","address"]}] },
     afm: { location:"eforia", routes:[{id:"1",requires:["adet","address","passport"]}] },
     tax_clearance: { location:"eforia", routes:[{id:"1",requires:["taxisnet"]}] },
@@ -3729,7 +3729,7 @@ function _drawDocEaterPreview(canvas) {
 function _showDocEaterOverlay() {
   const ch=getCharacter();
   const gendered=(ch&&ch.id==="hasan")?"αναγνωρισμένος πρόσφυγας":"αναγνωρισμένη πρόσφυγισσα";
-  const {overlay,canvas,statusEl}=_challengeOverlay(gendered,"⬆⬇⬅➡ ή WASD · σύρε οπουδήποτε ή πάτα τα βέλη · μάζεψε όλα τα έγγραφα χωρίς να σε πιάσουν οι υπάλληλοι");
+  const {overlay,canvas,statusEl}=_challengeOverlay(gendered,"⬆⬇⬅➡ ή WASD · σύρε οπουδήποτε ή πάτα τα βέλη · μάζεψε όλα τα έγγραφα χωρίς να σε πιάσουν");
   _drawDocEaterPreview(canvas);
   function launchRound() {
     launchDocEaterGame(canvas,statusEl,
