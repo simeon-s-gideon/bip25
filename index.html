@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Recognised Refugees in Greece: The Grand Bureaucracy Adventure 2026</title>
+  <title>Αναγνωρισμένοι Πρόσφυγες στην Ελλάδα — Μεγάλη Γραφειοκρατική Περιπέτεια 2026</title>
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; img-src data: blob:; media-src data: blob:; font-src data:; connect-src 'none';" />
   <style>
     :root {
-      --win95-bg: #c0c0c0;
-      --win95-mid: #dfdfdf;
-      --win95-light: #ffffff;
-      --win95-shadow: #808080;
-      --win95-dark: #000000;
-      --win95-text: #111111;
-      --win95-blue-a: #000080;
-      --win95-blue-b: #1084d0;
-      --win95-red: #8b0000;
-      --win95-green: #006400;
-      --win95-yellow: #808000;
+      --w95-bg: #c0c0c0;
+      --w95-mid: #dfdfdf;
+      --w95-light: #ffffff;
+      --w95-shadow: #808080;
+      --w95-dark: #000000;
+      --w95-text: #111111;
+      --w95-blue-a: #000080;
+      --w95-blue-b: #1084d0;
+      --w95-red: #8b0000;
+      --w95-green: #006400;
+      --w95-yellow: #808000;
       --accent: #000080;
       --success: #006400;
       --danger: #8b0000;
@@ -55,30 +55,30 @@
       width: min(1400px, 100%); height: 100%;
       overflow: hidden;
       border: 2px solid;
-      border-color: var(--win95-light) var(--win95-dark) var(--win95-dark) var(--win95-light);
-      box-shadow: inset -1px -1px 0 var(--win95-shadow), inset 1px 1px 0 var(--win95-mid);
-      background: var(--win95-bg);
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      box-shadow: inset -1px -1px 0 var(--w95-shadow), inset 1px 1px 0 var(--w95-mid);
+      background: var(--w95-bg);
       display: flex; flex-direction: column;
     }
 
-    /* ── WIN95 BASE ── */
-    .win95 {
-      background: var(--win95-bg);
+    /* ── W95 BASE ── */
+    .w95 {
+      background: var(--w95-bg);
       border: 2px solid;
-      border-color: var(--win95-light) var(--win95-dark) var(--win95-dark) var(--win95-light);
-      box-shadow: inset -1px -1px 0 var(--win95-shadow), inset 1px 1px 0 var(--win95-mid);
-      color: var(--win95-text);
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      box-shadow: inset -1px -1px 0 var(--w95-shadow), inset 1px 1px 0 var(--w95-mid);
+      color: var(--w95-text);
     }
 
-    .win95-inset {
+    .w95-inset {
       background: white;
       border: 2px solid;
-      border-color: var(--win95-shadow) var(--win95-light) var(--win95-light) var(--win95-shadow);
+      border-color: var(--w95-shadow) var(--w95-light) var(--w95-light) var(--w95-shadow);
       padding: 4px 6px;
     }
 
-    .win95-title {
-      background: linear-gradient(90deg, var(--win95-blue-a), var(--win95-blue-b));
+    .w95-title {
+      background: linear-gradient(90deg, var(--w95-blue-a), var(--w95-blue-b));
       color: white;
       font-weight: bold;
       padding: 3px 6px;
@@ -86,24 +86,24 @@
       display: flex; align-items: center; justify-content: space-between;
       user-select: none;
     }
-    .win95-close-btn {
-      background: var(--win95-bg); border: 1px solid;
-      border-color: var(--win95-light) var(--win95-dark) var(--win95-dark) var(--win95-light);
+    .w95-close-btn {
+      background: var(--w95-bg); border: 1px solid;
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
       color: #000; font-size: 10px; width: 16px; height: 14px; line-height: 1;
       cursor: pointer; display: flex; align-items: center; justify-content: center;
       padding: 0; font-weight: bold; flex-shrink: 0; margin-left: 6px;
     }
-    .win95-close-btn:hover { background: #c0c0c0; }
-    .win95-close-btn.hidden { display: none; }
+    .w95-close-btn:hover { background: #c0c0c0; }
+    .w95-close-btn.hidden { display: none; }
 
     /* ── TOP BAR ── */
     #top-bar {
       flex-shrink: 0;
       z-index: 20;
-      background: var(--win95-bg);
+      background: var(--w95-bg);
       border-bottom: 2px solid;
-      border-color: var(--win95-light) var(--win95-dark) var(--win95-dark) var(--win95-light);
-      box-shadow: inset -1px -1px 0 var(--win95-shadow), inset 1px 1px 0 var(--win95-mid);
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      box-shadow: inset -1px -1px 0 var(--w95-shadow), inset 1px 1px 0 var(--w95-mid);
       padding: 4px 8px;
       display: flex; flex-direction: column; gap: 4px;
     }
@@ -121,10 +121,10 @@
     .dropdown-btn {
       appearance: none;
       border: 2px solid;
-      border-color: var(--win95-light) var(--win95-dark) var(--win95-dark) var(--win95-light);
-      box-shadow: inset -1px -1px 0 var(--win95-shadow), inset 1px 1px 0 var(--win95-mid);
-      background: var(--win95-bg);
-      color: var(--win95-text);
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      box-shadow: inset -1px -1px 0 var(--w95-shadow), inset 1px 1px 0 var(--w95-mid);
+      background: var(--w95-bg);
+      color: var(--w95-text);
       padding: 3px 24px 3px 8px;
       font: inherit; font-size: 12px; font-weight: bold;
       cursor: pointer;
@@ -139,16 +139,16 @@
       color: var(--muted);
     }
     .dropdown-btn:active {
-      border-color: var(--win95-dark) var(--win95-light) var(--win95-light) var(--win95-dark);
-      box-shadow: inset 1px 1px 0 var(--win95-shadow), inset -1px -1px 0 var(--win95-mid);
+      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
+      box-shadow: inset 1px 1px 0 var(--w95-shadow), inset -1px -1px 0 var(--w95-mid);
     }
     .dropdown-menu {
       display: none;
       position: absolute; top: 100%; left: 0; z-index: 100;
       min-width: 200px;
-      background: var(--win95-bg);
+      background: var(--w95-bg);
       border: 2px solid;
-      border-color: var(--win95-light) var(--win95-dark) var(--win95-dark) var(--win95-light);
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
       box-shadow: 3px 3px 0 rgba(0,0,0,0.4);
     }
     .dropdown-menu.open { display: block; }
@@ -161,19 +161,19 @@
       border-bottom: 1px solid #ccc;
       white-space: normal;
     }
-    .dropdown-item:hover { background: var(--win95-blue-a); color: white; }
+    .dropdown-item:hover { background: var(--w95-blue-a); color: white; }
     .dropdown-item:last-child { border-bottom: none; }
-    .dropdown-item.active { font-weight: bold; color: var(--win95-blue-a); }
+    .dropdown-item.active { font-weight: bold; color: var(--w95-blue-a); }
     .dropdown-item.active:hover { color: white; }
 
-    /* ── WIN95 BUTTON ── */
+    /* ── W95 BUTTON ── */
     button {
       appearance: none;
       border: 2px solid;
-      border-color: var(--win95-light) var(--win95-dark) var(--win95-dark) var(--win95-light);
-      box-shadow: inset -1px -1px 0 var(--win95-shadow), inset 1px 1px 0 var(--win95-mid);
-      background: var(--win95-bg);
-      color: var(--win95-text);
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      box-shadow: inset -1px -1px 0 var(--w95-shadow), inset 1px 1px 0 var(--w95-mid);
+      background: var(--w95-bg);
+      color: var(--w95-text);
       padding: 4px 10px;
       font: inherit; font-size: 12px;
       cursor: pointer;
@@ -182,14 +182,14 @@
     }
     button:hover { filter: brightness(0.97); }
     button:active {
-      border-color: var(--win95-dark) var(--win95-light) var(--win95-light) var(--win95-dark);
-      box-shadow: inset 1px 1px 0 var(--win95-shadow), inset -1px -1px 0 var(--win95-mid);
+      border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark);
+      box-shadow: inset 1px 1px 0 var(--w95-shadow), inset -1px -1px 0 var(--w95-mid);
     }
     button:disabled { opacity: 0.55; cursor: not-allowed; filter: none; }
 
     button.primary { font-weight: bold; }
-    button.success { color: var(--win95-green); font-weight: bold; }
-    button.warn { color: var(--win95-yellow); }
+    button.success { color: var(--w95-green); font-weight: bold; }
+    button.warn { color: var(--w95-yellow); }
     button.ghost {
       border-color: transparent; box-shadow: none;
       background: transparent;
@@ -199,20 +199,20 @@
     /* ── BUTTON VARIANTS ── */
     button.btn-track {
       background: #e8f0ff;
-      color: var(--win95-blue-a);
+      color: var(--w95-blue-a);
       border-color: #6699cc #002266 #002266 #6699cc;
       font-style: italic;
     }
     button.btn-track:hover { background: #d0e0ff; }
     button.btn-action {
       background: #e0f5e0;
-      color: var(--win95-green);
+      color: var(--w95-green);
       border-color: #55aa55 #003300 #003300 #55aa55;
       font-weight: bold;
     }
     button.btn-action:hover { background: #cceecc; }
     button.btn-return {
-      background: var(--win95-bg);
+      background: var(--w95-bg);
       color: #555;
       border-color: #aaa #555 #555 #aaa;
       font-size: 11px;
@@ -224,15 +224,15 @@
       display: inline-block;
       padding: 2px 8px;
       border: 2px solid;
-      border-color: var(--win95-light) var(--win95-dark) var(--win95-dark) var(--win95-light);
-      box-shadow: inset -1px -1px 0 var(--win95-shadow), inset 1px 1px 0 var(--win95-mid);
-      background: var(--win95-bg);
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      box-shadow: inset -1px -1px 0 var(--w95-shadow), inset 1px 1px 0 var(--w95-mid);
+      background: var(--w95-bg);
       font-size: 11px;
     }
-    .pill.active { background: #d0e8ff; border-color: var(--win95-blue-a); }
-    .pill.ok { background: #d0f0d0; border-color: var(--win95-green); }
-    .pill.blocked { background: #f0d0d0; border-color: var(--win95-red); }
-    .pill.warn { background: #f0f0c0; border-color: var(--win95-yellow); }
+    .pill.active { background: #d0e8ff; border-color: var(--w95-blue-a); }
+    .pill.ok { background: #d0f0d0; border-color: var(--w95-green); }
+    .pill.blocked { background: #f0d0d0; border-color: var(--w95-red); }
+    .pill.warn { background: #f0f0c0; border-color: var(--w95-yellow); }
 
     .status-badge {
       font-size: 11px; padding: 2px 7px;
@@ -247,9 +247,9 @@
       font-weight: bold; font-size: 12px;
       padding: 2px 8px;
       border: 2px solid;
-      border-color: var(--win95-shadow) var(--win95-light) var(--win95-light) var(--win95-shadow);
+      border-color: var(--w95-shadow) var(--w95-light) var(--w95-light) var(--w95-shadow);
       background: white;
-      color: var(--win95-blue-a);
+      color: var(--w95-blue-a);
       transition: color 0.4s;
     }
     #day-counter.warn-days  { color: #b45309; }
@@ -275,10 +275,10 @@
 
     /* ── WINDOW CARD ── */
     .win-card {
-      background: var(--win95-bg);
+      background: var(--w95-bg);
       border: 2px solid;
-      border-color: var(--win95-light) var(--win95-dark) var(--win95-dark) var(--win95-light);
-      box-shadow: var(--shadow), inset -1px -1px 0 var(--win95-shadow), inset 1px 1px 0 var(--win95-mid);
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      box-shadow: var(--shadow), inset -1px -1px 0 var(--w95-shadow), inset 1px 1px 0 var(--w95-mid);
       max-height: calc(100svh - 48px);
       overflow: hidden;
       display: flex; flex-direction: column;
@@ -321,22 +321,22 @@
       width: 300px; flex-shrink: 0;
       overflow: hidden;
       border-left: 2px solid;
-      border-color: var(--win95-shadow) var(--win95-light) var(--win95-light) var(--win95-shadow);
-      background: var(--win95-mid);
+      border-color: var(--w95-shadow) var(--w95-light) var(--w95-light) var(--w95-shadow);
+      background: var(--w95-mid);
       flex-direction: column; gap: 5px; padding: 5px;
     }
     @media (min-width: 1024px) {
       #sidebar { display: flex; }
     }
     .sidebar-section {
-      background: var(--win95-bg);
+      background: var(--w95-bg);
       border: 2px solid;
-      border-color: var(--win95-light) var(--win95-dark) var(--win95-dark) var(--win95-light);
-      box-shadow: inset -1px -1px 0 var(--win95-shadow), inset 1px 1px 0 var(--win95-mid);
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      box-shadow: inset -1px -1px 0 var(--w95-shadow), inset 1px 1px 0 var(--w95-mid);
       display: flex; flex-direction: column;
     }
     .sidebar-section-body { padding: 7px 8px; }
-    #sidebar-tracked-card { border-color: #d97706 var(--win95-dark) var(--win95-dark) #d97706 !important; }
+    #sidebar-tracked-card { border-color: #d97706 var(--w95-dark) var(--w95-dark) #d97706 !important; }
     /* sidebar-glossary-body style is in the requirements section above (full height, white bg) */
     .sidebar-pill-row { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 3px; }
 
@@ -348,8 +348,8 @@
     }
     .section {
       border: 2px solid;
-      border-color: var(--win95-shadow) var(--win95-light) var(--win95-light) var(--win95-shadow);
-      background: var(--win95-mid);
+      border-color: var(--w95-shadow) var(--w95-light) var(--w95-light) var(--w95-shadow);
+      background: var(--w95-mid);
       padding: 10px;
     }
     .section-title { font-weight: bold; font-size: 12px; margin-bottom: 6px; }
@@ -364,13 +364,13 @@
     }
     .choice-button.selected {
       background: #d0e8ff !important;
-      border-color: var(--win95-blue-a) var(--win95-blue-b) var(--win95-blue-b) var(--win95-blue-a) !important;
-      box-shadow: inset 0 0 0 2px var(--win95-blue-a), inset 1px 1px 0 #90c8ff !important;
-      outline: 2px solid var(--win95-blue-a);
+      border-color: var(--w95-blue-a) var(--w95-blue-b) var(--w95-blue-b) var(--w95-blue-a) !important;
+      box-shadow: inset 0 0 0 2px var(--w95-blue-a), inset 1px 1px 0 #90c8ff !important;
+      outline: 2px solid var(--w95-blue-a);
     }
     .choice-button.selected::before {
       content: "✔ ";
-      color: var(--win95-blue-a);
+      color: var(--w95-blue-a);
       font-weight: bold;
       font-size: 14px;
     }
@@ -381,7 +381,7 @@
     .doc-card {
       background: white;
       border: 2px solid;
-      border-color: var(--win95-shadow) var(--win95-light) var(--win95-light) var(--win95-shadow);
+      border-color: var(--w95-shadow) var(--w95-light) var(--w95-light) var(--w95-shadow);
       padding: 10px 12px;
     }
     .doc-card-head {
@@ -394,12 +394,12 @@
     .route-card {
       padding: 7px 10px;
       border: 1px solid var(--line);
-      background: var(--win95-mid);
+      background: var(--w95-mid);
     }
-    .route-card.ready { background: #d8f0d8; border-color: var(--win95-green); }
-    .route-card.blocked { background: #f0d8d8; border-color: var(--win95-red); }
-    .route-card.popup { background: #f8f8d0; border-color: var(--win95-yellow); }
-    .route-title { font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: .05em; color: var(--win95-blue-a); margin-bottom: 4px; }
+    .route-card.ready { background: #d8f0d8; border-color: var(--w95-green); }
+    .route-card.blocked { background: #f0d8d8; border-color: var(--w95-red); }
+    .route-card.popup { background: #f8f8d0; border-color: var(--w95-yellow); }
+    .route-title { font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: .05em; color: var(--w95-blue-a); margin-bottom: 4px; }
     .route-card ul { margin: 0; padding-left: 18px; }
     .route-card li { font-size: 11px; color: var(--muted); }
 
@@ -418,7 +418,7 @@
       font-family: "Courier New", monospace;
       box-shadow: 0 0 0 4px #000, 0 12px 0 #5b1607, 0 28px 60px rgba(0,0,0,0.75) !important;
     }
-    #fail-modal-wrap .win95-title { background: linear-gradient(90deg, #7c2d12, #b45309) !important; }
+    #fail-modal-wrap .w95-title { background: linear-gradient(90deg, #7c2d12, #b45309) !important; }
     #fail-modal-wrap button {
       background: linear-gradient(180deg, #38d996, #0f7a4b) !important;
       color: #fff7c2 !important; border: 3px solid #000 !important;
@@ -437,7 +437,7 @@
       font-family: "Courier New", monospace;
       box-shadow: 0 0 0 4px #000, 0 12px 0 #5b1607, 0 28px 60px rgba(0,0,0,0.75) !important;
     }
-    #denial-modal-wrap .win95-title { background: linear-gradient(90deg, #7c2d12, #b45309) !important; }
+    #denial-modal-wrap .w95-title { background: linear-gradient(90deg, #7c2d12, #b45309) !important; }
     #denial-modal-wrap * { color: #fff7d6 !important; font-family: "Courier New", monospace; }
     #denial-modal-wrap .route-card {
       background: rgba(20,7,3,0.82) !important;
@@ -488,7 +488,7 @@
       width: 100%; height: 52px;
       background: white;
       border: 2px solid;
-      border-color: var(--win95-shadow) var(--win95-light) var(--win95-light) var(--win95-shadow);
+      border-color: var(--w95-shadow) var(--w95-light) var(--w95-light) var(--w95-shadow);
       overflow: hidden; position: relative; cursor: pointer;
     }
     .progress-fill {
@@ -506,7 +506,7 @@
     .stuck-spinner {
       width: 90px; height: 90px; border-radius: 50%;
       border: 7px solid rgba(200,200,200,0.3);
-      border-top-color: var(--win95-blue-a);
+      border-top-color: var(--w95-blue-a);
       animation: stuck-spin 5.5s steps(18,end) infinite;
       margin: 12px auto;
     }
@@ -523,7 +523,7 @@
     }
     #glossary-body { overflow-y: auto; flex: 1; padding: 10px 12px; }
     .glossary-entry { margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #ccc; }
-    .glossary-term { font-weight: bold; font-size: 12px; color: var(--win95-blue-a); }
+    .glossary-term { font-weight: bold; font-size: 12px; color: var(--w95-blue-a); }
     .glossary-def { font-size: 11px; color: var(--muted); margin-top: 2px; line-height: 1.45; }
 
     /* ── NPC BUBBLES ── */
@@ -552,7 +552,7 @@
     }
     .npc-bubble-name {
       font-weight: bold; font-size: 10px;
-      color: var(--win95-blue-a);
+      color: var(--w95-blue-a);
       margin-bottom: 3px;
       border-bottom: 1px solid #ccc;
       padding-bottom: 2px;
@@ -613,9 +613,9 @@
       border: 1px solid transparent;
       border-radius: 0;
     }
-    .req-item:hover { background: #d0e8ff; border-color: var(--win95-blue-a); }
-    .req-item.has { color: var(--win95-green); }
-    .req-item.missing { color: var(--win95-red); }
+    .req-item:hover { background: #d0e8ff; border-color: var(--w95-blue-a); }
+    .req-item.has { color: var(--w95-green); }
+    .req-item.missing { color: var(--w95-red); }
     .req-item-icon { font-size: 11px; flex-shrink: 0; font-weight: bold; }
     .req-item-name { flex: 1; }
     .req-item.has .req-item-name { text-decoration: line-through; color: #555; }
@@ -632,7 +632,7 @@
       font-size: 10px; color: var(--muted);
       margin-bottom: 3px;
     }
-    .req-progress span { font-weight: bold; color: var(--win95-blue-a); }
+    .req-progress span { font-weight: bold; color: var(--w95-blue-a); }
     /* Mobile top-bar: requirements flow horizontally */
     #bar-requirements .req-list,
     #bar-tracked-requirements .req-list {
@@ -663,7 +663,7 @@
       overflow-y: auto; flex: 1; padding: 8px 10px;
       background: white;
       border-top: 2px solid;
-      border-color: var(--win95-shadow) var(--win95-light) var(--win95-light) var(--win95-shadow);
+      border-color: var(--w95-shadow) var(--w95-light) var(--w95-light) var(--w95-shadow);
     }
 
     /* ── WAITING STORY ── */
@@ -696,7 +696,7 @@
     /* ── COMMON DOCS GROUPING ── */
     .common-reqs-label {
       font-size: 10px; font-weight: bold; text-transform: uppercase;
-      letter-spacing: .05em; color: var(--win95-blue-a);
+      letter-spacing: .05em; color: var(--w95-blue-a);
       margin: 6px 0 3px;
     }
     .route-options-label {
@@ -709,10 +709,10 @@
       position: absolute; left: 50%; bottom: 34px; z-index: 50;
       transform: translateX(-50%);
       max-width: min(640px, calc(100% - 24px));
-      background: var(--win95-bg);
+      background: var(--w95-bg);
       border: 2px solid;
-      border-color: var(--win95-light) var(--win95-dark) var(--win95-dark) var(--win95-light);
-      box-shadow: var(--shadow), inset -1px -1px 0 var(--win95-shadow), inset 1px 1px 0 var(--win95-mid);
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+      box-shadow: var(--shadow), inset -1px -1px 0 var(--w95-shadow), inset 1px 1px 0 var(--w95-mid);
       padding: 6px 14px;
       font-size: 14px;
       pointer-events: none;
@@ -750,14 +750,14 @@
       #req-toggle-btn {
         display: inline-flex !important; align-items: center; gap: 4px;
         font-size: 11px; padding: 2px 6px;
-        background: var(--win95-bg); cursor: pointer;
+        background: var(--w95-bg); cursor: pointer;
       }
-      #req-toggle-btn.active { background: #d0e0ff; border-color: var(--win95-blue-a) var(--win95-light) var(--win95-light) var(--win95-blue-a); }
+      #req-toggle-btn.active { background: #d0e0ff; border-color: var(--w95-blue-a) var(--w95-light) var(--w95-light) var(--w95-blue-a); }
       #req-collapse {
         position: absolute; top: 0; left: 0; right: 0; z-index: 18;
-        background: var(--win95-bg);
+        background: var(--w95-bg);
         border: 2px solid;
-        border-color: var(--win95-light) var(--win95-dark) var(--win95-dark) var(--win95-light);
+        border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
         box-shadow: 0 6px 18px rgba(0,0,0,0.45);
         padding: 8px 10px; max-height: 55vh; overflow-y: auto;
       }
@@ -778,8 +778,8 @@
 
     /* ── MODAL HEADER BUTTONS (?, G) ── */
     .modal-hdr-btn {
-      background: var(--win95-bg); color: var(--win95-blue-a);
-      border: 1px solid; border-color: var(--win95-light) var(--win95-dark) var(--win95-dark) var(--win95-light);
+      background: var(--w95-bg); color: var(--w95-blue-a);
+      border: 1px solid; border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
       font-size: 12px; font-weight: bold; padding: 0 4px; height: 18px; line-height: 1;
       cursor: pointer; min-width: 20px;
     }
@@ -804,13 +804,13 @@
 
     /* ── MOBILE BAR compact structure ── */
     .bar-mini-section {
-      background: var(--win95-mid);
+      background: var(--w95-mid);
       border: 2px solid;
-      border-color: var(--win95-shadow) var(--win95-light) var(--win95-light) var(--win95-shadow);
+      border-color: var(--w95-shadow) var(--w95-light) var(--w95-light) var(--w95-shadow);
       padding: 3px 6px; margin-top: 3px;
     }
     .bar-mini-title {
-      font-size: 10px; font-weight: bold; color: var(--win95-blue-a);
+      font-size: 10px; font-weight: bold; color: var(--w95-blue-a);
       text-transform: uppercase; letter-spacing: .04em; margin-bottom: 2px;
     }
 
@@ -835,26 +835,26 @@
     #tree-body {
       overflow: auto; flex: 1; padding: 12px;
       background: white;
-      border-top: 2px solid var(--win95-shadow);
+      border-top: 2px solid var(--w95-shadow);
     }
     .tree-grid {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
       gap: 8px;
     }
     .tree-node {
-      background: var(--win95-bg);
+      background: var(--w95-bg);
       border: 2px solid;
-      border-color: var(--win95-light) var(--win95-dark) var(--win95-dark) var(--win95-light);
+      border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
       padding: 6px 8px; font-size: 11px;
     }
-    .tree-node-name { font-weight: bold; color: var(--win95-blue-a); margin-bottom: 3px; }
+    .tree-node-name { font-weight: bold; color: var(--w95-blue-a); margin-bottom: 3px; }
     .tree-node-loc { font-size: 10px; color: var(--muted); }
     .tree-node-reqs { font-size: 10px; margin-top: 3px; }
-    .tree-node.has-node { border-color: var(--win95-green) !important; background: #d8f0d8; }
+    .tree-node.has-node { border-color: var(--w95-green) !important; background: #d8f0d8; }
     .tree-node.ready-node { border-color: #d97706 !important; background: #fff8e8; }
     .tree-req-item { display: flex; align-items: center; gap: 3px; }
-    .tree-req-item.owned { color: var(--win95-green); }
-    .tree-req-item.missing { color: var(--win95-red); }
+    .tree-req-item.owned { color: var(--w95-green); }
+    .tree-req-item.missing { color: var(--w95-red); }
 
     /* ── LEGEND PANEL ── */
     #legend-panel {
@@ -864,9 +864,9 @@
       padding: 16px;
     }
     #legend-inner { width: min(520px, 100%); max-height: calc(100svh - 40px); display: flex; flex-direction: column; }
-    #legend-body { overflow-y: auto; flex: 1; padding: 12px; background: white; border-top: 2px solid var(--win95-shadow); }
+    #legend-body { overflow-y: auto; flex: 1; padding: 12px; background: white; border-top: 2px solid var(--w95-shadow); }
     .legend-section { margin-bottom: 10px; }
-    .legend-section-title { font-weight: bold; font-size: 12px; color: var(--win95-blue-a); margin-bottom: 4px; border-bottom: 1px solid #ccc; padding-bottom: 2px; }
+    .legend-section-title { font-weight: bold; font-size: 12px; color: var(--w95-blue-a); margin-bottom: 4px; border-bottom: 1px solid #ccc; padding-bottom: 2px; }
     .legend-row { display: flex; align-items: flex-start; gap: 8px; font-size: 11px; margin-bottom: 4px; }
     .legend-icon { font-size: 12px; min-width: 56px; max-width: 56px; text-align: center; flex-shrink: 0; background: #dde; border: 1px solid #aaa; border-radius: 3px; padding: 1px 3px; line-height: 1.5; word-break: break-word; }
     .legend-desc { flex: 1; line-height: 1.5; padding-top: 1px; }
@@ -922,9 +922,9 @@
     /* ── GAME FOOTER ── */
     #game-footer {
       flex-shrink: 0;
-      background: var(--win95-bg);
+      background: var(--w95-bg);
       border-top: 2px solid;
-      border-color: var(--win95-shadow) var(--win95-light) var(--win95-light) var(--win95-shadow);
+      border-color: var(--w95-shadow) var(--w95-light) var(--w95-light) var(--w95-shadow);
       padding: 2px 8px;
       display: flex; align-items: center; justify-content: center;
       gap: 8px;
@@ -971,10 +971,16 @@
     .ch-canvas-wrap { position:relative; display:inline-flex; }
     .mc-btn-row {
       position:absolute; inset:0;
-      display:flex; align-items:center; justify-content:center; gap:12px;
+      display:flex; align-items:center; justify-content:center;
       pointer-events:none;
     }
-    .mc-btn-row button { pointer-events:auto; }
+    .mc-btn-panel {
+      display:flex; align-items:center; gap:10px;
+      background:rgba(0,0,20,0.78); border:1px solid rgba(100,130,200,0.45);
+      border-radius:6px; padding:8px 14px;
+      backdrop-filter:blur(2px);
+      pointer-events:auto;
+    }
     .ch-status  { color:#88aaff; font-size:12px; text-align:center; min-height:18px; }
     .ch-hint    { color:#445566; font-size:11px; text-align:center; }
     .ch-dpad {
@@ -1000,7 +1006,7 @@
       display: flex; flex-direction: column; gap: 10px;
       max-height: 70vh; overflow-y: auto;
     }
-    #about-modal-overlay a { color: var(--win95-blue-a); }
+    #about-modal-overlay a { color: var(--w95-blue-a); }
   </style>
 </head>
 <body>
@@ -1030,10 +1036,10 @@
         </div>
         <button id="req-toggle-btn" onclick="toggleRequirementsPanel()">📋 Απαιτούμενα ▾</button>
         <span id="bar-arrow-label" class="bar-label" style="margin-left:4px;">→</span>
-        <strong id="bar-target" style="color:var(--win95-blue-a); font-size:12px;"></strong>
+        <strong id="bar-target" style="color:var(--w95-blue-a); font-size:12px;"></strong>
         <span style="flex-grow:1"></span>
         <span class="bar-label">📅</span>
-        <span id="day-counter" style="font-weight:bold; font-size:12px; color:var(--win95-blue-a);">1</span>
+        <span id="day-counter" style="font-weight:bold; font-size:12px; color:var(--w95-blue-a);">1</span>
         <button id="glossary-btn" style="font-size:11px; padding:2px 6px; display:none;">📖 Γλωσσάρι</button>
         <button id="mute-btn" title="Σίγαση / Ήχος" onclick="toggleMute()">🔊</button>
         <button id="bar-reset" title="Επανεκκίνηση">↺</button>
@@ -1074,17 +1080,17 @@
       <div id="sidebar">
         <!-- Quest requirements (always visible) -->
         <div class="sidebar-section">
-          <div class="win95-title"><span>🎯 Αποστολή</span></div>
+          <div class="w95-title"><span>🎯 Αποστολή</span></div>
           <div class="sidebar-section-body">
-            <div id="sidebar-quest-target" style="font-weight:bold; font-size:12px; color:var(--win95-blue-a); margin-bottom:5px;"></div>
-            <div class="bar-label" style="margin-bottom:3px;font-weight:bold;color:var(--win95-blue-black)">📋 Απαιτούμενα:</div>
+            <div id="sidebar-quest-target" style="font-weight:bold; font-size:12px; color:var(--w95-blue-a); margin-bottom:5px;"></div>
+            <div class="bar-label" style="margin-bottom:3px;font-weight:bold;color:var(--w95-blue-black)">📋 Απαιτούμενα:</div>
             <div id="sidebar-requirements"></div>
           </div>
         </div>
 
         <!-- Tracked doc (shown when tracking) -->
         <div class="sidebar-section hidden" id="sidebar-tracked-card">
-          <div class="win95-title" style="background: linear-gradient(90deg, #7c3f00, #d97706);">
+          <div class="w95-title" style="background: linear-gradient(90deg, #7c3f00, #d97706);">
             <span>🔍 Παρακολούθηση εγγράφου</span>
           </div>
           <div class="sidebar-section-body">
@@ -1095,7 +1101,7 @@
 
         <!-- Wallet -->
         <div class="sidebar-section">
-          <div class="win95-title"><span>🗂 Φάκελος</span></div>
+          <div class="w95-title"><span>🗂 Φάκελος</span></div>
           <div class="sidebar-section-body">
             <div id="sidebar-wallet" class="sidebar-pill-row"></div>
           </div>
@@ -1103,7 +1109,7 @@
 
         <!-- Glossary (always visible on desktop) -->
         <div class="sidebar-section" style="flex:1; min-height:0;">
-          <div class="win95-title"><span>📖 Γλωσσάρι</span></div>
+          <div class="w95-title"><span>📖 Γλωσσάρι</span></div>
           <div id="sidebar-glossary-body"></div>
         </div>
       </div>
@@ -1111,7 +1117,7 @@
 
     <!-- GLOSSARY OVERLAY PANEL (mobile) -->
     <div id="glossary-panel" class="win-card hidden">
-      <div class="win95-title">
+      <div class="w95-title">
         <span>📖 Γλωσσάρι Εγγράφων</span>
         <button id="close-glossary" style="background:#c00; color:white; border:1px solid #600; padding:0 6px; min-width:20px; font-weight:bold;">✕</button>
       </div>
@@ -1121,7 +1127,7 @@
     <!-- START SCREEN -->
     <div id="start-screen">
       <div class="win-card start-card">
-        <div class="win95-title"><span>🏛 Bureaucracy Maze — Αναγνωρισμένοι Πρόσφυγες στην Ελλάδα 2026</span></div>
+        <div class="w95-title"><span>🏛 Bureaucracy Maze — Αναγνωρισμένοι Πρόσφυγες στην Ελλάδα 2026</span></div>
         <div class="win-card-body">
           <p style="margin-bottom:10px; font-size:12px; line-height:1.5;">
             Μετά από χρόνια σε άλλη ευρωπαϊκή χώρα, επιστρέφεσαι αναγκαστικά στην Ελλάδα. Μόλις προσγειώθηκες. Πρέπει να επιβιώσεις.<br>
@@ -1129,7 +1135,7 @@
           </p>
           <!-- Step 1: character (always visible, collapses on mobile after selection) -->
           <div class="section" id="start-step-1">
-            <div class="section-title">1. Επίλεξε χαρακτήρα <span id="step1-change-link" style="display:none; font-size:11px; font-weight:normal; color:var(--win95-blue-a); cursor:pointer; text-decoration:underline;" onclick="expandStep1()">αλλαγή</span></div>
+            <div class="section-title">1. Επίλεξε χαρακτήρα <span id="step1-change-link" style="display:none; font-size:11px; font-weight:normal; color:var(--w95-blue-a); cursor:pointer; text-decoration:underline;" onclick="expandStep1()">αλλαγή</span></div>
             <div id="character-choices" class="choice-grid"></div>
             <div class="step1-summary" id="step1-summary"></div>
           </div>
@@ -1149,7 +1155,7 @@
     <!-- PRELIMINARY SCREEN -->
     <div id="preliminary-screen" class="hidden">
       <div class="win-card" id="prelim-card">
-        <div class="win95-title"><span id="prelim-title-bar">Προκαταρκτική δοκιμή</span></div>
+        <div class="w95-title"><span id="prelim-title-bar">Προκαταρκτική δοκιμή</span></div>
         <div class="win-card-body" style="text-align:center; padding:16px;">
           <p id="prelim-desc" style="font-size:12px; margin-bottom:16px; line-height:1.5;"></p>
 
@@ -1162,13 +1168,13 @@
               <button id="spin-btn" class="primary" style="font-size:13px; padding:8px 24px;">🎲 Γύρισε τον τροχό</button>
             </div>
             <div id="spin-result" class="hidden" style="margin-top:10px;">
-              <p style="font-size:14px; font-weight:bold; color:var(--win95-blue-a);">Πήρες <span id="result-seconds"></span> δευτερόλεπτα!</p>
+              <p style="font-size:14px; font-weight:bold; color:var(--w95-blue-a);">Πήρες <span id="result-seconds"></span> δευτερόλεπτα!</p>
               <p class="small" style="margin-top:4px;">Ο χρονομετρητής δεν ξεκινά μέχρι να πατήσεις το κουμπί.</p>
             </div>
           </div>
 
           <div id="tap-panel" class="hidden" style="margin-top:14px;">
-            <div class="win95-inset" style="text-align:left; margin-bottom:10px; font-size:11px; line-height:1.5;">
+            <div class="w95-inset" style="text-align:left; margin-bottom:10px; font-size:11px; line-height:1.5;">
               <strong>Οδηγίες Tap Test:</strong> Κάνε κλικ/tap στην μπάρα για να τη γεμίσεις πριν τελειώσει ο χρόνος.
             </div>
             <div id="tap-action-slot">
@@ -1179,7 +1185,7 @@
               </div>
             </div>
             <div id="game-stage" class="hidden" style="margin-top:10px;">
-              <div id="timer-display" style="font-size:2rem; font-weight:bold; color:var(--win95-blue-a); font-family:'Courier New',monospace;">0.00s</div>
+              <div id="timer-display" style="font-size:2rem; font-weight:bold; color:var(--w95-blue-a); font-family:'Courier New',monospace;">0.00s</div>
             </div>
           </div>
 
@@ -1194,7 +1200,7 @@
     <!-- OFFICE MODAL -->
     <div id="office-modal" class="overlay hidden">
       <div class="win-card" id="office-modal-wrap">
-        <div class="win95-title">
+        <div class="w95-title">
           <span id="office-title-bar">Γραφείο</span>
           <div style="display:flex; gap:3px; align-items:center; margin-left:auto;">
             <button class="modal-hdr-btn" onclick="document.getElementById('legend-panel').classList.remove('hidden')" title="Οδηγίες">?</button>
@@ -1212,11 +1218,11 @@
     <!-- EVENT MODAL -->
     <div id="event-modal" class="overlay overlay-top hidden">
       <div class="win-card" id="event-modal-wrap">
-        <div class="win95-title">
+        <div class="w95-title">
           <span id="event-title-bar">Ενημέρωση</span>
           <div style="display:flex; gap:3px; align-items:center; margin-left:auto;">
             <button class="modal-hdr-btn" onclick="document.getElementById('glossary-panel').classList.toggle('hidden')" title="Γλωσσάρι">📖</button>
-            <button id="event-close-btn" class="win95-close-btn hidden" title="Κλείσιμο">✕</button>
+            <button id="event-close-btn" class="w95-close-btn hidden" title="Κλείσιμο">✕</button>
           </div>
         </div>
         <div class="win-card-body" style="text-align:center; padding:16px;">
@@ -1232,13 +1238,13 @@
     <!-- ENDING MODAL -->
     <div id="ending-modal" class="overlay hidden">
       <div class="win-card" id="ending-modal-wrap">
-        <div class="win95-title" style="background:linear-gradient(90deg,#3a3a3a,#5a5a5a);"><span>📋 Βήμα ολοκληρώθηκε</span></div>
+        <div class="w95-title" style="background:linear-gradient(90deg,#3a3a3a,#5a5a5a);"><span>📋 Βήμα ολοκληρώθηκε</span></div>
         <div class="win-card-body" style="padding:16px;">
-          <p id="ending-title" style="font-weight:bold; font-size:14px; margin-bottom:8px; color:var(--win95-blue-a);"></p>
+          <p id="ending-title" style="font-weight:bold; font-size:14px; margin-bottom:8px; color:var(--w95-blue-a);"></p>
           <p id="ending-body" style="font-size:12px; line-height:1.5; margin-bottom:10px; color:#444;"></p>
           <div id="ending-cta" style="background:#e8f0fb; border:1px solid #9ab; padding:8px 10px; margin-bottom:12px; font-size:12px; line-height:1.5;">
             Διάβασε την πλήρη έκθεση της RSA για τους αναγνωρισμένους πρόσφυγες στην Ελλάδα:<br>
-            <a id="ending-report-link" href="" target="_blank" rel="noopener" style="color:var(--win95-blue-a); font-weight:bold;"></a>
+            <a id="ending-report-link" href="" target="_blank" rel="noopener" style="color:var(--w95-blue-a); font-weight:bold;"></a>
           </div>
           <div class="inline-actions">
             <button id="ending-switch" class="primary">Αλλαγή αποστολής</button>
@@ -1251,7 +1257,7 @@
     <!-- FAIL MODAL -->
     <div id="fail-modal" class="overlay overlay-max hidden">
       <div class="win-card" id="fail-modal-wrap">
-        <div class="win95-title"><span>✗ ΑΠΟΤΥΧΙΑ TAP TEST</span></div>
+        <div class="w95-title"><span>✗ ΑΠΟΤΥΧΙΑ TAP TEST</span></div>
         <div style="padding:20px; text-align:center;">
           <p style="font-size:1.1rem; margin-bottom:12px;">Έτρεξε ο χρόνος πριν γεμίσεις τη μπάρα.</p>
           <p id="fail-summary" style="font-size:11px; margin-bottom:16px;"></p>
@@ -1263,7 +1269,7 @@
     <!-- DENIAL MODAL -->
     <div id="denial-modal" class="overlay overlay-high hidden">
       <div class="win-card" id="denial-modal-wrap">
-        <div class="win95-title">
+        <div class="w95-title">
           <span>⛔ ΑΠΟΚΛΕΙΣΜΟΣ</span>
           <div style="display:flex; gap:3px; align-items:center; margin-left:auto;">
             <button class="modal-hdr-btn" onclick="document.getElementById('glossary-panel').classList.toggle('hidden')" title="Γλωσσάρι">📖</button>
@@ -1292,11 +1298,11 @@
     <!-- TREE DIAGRAM PANEL -->
     <div id="tree-panel" class="hidden">
       <div class="win-card" id="tree-panel-inner">
-        <div class="win95-title">
+        <div class="w95-title">
           <span>🌳 Χάρτης Εγγράφων &amp; Απαιτήσεων</span>
           <button id="close-tree-panel" style="background:#c00;color:white;border:1px solid #600;padding:0 6px;font-weight:bold;">✕</button>
         </div>
-        <div style="display:flex; gap:4px; padding:4px 8px; background:var(--win95-mid); border-bottom:1px solid var(--win95-shadow);">
+        <div style="display:flex; gap:4px; padding:4px 8px; background:var(--w95-mid); border-bottom:1px solid var(--w95-shadow);">
           <button id="tree-view-map" class="primary" style="font-size:11px; padding:2px 10px;" onclick="setTreeView('map')">📋 Λίστα ανά κτίριο</button>
           <button id="tree-view-net" style="font-size:11px; padding:2px 10px;" onclick="setTreeView('net')">🔗 Network graph</button>
         </div>
@@ -1308,7 +1314,7 @@
     <!-- LEGEND PANEL -->
     <div id="legend-panel" class="hidden">
       <div class="win-card" id="legend-inner">
-        <div class="win95-title">
+        <div class="w95-title">
           <span>❓ Οδηγίες &amp; Υπόμνημα</span>
           <button id="close-legend-panel" style="background:#c00;color:white;border:1px solid #600;padding:0 6px;font-weight:bold;">✕</button>
         </div>
@@ -1349,7 +1355,7 @@
 
     <!-- FOOTER -->
     <div id="game-footer">
-      <span class="footer-disclaimer">Παιχνίδι βασισμένο στην <a href="${RSA_REPORT_URL}" target="_blank" style="color:var(--win95-blue-a)">Έκθεση της RSA</a> · Δεν αποτελεί νομική συμβουλή</span>
+      <span class="footer-disclaimer">Παιχνίδι βασισμένο στην <a href="${RSA_REPORT_URL}" target="_blank" style="color:var(--w95-blue-a)">Έκθεση της RSA</a> · Δεν αποτελεί νομική συμβουλή</span>
       <button onclick="showAboutModal()">ℹ️ Σχετικά</button>
     </div>
 
@@ -1501,7 +1507,7 @@ const DATA = {
     { term:"HELIOS+", def:"Πρόγραμμα ενταξιακής υποστήριξης (ΔΟΜ, 2025–2028). Προϋπόθεση: Χορήγηση ασύλου εντός των τελευταίων 24 μηνών. Παρέχει επιδότηση ενοικίου — αλλά μόνο αν έχεις ήδη μισθωτήριο στο όνομά σου. Μόνο 4.323 θέσεις για 134.576 κατόχους ΑΔΕΤ." },
     { term:"ΠΑΑΥΠΑ", def:"Προσωρινός Αριθμός Ασφάλισης και Υγειονομικής Περίθαλψης Αλλοδαπού. Εκδίδεται σε αιτούντες άσυλο. Πρέπει να μετατραπεί σε ΑΜΚΑ εντός ενός μήνα από τη λήψη ΑΔΕΤ - αλλά αυτό δεν γίνεται αυτόματα." },
     { term:"TAXISnet (Κλειδάριθμος)", def:"Κωδικοί πρόσβασης στη φορολογική πύλη ΑΑΔΕ. Χωρίς κλειδάριθμο δεν γίνεται επικαιροποίηση στοιχείων. Χωρίς επικαιροποίηση δεν εκδίδεται κλειδάριθμος — κλασικό 'Catch-22'." },
-    { term:"Υποστήριξη Προσφύγων στο Αιγαίο - RSA", def:`Παρέχει δωρεάν νομική βοήθεια και υποστήριξη σε αναγνωρισμένους πρόσφυγες. Υποστήριξε 50+ άτομα που επέστρεψαν στην Ελλάδα το 2025. Έκθεση 2026: <a href="${RSA_REPORT_URL}" target="_blank" style="color:var(--win95-blue-a)">rsaegean.org/el/anagnorismenoi-prosfyges-2026</a>.` },
+    { term:"Υποστήριξη Προσφύγων στο Αιγαίο - RSA", def:`Παρέχει δωρεάν νομική βοήθεια και υποστήριξη σε αναγνωρισμένους πρόσφυγες. Υποστήριξε 50+ άτομα που επέστρεψαν στην Ελλάδα το 2025. Έκθεση 2026: <a href="${RSA_REPORT_URL}" target="_blank" style="color:var(--w95-blue-a)">rsaegean.org/el/anagnorismenoi-prosfyges-2026</a>.` },
   ]
 };
 
@@ -1923,7 +1929,7 @@ function buildRequirementList(docId, container) {
   // Quest target label (shown when called from mobile bar with showTarget:true)
   if (container._showQuestTarget) {
     const lbl = document.createElement("div");
-    lbl.style.cssText = "font-size:10px;color:var(--win95-blue-a);font-weight:bold;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;";
+    lbl.style.cssText = "font-size:10px;color:var(--w95-blue-a);font-weight:bold;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;";
     lbl.textContent = `Στόχος: ${getDoc(docId).name}`;
     list.prepend(lbl);
   }
@@ -1963,7 +1969,7 @@ function makeReqItem(docId) {
   if (!owned) {
     const rule = getRule(docId);
     if (rule.location) {
-      item.innerHTML += `<span style="font-size:9px; color:var(--win95-blue-a);">↗</span>`;
+      item.innerHTML += `<span style="font-size:9px; color:var(--w95-blue-a);">↗</span>`;
       item.onclick = () => { trackDocument(docId); closeDropdowns(); };
       item.title = `Κλικ για παρακολούθηση: ${doc.name}`;
     }
@@ -2078,7 +2084,7 @@ function updateUI() {
     barTrackedRow.style.display = "";
     barTrackedReqs.innerHTML = "";
     const trackedSec = document.createElement("div"); trackedSec.className = "bar-mini-section";
-    trackedSec.style.borderColor = "#d97706 var(--win95-light) var(--win95-light) #d97706";
+    trackedSec.style.borderColor = "#d97706 var(--w95-light) var(--w95-light) #d97706";
     const trackedReqsDiv = document.createElement("div"); buildRequirementPills(state.trackedDoc, trackedReqsDiv);
     trackedSec.appendChild(trackedReqsDiv);
     barTrackedReqs.appendChild(trackedSec);
@@ -2126,7 +2132,7 @@ function createRouteCard(route, opts={}) {
   route.requires.forEach(id => {
     const li = document.createElement("li");
     li.textContent = `${hasDoc(id) ? "✓" : "✕"} ${getDoc(id).name}`;
-    li.style.color = hasDoc(id) ? "var(--win95-green)" : "var(--win95-red)";
+    li.style.color = hasDoc(id) ? "var(--w95-green)" : "var(--w95-red)";
     ul.appendChild(li);
   });
   card.appendChild(ul); return card;
@@ -2230,7 +2236,7 @@ function buildStoryHtml(sr) {
   const paras = paragraphs.map(p => `<p>${p.replace(/\n/g, "<br>")}</p>`).join("");
   // sr.link is authored data {href, label} — no user input, safe to interpolate
   const linkHtml = sr.link
-    ? `<p style="margin-top:8px"><a href="${sr.link.href}" target="_blank" rel="noopener noreferrer" style="color:var(--win95-blue-a)">${sr.link.label}</a></p>`
+    ? `<p style="margin-top:8px"><a href="${sr.link.href}" target="_blank" rel="noopener noreferrer" style="color:var(--w95-blue-a)">${sr.link.label}</a></p>`
     : "";
   if (sr.storyTitle) {
     return `<div class="waiting-story">
@@ -2375,7 +2381,7 @@ function renderRoutesGrouped(routes, container) {
     common.forEach(id => {
       const li = document.createElement("li");
       li.textContent = `${hasDoc(id) ? "✓" : "✕"} ${getDoc(id).name}`;
-      li.style.color = hasDoc(id) ? "var(--win95-green)" : "var(--win95-red)";
+      li.style.color = hasDoc(id) ? "var(--w95-green)" : "var(--w95-red)";
       commonUl.appendChild(li);
     });
     commonCard.appendChild(commonUl);
@@ -2410,7 +2416,7 @@ function renderRoutesGrouped(routes, container) {
       displayItems.forEach(id => {
         const li = document.createElement("li");
         li.textContent = `${hasDoc(id) ? "✓" : "✕"} ${getDoc(id).name}`;
-        li.style.color = hasDoc(id) ? "var(--win95-green)" : "var(--win95-red)";
+        li.style.color = hasDoc(id) ? "var(--w95-green)" : "var(--w95-red)";
         ul.appendChild(li);
       });
       card.appendChild(ul);
@@ -2898,14 +2904,14 @@ function showTutorial() {
       <p style="margin-bottom:10px;">Μόλις επέστρεψες αναγκαστικά. Δεν έχεις σπίτι, δεν έχεις δουλειά, και τα έγγραφά σου είναι ανεπαρκή ή ληγμένα.</p>
       <p style="margin-bottom:10px;"><strong>Στόχος:</strong> Μάζεψε τα απαιτούμενα έγγραφα για να ολοκληρώσεις την αποστολή σου.</p>
       <div style="background:#f0f4ff; border:1px solid #aac; padding:8px 10px; margin-bottom:10px;">
-        <div style="font-weight:bold; margin-bottom:4px; color:var(--win95-blue-a);">Πώς παίζεται</div>
+        <div style="font-weight:bold; margin-bottom:4px; color:var(--w95-blue-a);">Πώς παίζεται</div>
         <div style="margin-bottom:3px;">&#9654; ${moveHint}</div>
         <div style="margin-bottom:3px;">&#9654; <strong>Tap / click πάνω σε κτίριο</strong> για να μπεις και να δεις τι ποια έγγραφα είναι διαθέσιμα και ποια λείπουν.</div>
-        <div style="margin-bottom:3px;">&#9654; Τα <span style="color:var(--win95-red)">&#10005; κόκκινα έγγραφα</span> λείπουν — click για να τα παρακολουθήσεις.</div>
-        <div style="margin-bottom:3px;">&#9654; Το <span style="color:var(--win95-blue-a)">📋 Απαιτούμενα</span> δείχνει τι χρειάζεσαι για την τρέχουσα αποστολή.</div>
+        <div style="margin-bottom:3px;">&#9654; Τα <span style="color:var(--w95-red)">&#10005; κόκκινα έγγραφα</span> λείπουν — click για να τα παρακολουθήσεις.</div>
+        <div style="margin-bottom:3px;">&#9654; Το <span style="color:var(--w95-blue-a)">📋 Απαιτούμενα</span> δείχνει τι χρειάζεσαι για την τρέχουσα αποστολή.</div>
         <div>&#9654; Κάνοντας κλικ στο <strong>❓</strong> μπορείς να δεις τις πλήρεις οδηγίες.</div>
       </div>
-      <p style="font-size:11px; color:var(--muted);">Αυτό το παιχνίδι βασίζεται σε πραγματικές υποθέσεις αναγνωρισμένων προσφύγων στην Ελλάδα το 2025-2026. <a href="${RSA_REPORT_URL}" target="_blank" rel="noopener" style="color:var(--win95-blue-a); font-weight:bold;">Διάβασε την πλήρη έκθεση RSA →</a></p>
+      <p style="font-size:11px; color:var(--muted);">Αυτό το παιχνίδι βασίζεται σε πραγματικές υποθέσεις αναγνωρισμένων προσφύγων στην Ελλάδα το 2025-2026. <a href="${RSA_REPORT_URL}" target="_blank" rel="noopener" style="color:var(--w95-blue-a); font-weight:bold;">Διάβασε την πλήρη έκθεση RSA →</a></p>
     </div>`,
     actions: [{ label: "Συνέχεια →", className: "primary", onClick: () => { closeEventModal(); _showDocumentGraphOnboarding(); } }]
   });
@@ -2938,7 +2944,7 @@ function _showDocumentGraphOnboarding() {
   introPara.innerHTML = introHtml;
 
   const reqLabel = document.createElement("div");
-  reqLabel.style.cssText = "font-weight:bold;margin-bottom:5px;color:var(--win95-blue-a);";
+  reqLabel.style.cssText = "font-weight:bold;margin-bottom:5px;color:var(--w95-blue-a);";
   reqLabel.textContent = "📋 Απαιτούμενα έγγραφα:";
 
   const reqWrap = document.createElement("div");
@@ -3636,11 +3642,14 @@ function _addStartBtns(overlay, canvas, statusEl, launchFn) {
   const canvasWrap = overlay.querySelector(".ch-canvas-wrap");
   const row = document.createElement("div");
   row.className = "mc-btn-row";
+  const panel = document.createElement("div");
+  panel.className = "mc-btn-panel";
   const go = document.createElement("button");
   go.className = "primary"; go.textContent = "▶ Έναρξη";
   go.onclick = () => { row.remove(); canvas.focus(); launchFn(); };
-  row.appendChild(go);
-  row.appendChild(_makeSkipInlineBtn(overlay));
+  panel.appendChild(go);
+  panel.appendChild(_makeSkipInlineBtn(overlay));
+  row.appendChild(panel);
   canvasWrap.appendChild(row);
 }
 function _addLoseBtns(overlay, canvas, statusEl, launchFn) {
@@ -3649,11 +3658,14 @@ function _addLoseBtns(overlay, canvas, statusEl, launchFn) {
   if (existing) existing.remove();
   const row = document.createElement("div");
   row.className = "mc-btn-row mc-lose-btns";
+  const panel = document.createElement("div");
+  panel.className = "mc-btn-panel";
   const rb = document.createElement("button");
   rb.className = "primary"; rb.textContent = "↺ Ξαναπαίξε";
   rb.onclick = () => { row.remove(); statusEl.textContent = ""; canvas.focus(); launchFn(); };
-  row.appendChild(rb);
-  row.appendChild(_makeSkipInlineBtn(overlay));
+  panel.appendChild(rb);
+  panel.appendChild(_makeSkipInlineBtn(overlay));
+  row.appendChild(panel);
   canvasWrap.appendChild(row);
 }
 function _drawWallCell(ctx, c, r, CELL) {
@@ -4354,10 +4366,10 @@ function showAboutModal() {
   box.className = "win-card";
   box.style.cssText = "max-width:400px;width:100%;";
   const titleBar = document.createElement("div");
-  titleBar.className = "win95-title";
+  titleBar.className = "w95-title";
   titleBar.innerHTML = '<span>ℹ️ Σχετικά με το παιχνίδι</span>';
   const closeBtn = document.createElement("button");
-  closeBtn.className = "win95-close-btn";
+  closeBtn.className = "w95-close-btn";
   closeBtn.textContent = "✕";
   closeBtn.onclick = () => overlay.remove();
   titleBar.appendChild(closeBtn);
