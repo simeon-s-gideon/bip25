@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Recognised Refugees in Greece: The Grand Bureaucracy Adventure 2026</title>
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; img-src data: blob:; media-src data: blob:; font-src data:; connect-src 'none';" />
   <style>
     :root {
       --win95-bg: #c0c0c0;
@@ -248,7 +250,12 @@
       border-color: var(--win95-shadow) var(--win95-light) var(--win95-light) var(--win95-shadow);
       background: white;
       color: var(--win95-blue-a);
+      transition: color 0.4s;
     }
+    #day-counter.warn-days  { color: #b45309; }
+    #day-counter.danger-days { color: #b91c1c; }
+    @keyframes pulse-day { 0%,100%{opacity:1} 50%{opacity:0.45} }
+    #day-counter.pulse-days { animation: pulse-day 1.2s ease infinite; }
 
     /* ── GAME CONTAINER (legacy, overridden by #map-area #game-container) ── */
     #game-container { flex: 1; position: relative; width: 100%; z-index: 1; }
@@ -286,7 +293,7 @@
       display: none;
       background: linear-gradient(90deg, #1a3a6a 0%, #2a5298 50%, #1a3a6a 100%);
       color: #ffffff;
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: Tahoma, "MS Sans Serif", sans-serif;
       font-size: 13px; font-weight: bold;
       text-align: center;
       padding: 4px 10px;
@@ -911,6 +918,82 @@
       font-size: 10px; color: var(--muted); font-style: italic;
       padding: 1px 4px; text-align: left;
     }
+
+    /* ── GAME FOOTER ── */
+    #game-footer {
+      flex-shrink: 0;
+      background: var(--win95-bg);
+      border-top: 2px solid;
+      border-color: var(--win95-shadow) var(--win95-light) var(--win95-light) var(--win95-shadow);
+      padding: 2px 8px;
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px;
+      font-size: 10px; color: var(--muted);
+    }
+    #game-footer .footer-disclaimer {
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    #game-footer button {
+      font-size: 10px; padding: 1px 6px; flex-shrink: 0;
+    }
+
+    /* ── CHALLENGE OVERLAY ── */
+    .ch-overlay {
+      position:fixed; inset:0; z-index:10000;
+      background:rgba(0,0,18,0.94);
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:8px; padding:14px 14px 10px; box-sizing:border-box;
+      font-family:Tahoma,"MS Sans Serif",sans-serif;
+    }
+    .ch-skip-btn {
+      position:absolute; top:8px; right:8px;
+      font-size:11px; padding:5px 9px;
+      background:rgba(60,0,0,0.92); border:1px solid #cc4444;
+      color:#ffaaaa; border-radius:3px; cursor:pointer; z-index:2;
+      font-family:Tahoma,"MS Sans Serif",sans-serif;
+    }
+    .ch-skip-btn:hover { background:rgba(120,0,0,0.95); color:#fff; }
+    .ch-skip-inline {
+      font-size:12px; padding:5px 12px;
+      background:rgba(60,0,0,0.92); border:1px solid #cc4444;
+      color:#ffaaaa; border-radius:3px; cursor:pointer;
+      font-family:Tahoma,"MS Sans Serif",sans-serif;
+    }
+    .ch-skip-inline:hover { background:rgba(120,0,0,0.95); color:#fff; }
+    .ch-title {
+      color:#facc15; font-size:13px; font-weight:bold;
+      text-align:center; max-width:400px; line-height:1.5;
+      text-shadow:0 0 8px rgba(250,204,21,0.6);
+      border:2px solid #facc15; padding:8px 12px; border-radius:3px;
+      background:rgba(0,0,0,0.5);
+    }
+    .ch-canvas { display:block; border:2px solid #2244aa; border-radius:2px; touch-action:none; }
+    .ch-status  { color:#88aaff; font-size:12px; text-align:center; min-height:18px; }
+    .ch-hint    { color:#445566; font-size:11px; text-align:center; }
+    .ch-dpad {
+      display:grid;
+      grid-template:repeat(3,44px)/repeat(3,44px);
+      gap:3px; margin-top:2px;
+    }
+    .ch-dpad-btn {
+      font-size:17px;
+      background:rgba(20,20,70,0.92); border:1px solid #334488;
+      color:#8899cc; border-radius:6px; cursor:pointer;
+      touch-action:none; user-select:none; -webkit-user-select:none;
+    }
+
+    /* ── ABOUT MODAL ── */
+    #about-modal-overlay {
+      position: fixed; inset: 0; z-index: 11000;
+      background: rgba(0,0,0,0.65);
+      display: flex; align-items: center; justify-content: center; padding: 16px;
+    }
+    #about-modal-overlay .about-body {
+      padding: 12px 14px; font-size: 12px; line-height: 1.65;
+      display: flex; flex-direction: column; gap: 10px;
+      max-height: 70vh; overflow-y: auto;
+    }
+    #about-modal-overlay a { color: var(--win95-blue-a); }
   </style>
 </head>
 <body>
@@ -1256,9 +1339,23 @@
         </div>
       </div>
     </div>
+
+    <!-- FOOTER -->
+    <div id="game-footer">
+      <span class="footer-disclaimer">Παιχνίδι βασισμένο στην <a href="${RSA_REPORT_URL}" target="_blank" style="color:var(--win95-blue-a)">Έκθεση της RSA</a> · Δεν αποτελεί νομική συμβουλή</span>
+      <button onclick="showAboutModal()">ℹ️ Σχετικά</button>
+    </div>
+
   </div>
 </div>
 
+<script>
+  window.addEventListener('error', function(e) {
+    if (typeof Phaser === 'undefined') {
+      document.body.innerHTML = '<div style="font-family:Tahoma,sans-serif;padding:40px;text-align:center;background:#c0c0c0;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;"><h2>⚠️ Σφάλμα φόρτωσης</h2><p>Δεν ήταν δυνατή η φόρτωση του παιχνιδιού.<br>Ελέγξτε τη σύνδεσή σας και δοκιμάστε επαναφόρτωση.</p><button onclick="location.reload()" style="padding:8px 20px;font-size:14px;cursor:pointer;">↺ Επαναφόρτωση</button></div>';
+    }
+  });
+</script>
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
 <script>
 // ─────────────────────────────────────────────
@@ -1294,7 +1391,8 @@ const DATA = {
           title: "ΑΝΑΚΤΗΣΗ ΑΔΕΤ & ΔΙΑΒΑΤΗΡΙΟΥ",
           storyTitle: "Πραγματική υπόθεση — Αχμέντ*, Αφγανιστάν",
           storySubtitle: "Ενημέρωση κατά τη διάρκεια της αναμονής",
-          message: "Ο Αχμέντ*, αναγνωρισμένος πρόσφυγας από το Αφγανιστάν, απελάθηκε από τη Γερμανία στα τέλη Δεκεμβρίου 2025, χωρίς να του παραδοθούν τα έγκυρα έγγραφα ΑΔΕΤ και ταξιδιωτικού από τις γερμανικές αρχές.\n\nΑπό τα μέσα Ιανουαρίου 2026, δικηγόροι της RSA επικοινωνούν με το ΠΓΑ Πειραιά της Υπηρεσίας Ασύλου και ζήτησαν ανάκτηση των εγγράφων από τη Γερμανία.\n\nΣτα μέσα Μαρτίου 2026, το ΠΓΑ Πειραιά ενημέρωσε ότι τα έγγραφα δεν έχουν παραληφθεί και ζητά δήλωση απώλειας — ενώ τα έγγραφα δεν έχουν χαθεί.\n\n <strong> Διάβασε περισσότερα για τους αναγνωρισμένους πρόσφυγες στην Ελλάδα <a href=\"https://rsaegean.org/el/anagnorismenoi-prosfyges-2026\" target=\"_blank\" style=\"color:var(--win95-blue-a)\">στην ετήσια έκθεσή μας</a></strong>",
+          message: "Ο Αχμέντ*, αναγνωρισμένος πρόσφυγας από το Αφγανιστάν, απελάθηκε από τη Γερμανία στα τέλη Δεκεμβρίου 2025, χωρίς να του παραδοθούν τα έγκυρα έγγραφα ΑΔΕΤ και ταξιδιωτικού από τις γερμανικές αρχές.\n\nΑπό τα μέσα Ιανουαρίου 2026, δικηγόροι της RSA επικοινωνούν με το ΠΓΑ Πειραιά της Υπηρεσίας Ασύλου και ζήτησαν ανάκτηση των εγγράφων από τη Γερμανία.\n\nΣτα μέσα Μαρτίου 2026, το ΠΓΑ Πειραιά ενημέρωσε ότι τα έγγραφα δεν έχουν παραληφθεί και ζητά δήλωση απώλειας — ενώ τα έγγραφα δεν έχουν χαθεί.",
+          link: { href: "https://rsaegean.org/el/anagnorismenoi-prosfyges-2026", label: "Διάβασε περισσότερα στην ετήσια έκθεση RSA →" },
           alsoGrants: ["passport"]
         },
         passport: { mergedInto: "adet" }
@@ -1486,7 +1584,7 @@ const els = {
 // ─────────────────────────────────────────────
 // HELPERS
 // ─────────────────────────────────────────────
-const getCharacter = () => DATA.characters.find(c => c.id === state.selectedCharacter);
+const getCharacter = () => DATA.characters.find(c => c.id === state.selectedCharacter) ?? DATA.characters[0];
 const getDoc = id => DATA.documents[id];
 const getQuest = () => DATA.quests[state.selectedQuest];
 const getRule = id => DATA.rules[id] || { location:null, routes:[] };
@@ -1527,13 +1625,36 @@ function removeDocument(id) {
 function seedCharacterInventory() {
   if (state.inventorySeeded) return;
   const ch = getCharacter();
+  if (!ch) return;
   state.inventory = new Set(); state.inventoryOrder = [];
   (ch.startingDocs || []).forEach(id => addDocument(id));
   state.inventorySeeded = true;
 }
+function _applyDayUrgency(days) {
+  const el = els.dayCounter;
+  el.classList.toggle("warn-days",   days >= 100 && days < 365);
+  el.classList.toggle("danger-days", days >= 365);
+  el.classList.toggle("pulse-days",  days >= 365);
+}
+function _maybeShowDayMilestone(days) {
+  if (!state.shownMilestones) state.shownMilestones = [];
+  const labels = {
+    100: "📅 100 ημέρες στη γραφειοκρατία.",
+    200: "📅 200 ημέρες. Συνεχίζεις ακόμα.",
+    365: "⚠️ Πέρασε ένας ολόκληρος χρόνος χωρίς λύση.",
+    500: "⚠️ 500 ημέρες. Αλλού θα ήταν άλλη ζωή.",
+    730: "⚠️ Δύο χρόνια. Η γραφειοκρατία δεν τελειώνει."
+  };
+  if (labels[days] && !state.shownMilestones.includes(days)) {
+    state.shownMilestones.push(days);
+    showToast(labels[days]);
+  }
+}
 function addDays(n, silent=false) {
   state.dayCount += n;
   els.dayCounter.textContent = state.dayCount;
+  _applyDayUrgency(state.dayCount);
+  _maybeShowDayMilestone(state.dayCount);
   if (!silent) showToast(`⏳ Πέρασαν ${n} ημέρα/ες... Σύνολο: ${state.dayCount} ημέρες`);
 }
 
@@ -1793,6 +1914,13 @@ function buildRequirementList(docId, container) {
     prog.innerHTML = `<span>${ownedCount}/${neededCount}</span> έγγραφα`;
     list.appendChild(prog);
   }
+  // Quest target label (shown when called from mobile bar with showTarget:true)
+  if (container._showQuestTarget) {
+    const lbl = document.createElement("div");
+    lbl.style.cssText = "font-size:10px;color:var(--win95-blue-a);font-weight:bold;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;";
+    lbl.textContent = `Στόχος: ${getDoc(docId).name}`;
+    list.prepend(lbl);
+  }
   // Common docs
   if (common.length > 0) {
     common.forEach(id => list.appendChild(makeReqItem(id)));
@@ -1926,11 +2054,14 @@ function updateUI() {
   }
   els.barTarget.textContent = focLoc ? `${focDoc.name} @ ${focLoc.name}` : focDoc.name;
   els.dayCounter.textContent = state.dayCount;
+  _applyDayUrgency(state.dayCount);
 
   // Mobile requirements row - mini-section style
   els.barRequirements.innerHTML = "";
   const miniSec = document.createElement("div"); miniSec.className = "bar-mini-section";
-  const miniReqs = document.createElement("div"); buildRequirementPills(quest.target, miniReqs);
+  const miniReqs = document.createElement("div");
+  miniReqs._showQuestTarget = true;
+  buildRequirementPills(quest.target, miniReqs);
   miniSec.appendChild(miniReqs);
   els.barRequirements.appendChild(miniSec);
 
@@ -2053,7 +2184,7 @@ function getHardRequestBlock(id) {
   if (id === "unemployment_card" && hasDoc("work_contract")) {
     return { title:"Μη επιλέξιμος/η", body:"Δεν μπορείς να βγάλεις Δελτίο Ανεργίας γιατί έχεις Σύμβαση Εργασίας. Αν το χρειάζεσαι για να ενταχθείς στο HELIOS+ προκειμένου να λάβεις επιδότηση ενοικίου, αυτό σημαίνει ότι δεν μπορείς να εγγραφείς στο HELIOS+",
       extraActions:[
-        { label:"↗ Διαβάστε Περισσότερα", className:"btn-track", onClick:() => window.open(RSA_REPORT_URL, "_blank") },
+        { label:"↗ Διαβάστε Περισσότερα", className:"btn-track", onClick:() => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") },
         { label:"↺ Επανεκκίνηση", className:"warn", onClick:() => { closeEventModal(); confirmReset(); } }
       ]
     };
@@ -2084,13 +2215,17 @@ function showPopupRoute(id, route, opts={}) {
   const confirmLabel = route.popup.confirmLabel || "ΚΑΤΑΛΑΒΑ";
   const actions = [{ label: confirmLabel, className:"primary", onClick:() => finalizeRequest(id, opts) }];
   if (route.popup.reportLink) {
-    actions.push({ label:"↗ Διαβάστε Περισσότερα", className:"btn-track", onClick:() => window.open(RSA_REPORT_URL, "_blank") });
+    actions.push({ label:"↗ Διαβάστε Περισσότερα", className:"btn-track", onClick:() => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") });
   }
   showEventModal({ title: route.popup.title || getDoc(id).name, body: route.popup.body, actions });
 }
 function buildStoryHtml(sr) {
   const paragraphs = sr.message.split("\n\n").filter(Boolean);
   const paras = paragraphs.map(p => `<p>${p.replace(/\n/g, "<br>")}</p>`).join("");
+  // sr.link is authored data {href, label} — no user input, safe to interpolate
+  const linkHtml = sr.link
+    ? `<p style="margin-top:8px"><a href="${sr.link.href}" target="_blank" rel="noopener noreferrer" style="color:var(--win95-blue-a)">${sr.link.label}</a></p>`
+    : "";
   if (sr.storyTitle) {
     return `<div class="waiting-story">
       <div class="waiting-story-header">
@@ -2100,10 +2235,10 @@ function buildStoryHtml(sr) {
           ${sr.storySubtitle ? `<div class="waiting-story-subtitle">${sr.storySubtitle}</div>` : ""}
         </div>
       </div>
-      ${paras}
+      ${paras}${linkHtml}
     </div>`;
   }
-  return `<div class="waiting-story"><p>${sr.message}</p></div>`;
+  return `<div class="waiting-story"><p>${sr.message}</p>${linkHtml}</div>`;
 }
 
 function showWaitingFlow(id, sr, opts={}) {
@@ -2354,23 +2489,17 @@ const BANK_OBSTACLES = [
   "Άρνηση ορισμένων τραπεζών να εξυπηρετήσουν πρόσφυγες παρά μόνο σε συγκεκριμένα υποκαταστήματα — συχνά μακριά από τον τόπο κατοικίας τους."
 ];
 // ─────────────────────────────────────────────
-// THIRD-PARTY SLOT MACHINE MINI-CHALLENGE
+// SLOT MACHINE MINI-CHALLENGE (shared engine)
 // ─────────────────────────────────────────────
-function showThirdPartySlot(onSuccess) {
-  const FACES = [
-    { label:"Λογιστής/τρια",                    icon:"🧾", success:true,  bg:"#0d2b1a", fg:"#86efac" },
-    { label:"Δικηγόρος",                         icon:"⚖️", success:true,  bg:"#0d1f33", fg:"#93c5fd" },
-    { label:"Δεν κατάφερες να βρεις Δικηγόρο",  icon:"😞", success:false, bg:"#2b0d0d", fg:"#fca5a5" },
-    { label:"Δεν κατάφερες να βρεις Λογίστρια", icon:"😞", success:false, bg:"#2b0d0d", fg:"#fca5a5" },
-  ];
+function _showSlotMachine({ title, faces, introHtml, spinLabel, spinningLabel, retryLabel, makeSuccessHtml, failHtml, onSuccess, onRetry }) {
   const ITEM_H = 76;
   const REPEATS = 6;
-  const resultIdx = Math.floor(Math.random() * FACES.length);
-  const landIdx   = REPEATS * FACES.length + resultIdx;
+  const resultIdx = Math.floor(Math.random() * faces.length);
+  const landIdx   = REPEATS * faces.length + resultIdx;
   const targetY   = ITEM_H * (1 - landIdx);
 
   const allFaces = [];
-  for (let i = 0; i <= REPEATS; i++) allFaces.push(...FACES);
+  for (let i = 0; i <= REPEATS; i++) allFaces.push(...faces);
 
   const stripItems = allFaces.map(f =>
     `<div style="height:${ITEM_H}px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-bottom:1px solid #1a1a3a;background:${f.bg};padding:4px 10px;text-align:center;box-sizing:border-box;">
@@ -2382,94 +2511,7 @@ function showThirdPartySlot(onSuccess) {
   const H = ITEM_H * 3;
   const fade = Math.round(ITEM_H * 0.6);
   const bodyHtml = `<div style="text-align:center;user-select:none;">
-    <p style="font-size:12px;margin-bottom:10px;color:#555;line-height:1.5;">Ψάχνεις για κάποιον/α με TAXISnet<br>να καταθέσει αίτημα εκ μέρους σου...</p>
-    <!-- machine chassis -->
-    <div style="display:block;margin:0 auto;width:288px;background:linear-gradient(160deg,#1e1e4a 0%,#12123a 100%);border-radius:10px;padding:14px 12px 12px;border:3px solid #3a3a7a;box-shadow:0 6px 20px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.08);">
-      <!-- reel row with side arrows -->
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-        <div style="color:#facc15;font-size:22px;text-shadow:0 0 10px #facc15;line-height:1;">▶</div>
-        <!-- reel window -->
-        <div style="position:relative;width:200px;height:${H}px;overflow:hidden;border-radius:5px;border:2px solid #4a4a8a;background:#080818;box-shadow:inset 0 0 20px rgba(0,0,0,0.9);">
-          <!-- center selector lines -->
-          <div style="position:absolute;top:${ITEM_H}px;left:0;right:0;height:2px;background:#facc15;box-shadow:0 0 8px #facc15;pointer-events:none;z-index:3;"></div>
-          <div style="position:absolute;top:${ITEM_H*2}px;left:0;right:0;height:2px;background:#facc15;box-shadow:0 0 8px #facc15;pointer-events:none;z-index:3;"></div>
-          <!-- center glow -->
-          <div style="position:absolute;top:${ITEM_H}px;left:0;right:0;height:${ITEM_H}px;background:rgba(250,204,21,0.04);pointer-events:none;z-index:2;"></div>
-          <!-- top/bottom fades -->
-          <div style="position:absolute;top:0;left:0;right:0;height:${fade}px;background:linear-gradient(to bottom,rgba(8,8,24,0.95),transparent);pointer-events:none;z-index:2;"></div>
-          <div style="position:absolute;bottom:0;left:0;right:0;height:${fade}px;background:linear-gradient(to top,rgba(8,8,24,0.95),transparent);pointer-events:none;z-index:2;"></div>
-          <div id="slot-strip" style="will-change:transform;">${stripItems}</div>
-        </div>
-        <div style="color:#facc15;font-size:22px;text-shadow:0 0 10px #facc15;line-height:1;">◀</div>
-      </div>
-      <!-- result message inside chassis -->
-      <div id="slot-result-msg" style="display:none;font-size:12px;margin-bottom:10px;padding:8px 10px;border-radius:5px;line-height:1.4;box-sizing:border-box;width:100%;"></div>
-      <!-- spin button -->
-      <button id="slot-spin-btn" style="background:linear-gradient(180deg,#d97706,#b45309);color:#fff;border:none;border-bottom:3px solid #78350f;border-radius:20px;padding:8px 22px;font-size:13px;cursor:pointer;font-family:Tahoma,sans-serif;font-weight:bold;letter-spacing:0.03em;box-shadow:0 3px 8px rgba(0,0,0,0.4);width:100%;">🎰 Περιστροφή!</button>
-    </div>
-  </div>`;
-
-  showEventModal({ title:"Αναζήτηση Εξουσιοδοτημένου Τρίτου", bodyHtml, closeable:true, actions:[] });
-
-  const spinBtn  = document.getElementById("slot-spin-btn");
-  const strip    = document.getElementById("slot-strip");
-  const resultEl = document.getElementById("slot-result-msg");
-
-  function doSpin() {
-    spinBtn.disabled = true;
-    spinBtn.style.opacity = "0.6";
-    spinBtn.textContent = "⏳ Ψάχνεις...";
-    strip.style.transition = "transform 2.8s cubic-bezier(0.17,0.67,0.25,1)";
-    strip.style.transform  = `translateY(${targetY}px)`;
-    strip.addEventListener("transitionend", () => {
-      const result = FACES[resultIdx];
-      spinBtn.style.opacity = "1";
-      if (result.success) {
-        resultEl.style.cssText = "display:block;background:#14532d;border:1px solid #86efac;color:#bbf7d0;font-size:12px;margin-bottom:10px;padding:8px 10px;border-radius:5px;line-height:1.4;";
-        resultEl.innerHTML = `<strong>✓ Βρήκες: ${result.label}!</strong><br>Κάποιος/α θα καταθέσει αίτημα εκ μέρους σου.`;
-        spinBtn.style.cssText = spinBtn.style.cssText + ";background:linear-gradient(180deg,#16a34a,#15803d);border-bottom:3px solid #14532d;";
-        spinBtn.textContent = "Συνέχεια →";
-        spinBtn.disabled = false;
-        spinBtn.onclick = () => { closeEventModal(); onSuccess(); };
-      } else {
-        resultEl.style.cssText = "display:block;background:#7f1d1d;border:1px solid #fca5a5;color:#fecaca;font-size:12px;margin-bottom:10px;padding:8px 10px;border-radius:5px;line-height:1.4;";
-        resultEl.innerHTML = `<strong>Δυστυχώς δεν κατάφερες να βρεις τρίτο άτομο να καταθέσει το αίτημα εκ μέρους σου.</strong><br><span style="color:#fca5a5;font-size:11px;">Μπορείς να δοκιμάσεις ξανά.</span>`;
-        spinBtn.textContent = "🎰 Δοκίμασε ξανά";
-        spinBtn.disabled = false;
-        spinBtn.onclick = () => { closeEventModal(); showThirdPartySlot(onSuccess); };
-      }
-    }, { once:true });
-  }
-  spinBtn.addEventListener("click", doSpin, { once:true });
-}
-
-function show1555Slot(onSuccess) {
-  const FACES = [
-    { label:"Μιλώ Ελληνικά",                      icon:"🇬🇷", success:true,  bg:"#0d2233", fg:"#93c5fd" },
-    { label:"Μιλώ Αγγλικά",                        icon:"🇬🇧", success:true,  bg:"#0d2233", fg:"#93c5fd" },
-    { label:"Δεν μιλώ Ελληνικά ή Αγγλικά",        icon:"😞",  success:false, bg:"#2b0d0d", fg:"#fca5a5" },
-    { label:"Δεν βρήκα κάποιο άτομο να με βοηθήσει", icon:"😞", success:false, bg:"#2b0d0d", fg:"#fca5a5" },
-  ];
-  const ITEM_H = 76;
-  const REPEATS = 6;
-  const resultIdx = Math.floor(Math.random() * FACES.length);
-  const landIdx   = REPEATS * FACES.length + resultIdx;
-  const targetY   = ITEM_H * (1 - landIdx);
-
-  const allFaces = [];
-  for (let i = 0; i <= REPEATS; i++) allFaces.push(...FACES);
-
-  const stripItems = allFaces.map(f =>
-    `<div style="height:${ITEM_H}px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-bottom:1px solid #1a1a3a;background:${f.bg};padding:4px 10px;text-align:center;box-sizing:border-box;">
-      <div style="font-size:28px;line-height:1.1;">${f.icon}</div>
-      <div style="font-size:11px;font-weight:bold;color:${f.fg};margin-top:4px;line-height:1.25;">${f.label}</div>
-    </div>`
-  ).join("");
-
-  const H = ITEM_H * 3;
-  const fade = Math.round(ITEM_H * 0.6);
-  const bodyHtml = `<div style="text-align:center;user-select:none;">
-    <p style="font-size:12px;margin-bottom:10px;color:#555;line-height:1.5;">Μιλάς εσύ ή κάποιο άτομο που είναι δίπλα σου<br>για να σε βοηθήσει <strong>Ελληνικά ή Αγγλικά</strong>;</p>
+    <p style="font-size:12px;margin-bottom:10px;color:#555;line-height:1.5;">${introHtml}</p>
     <div style="display:block;margin:0 auto;width:288px;background:linear-gradient(160deg,#1e1e4a 0%,#12123a 100%);border-radius:10px;padding:14px 12px 12px;border:3px solid #3a3a7a;box-shadow:0 6px 20px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.08);">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
         <div style="color:#facc15;font-size:22px;text-shadow:0 0 10px #facc15;line-height:1;">▶</div>
@@ -2484,11 +2526,11 @@ function show1555Slot(onSuccess) {
         <div style="color:#facc15;font-size:22px;text-shadow:0 0 10px #facc15;line-height:1;">◀</div>
       </div>
       <div id="slot-result-msg" style="display:none;font-size:12px;margin-bottom:10px;padding:8px 10px;border-radius:5px;line-height:1.4;box-sizing:border-box;width:100%;"></div>
-      <button id="slot-spin-btn" style="background:linear-gradient(180deg,#d97706,#b45309);color:#fff;border:none;border-bottom:3px solid #78350f;border-radius:20px;padding:8px 22px;font-size:13px;cursor:pointer;font-family:Tahoma,sans-serif;font-weight:bold;letter-spacing:0.03em;box-shadow:0 3px 8px rgba(0,0,0,0.4);width:100%;">📞 Κλήση 1555</button>
+      <button id="slot-spin-btn" style="background:linear-gradient(180deg,#d97706,#b45309);color:#fff;border:none;border-bottom:3px solid #78350f;border-radius:20px;padding:8px 22px;font-size:13px;cursor:pointer;font-family:Tahoma,sans-serif;font-weight:bold;letter-spacing:0.03em;box-shadow:0 3px 8px rgba(0,0,0,0.4);width:100%;">${spinLabel}</button>
     </div>
   </div>`;
 
-  showEventModal({ title:"Κλήση 1555 — Γλωσσική Εξυπηρέτηση", bodyHtml, closeable:true, actions:[] });
+  showEventModal({ title, bodyHtml, closeable:true, actions:[] });
 
   const spinBtn  = document.getElementById("slot-spin-btn");
   const strip    = document.getElementById("slot-strip");
@@ -2497,15 +2539,15 @@ function show1555Slot(onSuccess) {
   function doSpin() {
     spinBtn.disabled = true;
     spinBtn.style.opacity = "0.6";
-    spinBtn.textContent = "⏳ Καλεί...";
+    spinBtn.textContent = spinningLabel;
     strip.style.transition = "transform 2.8s cubic-bezier(0.17,0.67,0.25,1)";
     strip.style.transform  = `translateY(${targetY}px)`;
     strip.addEventListener("transitionend", () => {
-      const result = FACES[resultIdx];
+      const result = faces[resultIdx];
       spinBtn.style.opacity = "1";
       if (result.success) {
         resultEl.style.cssText = "display:block;background:#14532d;border:1px solid #86efac;color:#bbf7d0;font-size:12px;margin-bottom:10px;padding:8px 10px;border-radius:5px;line-height:1.4;";
-        resultEl.innerHTML = `<strong>✓ ${result.label}!</strong><br>Μπορείς να εξυπηρετηθείς στο 1555.`;
+        resultEl.innerHTML = makeSuccessHtml(result);
         spinBtn.style.background = "linear-gradient(180deg,#16a34a,#15803d)";
         spinBtn.style.borderBottom = "3px solid #14532d";
         spinBtn.textContent = "Συνέχεια →";
@@ -2513,14 +2555,48 @@ function show1555Slot(onSuccess) {
         spinBtn.onclick = () => { closeEventModal(); onSuccess(); };
       } else {
         resultEl.style.cssText = "display:block;background:#7f1d1d;border:1px solid #fca5a5;color:#fecaca;font-size:12px;margin-bottom:10px;padding:8px 10px;border-radius:5px;line-height:1.4;";
-        resultEl.innerHTML = `<strong>Δυστυχώς δεν κατάφερες να εξυπηρετηθείς στο 1555.</strong><br><span style="color:#fca5a5;font-size:11px;">Μπορείς να δοκιμάσεις ξανά.</span>`;
-        spinBtn.textContent = "📞 Δοκίμασε ξανά";
+        resultEl.innerHTML = failHtml;
+        spinBtn.textContent = retryLabel;
         spinBtn.disabled = false;
-        spinBtn.onclick = () => { closeEventModal(); show1555Slot(onSuccess); };
+        spinBtn.onclick = () => { closeEventModal(); onRetry(onSuccess); };
       }
     }, { once:true });
   }
   spinBtn.addEventListener("click", doSpin, { once:true });
+}
+
+function showThirdPartySlot(onSuccess) {
+  _showSlotMachine({
+    title: "Αναζήτηση Εξουσιοδοτημένου Τρίτου",
+    faces: [
+      { label:"Λογιστής/τρια",                    icon:"🧾", success:true,  bg:"#0d2b1a", fg:"#86efac" },
+      { label:"Δικηγόρος",                         icon:"⚖️", success:true,  bg:"#0d1f33", fg:"#93c5fd" },
+      { label:"Δεν κατάφερες να βρεις Δικηγόρο",  icon:"😞", success:false, bg:"#2b0d0d", fg:"#fca5a5" },
+      { label:"Δεν κατάφερες να βρεις Λογίστρια", icon:"😞", success:false, bg:"#2b0d0d", fg:"#fca5a5" },
+    ],
+    introHtml: "Ψάχνεις για κάποιον/α με TAXISnet<br>να καταθέσει αίτημα εκ μέρους σου...",
+    spinLabel: "🎰 Περιστροφή!", spinningLabel: "⏳ Ψάχνεις...", retryLabel: "🎰 Δοκίμασε ξανά",
+    makeSuccessHtml: r => `<strong>✓ Βρήκες: ${r.label}!</strong><br>Κάποιος/α θα καταθέσει αίτημα εκ μέρους σου.`,
+    failHtml: `<strong>Δυστυχώς δεν κατάφερες να βρεις τρίτο άτομο να καταθέσει το αίτημα εκ μέρους σου.</strong><br><span style="color:#fca5a5;font-size:11px;">Μπορείς να δοκιμάσεις ξανά.</span>`,
+    onSuccess, onRetry: showThirdPartySlot
+  });
+}
+
+function show1555Slot(onSuccess) {
+  _showSlotMachine({
+    title: "Κλήση 1555 — Γλωσσική Εξυπηρέτηση",
+    faces: [
+      { label:"Μιλώ Ελληνικά",                         icon:"🇬🇷", success:true,  bg:"#0d2233", fg:"#93c5fd" },
+      { label:"Μιλώ Αγγλικά",                           icon:"🇬🇧", success:true,  bg:"#0d2233", fg:"#93c5fd" },
+      { label:"Δεν μιλώ Ελληνικά ή Αγγλικά",           icon:"😞",  success:false, bg:"#2b0d0d", fg:"#fca5a5" },
+      { label:"Δεν βρήκα κάποιο άτομο να με βοηθήσει", icon:"😞",  success:false, bg:"#2b0d0d", fg:"#fca5a5" },
+    ],
+    introHtml: "Μιλάς εσύ ή κάποιο άτομο που είναι δίπλα σου<br>για να σε βοηθήσει <strong>Ελληνικά ή Αγγλικά</strong>;",
+    spinLabel: "📞 Κλήση 1555", spinningLabel: "⏳ Καλεί...", retryLabel: "📞 Δοκίμασε ξανά",
+    makeSuccessHtml: r => `<strong>✓ ${r.label}!</strong><br>Μπορείς να εξυπηρετηθείς στο 1555.`,
+    failHtml: `<strong>Δυστυχώς δεν κατάφερες να εξυπηρετηθείς στο 1555.</strong><br><span style="color:#fca5a5;font-size:11px;">Μπορείς να δοκιμάσεις ξανά.</span>`,
+    onSuccess, onRetry: show1555Slot
+  });
 }
 
 const BUILDING_ENTRY_INFO = {
@@ -2532,7 +2608,7 @@ const BUILDING_ENTRY_INFO = {
     },
     actions: (onContinue) => [
       { label: "Συνέχεια →", className: "primary", onClick: () => { closeEventModal(); onContinue(); } },
-      { label: "↗ Διαβάστε Περισσότερα", className: "btn-track", onClick: () => window.open(RSA_REPORT_URL, "_blank") }
+      { label: "↗ Διαβάστε Περισσότερα", className: "btn-track", onClick: () => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") }
     ]
   },
   dom: {
@@ -2544,7 +2620,7 @@ const BUILDING_ENTRY_INFO = {
           body:"Το πρόγραμμα HELIOS+ απαιτεί η ΑΔΕΤ σου να έχει εκδοθεί πριν από λιγότερο από 2 χρόνια. Η ΑΔΕΤ σου έχει ήδη λήξει ή εκδόθηκε πάνω από 2 χρόνια πριν — δεν πληροίς τις προϋποθέσεις εγγραφής στο HELIOS+.",
           closeable: true,
           actions:[
-            { label:"↗ Διαβάστε Περισσότερα", className:"btn-track", onClick:() => window.open(RSA_REPORT_URL, "_blank") },
+            { label:"↗ Διαβάστε Περισσότερα", className:"btn-track", onClick:() => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") },
             { label:"↺ Επανεκκίνηση", className:"warn", onClick:() => { closeEventModal(); confirmReset(); } }
           ]
         });
@@ -2554,7 +2630,7 @@ const BUILDING_ENTRY_INFO = {
           closeable: true,
           actions:[
             { label:"Συνέχεια →", className:"primary", onClick:() => { closeEventModal(); onContinue(); } },
-            { label:"↗ Διαβάστε Περισσότερα", className:"btn-track", onClick:() => window.open(RSA_REPORT_URL, "_blank") }
+            { label:"↗ Διαβάστε Περισσότερα", className:"btn-track", onClick:() => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") }
           ]
         });
       }
@@ -2566,7 +2642,7 @@ const BUILDING_ENTRY_INFO = {
     bodyHtml: `<div style="text-align:left;font-size:11px;line-height:1.6;"><p>Για να κλείσεις ραντεβού στην Εφορία, χρειάζεσαι <strong>TAXISnet</strong>. Εφόσον δεν έχεις ακόμα TAXISnet, πρέπει να κάνεις <strong>εξουσιοδότηση σε κάποιον/α</strong> που έχει ήδη TAXISnet για να καταθέσει αίτημα εκ μέρους σου.</p><p style="margin-top:8px;">Συνήθως γίνεται από κάποιον/α λογιστή ή δικηγόρο.</p></div>`,
     actions: (onContinue) => [
       { label: "Εξουσιοδότηση τρίτου ατόμου", className: "primary", onClick: () => { closeEventModal(); showThirdPartySlot(onContinue); } },
-      { label: "↗ Διαβάστε Περισσότερα", className: "btn-track", onClick: () => window.open(RSA_REPORT_URL, "_blank") }
+      { label: "↗ Διαβάστε Περισσότερα", className: "btn-track", onClick: () => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") }
     ]
   },
   efka: {
@@ -2575,7 +2651,7 @@ const BUILDING_ENTRY_INFO = {
     bodyHtml: `<div style="text-align:left;font-size:11px;line-height:1.6;"><p>Για να κλείσεις ραντεβού στον ΕΦΚΑ, χρειάζεσαι <strong>TAXISnet</strong> και <strong>ΑΜΚΑ</strong> (ενεργό ή ανενεργό). Εφόσον δεν τα έχεις, πρέπει να κλείσεις ραντεβού τηλεφωνικά στο <strong>1555</strong>.</p><p style="margin-top:8px;">Όμως το 1555 υποστηρίζει μόνο <strong>Ελληνικά και Αγγλικά</strong>. Έτσι η πρόσβαση για πολλές και πολλούς πρόσφυγες γίνεται πολύ δύσκολη.</p><p style="margin-top:8px;font-style:italic;">Μιλάς Ελληνικά ή Αγγλικά ή βρήκες κάποιο άτομο να σου μεταφράσει;</p></div>`,
     actions: (onContinue) => [
       { label: "Κλήση 1555", className: "primary", onClick: () => { closeEventModal(); show1555Slot(onContinue); } },
-      { label: "↗ Διαβάστε Περισσότερα", className: "btn-track", onClick: () => window.open(RSA_REPORT_URL, "_blank") }
+      { label: "↗ Διαβάστε Περισσότερα", className: "btn-track", onClick: () => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") }
     ]
   }
 };
@@ -2825,7 +2901,55 @@ function showTutorial() {
       </div>
       <p style="font-size:11px; color:var(--muted);">Αυτό το παιχνίδι βασίζεται σε πραγματικές υποθέσεις αναγνωρισμένων προσφύγων στην Ελλάδα το 2025-2026. <a href="${RSA_REPORT_URL}" target="_blank" rel="noopener" style="color:var(--win95-blue-a); font-weight:bold;">Διάβασε την πλήρη έκθεση RSA →</a></p>
     </div>`,
-    actions: [{ label: "Έναρξη", className: "primary", onClick: closeEventModal }]
+    actions: [{ label: "Συνέχεια →", className: "primary", onClick: () => { closeEventModal(); _showDocumentGraphOnboarding(); } }]
+  });
+}
+
+function _showDocumentGraphOnboarding() {
+  if (state.onboardingGraphSeen) return;
+  state.onboardingGraphSeen = true;
+
+  const quest = getQuest();
+  const targetDoc = getDoc(quest.target);
+
+  const introByQuest = {
+    find_job:        `Κατάφερες να βρεις δουλειά! Για να υπογράψεις τη <strong>Σύμβαση Εργασίας</strong>, πρέπει πρώτα να συγκεντρώσεις τα απαραίτητα έγγραφα. Όμως αρκετά έγγραφα έχουν ως προαπαιτούμενο άλλα έγγραφα. Μάζεψέ τα όλα!`,
+    rent_apartment:  `Κατάφερες να βρεις διαμέρισμα! Για να υπογράψεις το <strong>Μισθωτήριο Κατοικίας</strong>, πρέπει πρώτα να συγκεντρώσεις τα απαραίτητα έγγραφα. Όμως αρκετά έγγραφα έχουν ως προαπαιτούμενο άλλα έγγραφα. Μάζεψέ τα όλα!`,
+    get_rent_subsidy:`Θέλεις να εγγραφείς στο <strong>HELIOS+</strong>, το βασικό πρόγραμμα που στοχεύει στην ενίσχυση της ένταξης των πολιτών τρίτων χωρών στην ελληνική κοινωνία. Για να το κάνεις, πρέπει πρώτα να συγκεντρώσεις τα απαραίτητα έγγραφα. Όμως αρκετά έγγραφα έχουν ως προαπαιτούμενο άλλα έγγραφα. Μάζεψέ τα όλα!`,
+  };
+  const introHtml = introByQuest[quest.id]
+    || `Για να αποκτήσεις <strong>${targetDoc.name}</strong>, πρέπει πρώτα να συγκεντρώσεις τα απαραίτητα έγγραφα. Μάζεψέ τα όλα!`;
+
+  // Build the requirements list as a DOM node, then serialize to HTML for bodyHtml
+  const reqDiv = document.createElement("div");
+  buildRequirementList(quest.target, reqDiv);
+
+  const bodyEl = document.createElement("div");
+  bodyEl.style.cssText = "text-align:left;font-size:12px;line-height:1.6;";
+
+  const introPara = document.createElement("p");
+  introPara.style.cssText = "margin-bottom:10px;";
+  introPara.innerHTML = introHtml;
+
+  const reqLabel = document.createElement("div");
+  reqLabel.style.cssText = "font-weight:bold;margin-bottom:5px;color:var(--win95-blue-a);";
+  reqLabel.textContent = "📋 Απαιτούμενα έγγραφα:";
+
+  const reqWrap = document.createElement("div");
+  reqWrap.style.cssText = "background:#f0f4ff;border:1px solid #aac;padding:6px 10px;margin-bottom:10px;";
+  reqWrap.appendChild(reqDiv);
+
+  const notePara = document.createElement("p");
+  notePara.style.cssText = "font-size:11px;color:var(--muted);";
+  notePara.textContent = "Αν λείπει ένας κρίκος, τα επόμενα έγγραφα μπλοκάρουν. Χρησιμοποίησε το 🕸️ για να δεις τον πλήρη χάρτη εξαρτήσεων ανά πάσα στιγμή.";
+
+  bodyEl.append(introPara, reqLabel, reqWrap, notePara);
+
+  // Use showEventModal so it appears identically to the tutorial
+  showEventModal({
+    title: `🎯 Αποστολή: ${quest.label}`,
+    bodyHtml: bodyEl.outerHTML,
+    actions: [{ label: "Ξεκινάω!", className: "primary", onClick: closeEventModal }]
   });
 }
 
@@ -3383,7 +3507,14 @@ function initGame() {
     GAME_CANVAS.width  = Math.round(rect.width);
     GAME_CANVAS.height = Math.round(rect.height);
   }
-  window.addEventListener("resize", () => { if (state.scene) state.scene.invalidateRectCache(); });
+  window.addEventListener("resize", () => {
+    if (state.scene) state.scene.invalidateRectCache();
+    if (state.game) {
+      const gs = state.game.scale.gameSize;
+      GAME_CANVAS.width  = Math.round(gs.width);
+      GAME_CANVAS.height = Math.round(gs.height);
+    }
+  });
   state.game = new Phaser.Game({
     type: Phaser.AUTO,
     parent: "game-container",
@@ -3419,40 +3550,40 @@ function triggerMiniChallenge() {
 // ── Shared helpers ──
 function _challengeOverlay(gendered, hint) {
   const overlay = document.createElement("div");
-  overlay.style.cssText = "position:fixed;inset:0;z-index:10000;background:rgba(0,0,18,0.94);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:14px 14px 10px;box-sizing:border-box;font-family:Arial,sans-serif;";
+  overlay.className = "ch-overlay";
 
   // Permanent skip — always visible
   const skipPerm = document.createElement("button");
   skipPerm.textContent = "✕ Παράλειψη";
-  skipPerm.style.cssText = "position:absolute;top:8px;right:8px;font-size:11px;padding:5px 9px;background:rgba(20,20,50,0.9);border:1px solid #334466;color:#8899bb;border-radius:3px;cursor:pointer;z-index:2;";
+  skipPerm.className = "ch-skip-btn";
   skipPerm.onclick = () => { _miniChallengeActive=false; _activeDirHandler=null; overlay.remove(); _scheduleMiniChallenge(); };
   overlay.appendChild(skipPerm);
 
   const titleEl = document.createElement("div");
-  titleEl.style.cssText = "color:#facc15;font-size:13px;font-weight:bold;text-align:center;max-width:400px;line-height:1.5;text-shadow:0 0 8px rgba(250,204,21,0.6);border:2px solid #facc15;padding:8px 12px;border-radius:3px;background:rgba(0,0,0,0.5);";
+  titleEl.className = "ch-title";
   titleEl.textContent = `Είσαι ${gendered} στην Ελλάδα, διαρκώς προκύπτουν δυσκολίες που το παιχνίδι δεν μπορεί να εξαντλήσει. Ξεπέρασε αυτή τη δοκιμασία για να μπορέσεις να συνεχίσεις την αποστολή σου`;
 
   const canvas = document.createElement("canvas");
-  canvas.style.cssText = "display:block;border:2px solid #2244aa;border-radius:2px;touch-action:none;";
+  canvas.className = "ch-canvas";
   canvas.setAttribute("tabindex","0");
 
   const statusEl = document.createElement("div");
-  statusEl.style.cssText = "color:#88aaff;font-size:12px;text-align:center;min-height:18px;";
+  statusEl.className = "ch-status";
 
   const hintEl = document.createElement("div");
-  hintEl.style.cssText = "color:#445566;font-size:11px;text-align:center;";
+  hintEl.className = "ch-hint";
   hintEl.textContent = hint;
 
   // D-pad for mobile
   const dpad = document.createElement("div");
-  dpad.style.cssText = "display:grid;grid-template:repeat(3,44px)/repeat(3,44px);gap:3px;margin-top:2px;";
+  dpad.className = "ch-dpad";
   [[null,{l:'▲',dc:0,dr:-1},null],
    [{l:'◀',dc:-1,dr:0},null,{l:'▶',dc:1,dr:0}],
    [null,{l:'▼',dc:0,dr:1},null]].forEach(row => row.forEach(b => {
     if (b) {
       const btn = document.createElement("button");
       btn.textContent = b.l;
-      btn.style.cssText = "font-size:17px;background:rgba(20,20,70,0.92);border:1px solid #334488;color:#8899cc;border-radius:6px;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;";
+      btn.className = "ch-dpad-btn";
       const fire = () => { if(_activeDirHandler) _activeDirHandler({dc:b.dc,dr:b.dr}); };
       btn.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); fire(); }, {passive:false});
       btn.addEventListener('mousedown', fire);
@@ -3485,24 +3616,32 @@ function _challengeOverlay(gendered, hint) {
   overlay.appendChild(dpad);
   return { overlay, canvas, statusEl };
 }
+function _makeSkipInlineBtn(overlay) {
+  const sk = document.createElement("button");
+  sk.className = "ch-skip-inline"; sk.textContent = "✕ Παράλειψη";
+  sk.onclick = () => { _miniChallengeActive=false; _activeDirHandler=null; overlay.remove(); _scheduleMiniChallenge(); };
+  return sk;
+}
 function _addStartBtns(overlay, canvas, statusEl, launchFn) {
   const row = document.createElement("div");
-  row.style.cssText = "display:flex;gap:12px;margin-top:2px;";
+  row.style.cssText = "display:flex;gap:12px;margin-top:2px;align-items:center;";
   const go = document.createElement("button");
-  go.className = "primary"; go.textContent = "Έναρξη";
+  go.className = "primary"; go.textContent = "▶ Έναρξη";
   go.onclick = () => { row.remove(); canvas.focus(); launchFn(); };
   row.appendChild(go);
+  row.appendChild(_makeSkipInlineBtn(overlay));
   overlay.appendChild(row);
 }
 function _addLoseBtns(overlay, canvas, statusEl, launchFn) {
   const existing = overlay.querySelector(".mc-lose-btns");
   if (existing) existing.remove();
   const row = document.createElement("div");
-  row.className = "mc-lose-btns"; row.style.cssText = "display:flex;gap:12px;margin-top:4px;";
+  row.className = "mc-lose-btns"; row.style.cssText = "display:flex;gap:12px;margin-top:4px;align-items:center;";
   const rb = document.createElement("button");
-  rb.className = "primary"; rb.textContent = "↺ Ξαναπαίξτε";
+  rb.className = "primary"; rb.textContent = "↺ Ξαναπαίξε";
   rb.onclick = () => { row.remove(); statusEl.textContent = ""; canvas.focus(); launchFn(); };
   row.appendChild(rb);
+  row.appendChild(_makeSkipInlineBtn(overlay));
   overlay.appendChild(row);
 }
 function _drawWallCell(ctx, c, r, CELL) {
@@ -4189,6 +4328,48 @@ function renderNetworkGraph() {
   legend.style.cssText = "padding:8px 12px; color:#94a3b8; font-size:10px; display:flex; gap:16px; flex-wrap:wrap;";
   legend.innerHTML = `<span style="color:#4ade80">■ ✓ Αποκτήθηκε</span> <span style="color:#fbbf24">■ ⚡ Έτοιμο να αποκτηθεί (έχεις όλα τα προαπαιτούμενα)</span> <span style="color:#60a5fa">■ Εκκρεμεί</span> <span style="color:#22c55e">→ Έχεις το απαιτούμενο</span> <span style="color:#ef4444">→ Λείπει το απαιτούμενο</span>`;
   container.appendChild(legend);
+}
+
+// ─────────────────────────────────────────────
+// ABOUT MODAL
+// ─────────────────────────────────────────────
+function showAboutModal() {
+  const existing = document.getElementById("about-modal-overlay");
+  if (existing) { existing.remove(); return; }
+  const overlay = document.createElement("div");
+  overlay.id = "about-modal-overlay";
+  const box = document.createElement("div");
+  box.className = "win-card";
+  box.style.cssText = "max-width:400px;width:100%;";
+  const titleBar = document.createElement("div");
+  titleBar.className = "win95-title";
+  titleBar.innerHTML = '<span>ℹ️ Σχετικά με το παιχνίδι</span>';
+  const closeBtn = document.createElement("button");
+  closeBtn.className = "win95-close-btn";
+  closeBtn.textContent = "✕";
+  closeBtn.onclick = () => overlay.remove();
+  titleBar.appendChild(closeBtn);
+  const body = document.createElement("div");
+  body.className = "about-body";
+  const rsa = document.createElement("p");
+  rsa.innerHTML = '<strong>Αναγνωρισμένοι Πρόσφυγες στην Ελλάδα — Μεγάλη Γραφειοκρατική Περιπέτεια 2026</strong>';
+  const context = document.createElement("p");
+  context.textContent = 'Αυτό το παιχνίδι βασίζεται στην έκθεση Αναγνωρισμένοι Πρόσφυγες στην Ελλάδα , 2026, της Υποστήριξης Προσφύγων στο Αιγαίο - RSA. Τα κριτίρια του παιχνιδιού βασίζονται σε πραγματικές, τεκμηριωμένες υποθέσεις και απλοποιούνται για λόγους gameplay.';
+  const disclaimer = document.createElement("p");
+  disclaimer.innerHTML = '<strong>Αποποίηση ευθύνης:</strong> Το παιχνίδι δεν αποτελεί νομική, διοικητική ή άλλη συμβουλή. Αν αντιμετωπίζετε παρόμοια κατάσταση, ζητήστε νομική συμβουλή ή απευθευθυνθείτε σε αρμόδιο φορέα.';
+  const link = document.createElement("p");
+  const a = document.createElement("a");
+  a.href = RSA_REPORT_URL; a.target = "_blank"; a.rel = "noopener noreferrer";
+  a.textContent = "Διαβάστε την έκθεση της RSA →";
+  link.appendChild(a);
+  const license = document.createElement("p");
+  license.style.cssText = "color:var(--muted);font-size:11px;";
+  license.textContent = "Υποστήριξη Προσφύγων στο Αιγαίο (RSA) 2026 · created with vibe coding";
+  body.append(rsa, context, disclaimer, link, license);
+  box.append(titleBar, body);
+  overlay.appendChild(box);
+  overlay.addEventListener("click", e => { if (e.target === overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
 }
 
 // ─────────────────────────────────────────────
