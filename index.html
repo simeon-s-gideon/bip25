@@ -2230,7 +2230,7 @@ function showPopupRoute(id, route, opts={}) {
   if (route.popup.reportLink) {
     actions.push({ label:"↗ Διαβάστε Περισσότερα", className:"btn-track", onClick:() => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") });
   }
-  showEventModal({ title: route.popup.title || getDoc(id).name, body: route.popup.body, actions });
+  showEventModal({ title: route.popup.title || getDoc(id).name, body: route.popup.body, closeable: true, actions });
 }
 function buildStoryHtml(sr) {
   const paragraphs = sr.message.split("\n\n").filter(Boolean);
@@ -2710,6 +2710,19 @@ function requestDocument(id, opts={}) {
   if (hasDoc(id)) { showToast(`${getDoc(id).name} — ήδη στον φάκελό σου.`); return; }
   // Address: if player already has a lease contract, it proves their address — skip popup
   if (id === "address" && hasDoc("lease_contract")) { finalizeRequest(id, opts); return; }
+  // Address: Hasan-specific popup text
+  if (id === "address" && getCharacter()?.id === "hasan") {
+    showEventModal({
+      title: "Δ/νση Κατοικίας",
+      body: "Για να έχεις διεύθυνση κατοικίας, πρέπει είτε να έχεις δική σου ιδιοκτησία (πράγμα ασυνήθιστο για πρόσφυγες/ισσες), είτε μισθωτήριο στο όνομά σου ή φιλοξενία καταχωρημένη στο Taxisnet. Κανονικά για αυτά χρειάζεσαι ΑΔΕΤ, ΑΦΜ και TAXISnet για να προχωρήσεις. Έχεις κάτι από τα παραπάνω;\n\nΕπισημαίνουμε ότι ο νόμος επιβάλλει πρόστιμο σε περίπτωση παράλειψης δήλωσης ή αναληθούς δήλωσης μισθωτηρίου στην ΑΑΔΕ. Ακόμα, η εν γνώσει δήλωση ψευδών στοιχείων ή απόκρυψη της αλήθειας κατά την εξέταση από οποιαδήποτε αρχή διώκεται ποινικά και τιμωρείται με ποινή φυλάκισης.",
+      closeable: true,
+      actions: [
+        { label: "Ας υποθέσουμε ότι βρήκα κάποιον τρόπο.", className: "primary", onClick: () => finalizeRequest(id, opts) },
+        { label: "↗ Διαβάστε Περισσότερα", className: "btn-track", onClick: () => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") }
+      ]
+    });
+    return;
+  }
   // Lease contract without work contract: confirm the real-life contradiction
   if (id === "lease_contract" && !hasDoc("work_contract") && getReadyRoute("lease_contract")) {
     showEventModal({ title:"Μισθωτήριο κατοικίας", body:"Παρότι δεν έχεις ακόμα σύμβαση εργασίας, θέλεις να υποθέσουμε ότι έχεις καταφέρει να νοικιάσεις διαμέρισμα στο όνομά σου;",
