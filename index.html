@@ -95,6 +95,25 @@
     }
     .ec95-close-btn:hover { background: #c0c0c0; }
     .ec95-close-btn.hidden { display: none; }
+    .ec95-title-btn {
+      background: var(--ec95-bg);
+      border: 1px solid;
+      border-color: var(--ec95-light) var(--ec95-dark) var(--ec95-dark) var(--ec95-light);
+      color: #000;
+      font-size: 10px;
+      min-width: 52px;
+      height: 18px;
+      line-height: 1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 6px;
+      font-weight: bold;
+      flex-shrink: 0;
+      margin-left: 6px;
+    }
+    .ec95-title-btn:hover { background: #c0c0c0; }
 
     /* ── TOP BAR ── */
     #top-bar {
@@ -976,9 +995,9 @@
     }
     .mc-btn-panel {
       display:flex; align-items:center; gap:10px;
-      background:rgba(15,25,80,0.96); border:2px solid rgba(140,180,255,0.85);
+      background:rgba(15,25,80,0.96); border:2px solid #facc15;
       border-radius:6px; padding:8px 14px;
-      box-shadow:0 0 16px rgba(80,120,255,0.55), inset 0 0 8px rgba(0,10,60,0.6);
+      box-shadow:0 0 14px rgba(250,204,21,0.5), inset 0 0 8px rgba(0,10,60,0.6);
       backdrop-filter:blur(4px);
       pointer-events:auto;
     }
@@ -1035,20 +1054,21 @@
           <button class="dropdown-btn" id="bar-quest-btn">—</button>
           <div class="dropdown-menu" id="quest-dropdown-menu"></div>
         </div>
-        <button id="req-toggle-btn" onclick="toggleRequirementsPanel()">📋 Απαιτούμενα ▾</button>
+        <button id="req-toggle-btn" onclick="toggleRequirementsPanel()">📋 <span id="req-toggle-label">Απαιτούμενα</span> ▾</button>
         <span id="bar-arrow-label" class="bar-label" style="margin-left:4px;">→</span>
         <strong id="bar-target" style="color:var(--ec95-blue-a); font-size:12px;"></strong>
         <span style="flex-grow:1"></span>
         <span class="bar-label">📅</span>
         <span id="day-counter" style="font-weight:bold; font-size:12px; color:var(--ec95-blue-a);">1</span>
-        <button id="glossary-btn" style="font-size:11px; padding:2px 6px; display:none;">📖 Γλωσσάρι</button>
+        <button id="glossary-btn" style="font-size:11px; padding:2px 6px; display:none;">📖 <span id="glossary-btn-label">Γλωσσάρι</span></button>
         <button id="mute-btn" title="Σίγαση / Ήχος" onclick="toggleMute()">🔊</button>
+        <button id="lang-btn" onclick="toggleLang()" title="Switch language / Εναλλαγή γλώσσας" style="font-size:11px; padding:2px 6px;"></button>
         <button id="bar-reset" title="Επανεκκίνηση">↺</button>
       </div>
     </div>
 
     <!-- MAP TITLE BAR (shown when in city) -->
-    <div id="map-title-bar">Αναγνωρισμένοι Πρόσφυγες στην Ελλάδα — Μεγάλη Γραφειοκρατική Περιπέτεια 2026</div>
+    <div id="map-title-bar"><!-- set by init --></div>
 
     <!-- MAIN AREA: MAP + SIDEBAR -->
     <div id="main-area">
@@ -1081,10 +1101,10 @@
       <div id="sidebar">
         <!-- Quest requirements (always visible) -->
         <div class="sidebar-section">
-          <div class="ec95-title"><span>🎯 Αποστολή</span></div>
+          <div class="ec95-title"><span id="sidebar-mission-title">🎯 Αποστολή</span></div>
           <div class="sidebar-section-body">
             <div id="sidebar-quest-target" style="font-weight:bold; font-size:12px; color:var(--ec95-blue-a); margin-bottom:5px;"></div>
-            <div class="bar-label" style="margin-bottom:3px;font-weight:bold;color:var(--ec95-blue-black)">📋 Απαιτούμενα:</div>
+            <div id="sidebar-req-label" class="bar-label" style="margin-bottom:3px;font-weight:bold;color:var(--ec95-blue-black)">📋 Απαιτούμενα:</div>
             <div id="sidebar-requirements"></div>
           </div>
         </div>
@@ -1092,7 +1112,7 @@
         <!-- Tracked doc (shown when tracking) -->
         <div class="sidebar-section hidden" id="sidebar-tracked-card">
           <div class="ec95-title" style="background: linear-gradient(90deg, #7c3f00, #d97706);">
-            <span>🔍 Παρακολούθηση εγγράφου</span>
+            <span id="sidebar-tracking-title">🔍 Παρακολούθηση εγγράφου</span>
           </div>
           <div class="sidebar-section-body">
             <div id="sidebar-tracked-name" style="font-weight:bold; font-size:12px; color:#7c3f00; margin-bottom:4px;"></div>
@@ -1102,7 +1122,7 @@
 
         <!-- Wallet -->
         <div class="sidebar-section">
-          <div class="ec95-title"><span>🗂 Φάκελος</span></div>
+          <div class="ec95-title"><span id="sidebar-wallet-title">🗂 Φάκελος</span></div>
           <div class="sidebar-section-body">
             <div id="sidebar-wallet" class="sidebar-pill-row"></div>
           </div>
@@ -1110,7 +1130,7 @@
 
         <!-- Glossary (always visible on desktop) -->
         <div class="sidebar-section" style="flex:1; min-height:0;">
-          <div class="ec95-title"><span>📖 Γλωσσάρι</span></div>
+          <div class="ec95-title"><span id="sidebar-glossary-title">📖 Γλωσσάρι</span></div>
           <div id="sidebar-glossary-body"></div>
         </div>
       </div>
@@ -1119,7 +1139,7 @@
     <!-- GLOSSARY OVERLAY PANEL (mobile) -->
     <div id="glossary-panel" class="win-card hidden">
       <div class="ec95-title">
-        <span>📖 Γλωσσάρι Εγγράφων</span>
+        <span id="glossary-overlay-title">📖 Γλωσσάρι Εγγράφων</span>
         <button id="close-glossary" style="background:#c00; color:white; border:1px solid #600; padding:0 6px; min-width:20px; font-weight:bold;">✕</button>
       </div>
       <div id="glossary-body" class="win-card-body"></div>
@@ -1128,25 +1148,28 @@
     <!-- START SCREEN -->
     <div id="start-screen">
       <div class="win-card start-card">
-        <div class="ec95-title"><span>🏛 Bureaucracy Maze — Αναγνωρισμένοι Πρόσφυγες στην Ελλάδα 2026</span></div>
+        <div class="ec95-title">
+          <span id="start-screen-title">🏛 Bureaucracy Maze — Αναγνωρισμένοι Πρόσφυγες στην Ελλάδα 2026</span>
+          <button id="start-lang-btn" class="ec95-title-btn" onclick="toggleLang()" title="Switch language / Εναλλαγή γλώσσας"></button>
+        </div>
         <div class="win-card-body">
-          <p style="margin-bottom:10px; font-size:12px; line-height:1.5;">
+          <p id="start-intro" style="margin-bottom:10px; font-size:12px; line-height:1.5;">
             Μετά από χρόνια σε άλλη ευρωπαϊκή χώρα, επιστρέφεσαι αναγκαστικά στην Ελλάδα. Μόλις προσγειώθηκες. Πρέπει να επιβιώσεις.<br>
-            <strong>Επίλεξε χαρακτήρα, επίλεξε αποστολή, και ξεκίνα από το μηδέν.</strong>
+            <strong id="start-intro-bold">Επίλεξε χαρακτήρα, επίλεξε αποστολή, και ξεκίνα από το μηδέν.</strong>
           </p>
           <!-- Step 1: character (always visible, collapses on mobile after selection) -->
           <div class="section" id="start-step-1">
-            <div class="section-title">1. Επίλεξε χαρακτήρα <span id="step1-change-link" style="display:none; font-size:11px; font-weight:normal; color:var(--ec95-blue-a); cursor:pointer; text-decoration:underline;" onclick="expandStep1()">αλλαγή</span></div>
+            <div id="start-step1-title" class="section-title">1. Επίλεξε χαρακτήρα <span id="step1-change-link" style="display:none; font-size:11px; font-weight:normal; color:var(--ec95-blue-a); cursor:pointer; text-decoration:underline;" onclick="expandStep1()">αλλαγή</span></div>
             <div id="character-choices" class="choice-grid"></div>
             <div class="step1-summary" id="step1-summary"></div>
           </div>
           <!-- Step 2: quest (hidden on mobile until character chosen) -->
           <div class="section" id="start-step-2" style="margin-top:10px;">
-            <div class="section-title">2. Επίλεξε αποστολή</div>
+            <div id="start-step2-title" class="section-title">2. Επίλεξε αποστολή</div>
             <div id="quest-choices" class="choice-grid"></div>
           </div>
           <div class="inline-actions" style="margin-top:14px; justify-content:space-between; align-items:center;">
-            <span class="small">Έτοιμος; Ακόμα και αν δεν είσαι, δεν έχεις επιλογή.</span>
+            <span id="start-ready-label" class="small">Έτοιμος; Ακόμα και αν δεν είσαι, δεν έχεις επιλογή.</span>
             <button id="start-button" class="primary" disabled>Ξεκίνα την αποστολή</button>
           </div>
         </div>
@@ -1156,7 +1179,10 @@
     <!-- PRELIMINARY SCREEN -->
     <div id="preliminary-screen" class="hidden">
       <div class="win-card" id="prelim-card">
-        <div class="ec95-title"><span id="prelim-title-bar">Προκαταρκτική δοκιμή</span></div>
+        <div class="ec95-title">
+          <span id="prelim-title-bar">Προκαταρκτική δοκιμή</span>
+          <button id="prelim-lang-btn" class="ec95-title-btn" onclick="toggleLang()" title="Switch language / Εναλλαγή γλώσσας"></button>
+        </div>
         <div class="win-card-body" style="text-align:center; padding:16px;">
           <p id="prelim-desc" style="font-size:12px; margin-bottom:16px; line-height:1.5;"></p>
 
@@ -1166,23 +1192,22 @@
               <div id="wheel" class="wheel"></div>
             </div>
             <div id="spin-controls">
-              <button id="spin-btn" class="primary" style="font-size:13px; padding:8px 24px;">🎲 Γύρισε τον τροχό</button>
+              <button id="spin-btn" class="primary" style="font-size:13px; padding:8px 24px;"><span id="spin-btn-label">🎲 Γύρισε τον τροχό</span></button>
             </div>
             <div id="spin-result" class="hidden" style="margin-top:10px;">
-              <p style="font-size:14px; font-weight:bold; color:var(--ec95-blue-a);">Πήρες <span id="result-seconds"></span> δευτερόλεπτα!</p>
-              <p class="small" style="margin-top:4px;">Ο χρονομετρητής δεν ξεκινά μέχρι να πατήσεις το κουμπί.</p>
+              <p style="font-size:14px; font-weight:bold; color:var(--ec95-blue-a);"><span id="spin-got-label">Πήρες</span> <span id="result-seconds"></span> <span id="spin-seconds-label">δευτερόλεπτα!</span></p>
+              <p id="spin-timer-hint" class="small" style="margin-top:4px;">Ο χρονομετρητής δεν ξεκινά μέχρι να πατήσεις το κουμπί.</p>
             </div>
           </div>
 
           <div id="tap-panel" class="hidden" style="margin-top:14px;">
             <div class="ec95-inset" style="text-align:left; margin-bottom:10px; font-size:11px; line-height:1.5;">
-              <strong>Οδηγίες Tap Test:</strong> Κάνε κλικ/tap στην μπάρα από κάτω για να τη γεμίσεις πριν τελειώσει ο χρόνος.
+              <strong id="tap-instructions-title">Οδηγίες Tap Test:</strong> <span id="tap-instructions-body">Κάνε κλικ/tap στην μπάρα από κάτω για να τη γεμίσεις πριν τελειώσει ο χρόνος.</span>
             </div>
             <div id="tap-action-slot">
-              <button id="start-tap-btn" class="success" style="width:100%; padding:10px; font-size:13px;">▶ Ξεκίνα</button>
-              <div class="progress-track hidden" id="tap-area">
+              <div class="progress-track" id="tap-area">
                 <div id="progress-bar" class="progress-fill"></div>
-                <div class="progress-label">ΚΛΙΚ / TAP ΕΔΩ</div>
+                <div id="tap-click-label" class="progress-label">ΚΛΙΚ / TAP ΕΔΩ</div>
               </div>
             </div>
             <div id="game-stage" class="hidden" style="margin-top:10px;">
@@ -1191,7 +1216,7 @@
           </div>
 
           <div style="margin-top:18px; border-top:1px solid #aaa; padding-top:12px; display:flex; flex-direction:column; align-items:center; gap:6px;">
-            <button id="skip-btn" style="padding:6px 20px;">Παράλειψη δοκιμής</button>
+            <button id="skip-btn" style="padding:6px 20px;"><span id="skip-btn-label">Παράλειψη δοκιμής</span></button>
             <span id="skip-desc" class="small">Αν δεν μπορείς να το παλέψεις, ας υποθέσουμε ότι τα κατάφερες.</span>
           </div>
         </div>
@@ -1220,10 +1245,10 @@
     <div id="event-modal" class="overlay overlay-top hidden">
       <div class="win-card" id="event-modal-wrap">
         <div class="ec95-title">
-          <span id="event-title-bar">Ενημέρωση</span>
+          <span id="event-title-bar"><!-- set by init --></span>
           <div style="display:flex; gap:3px; align-items:center; margin-left:auto;">
             <button class="modal-hdr-btn" onclick="document.getElementById('glossary-panel').classList.toggle('hidden')" title="Γλωσσάρι">📖</button>
-            <button id="event-close-btn" class="ec95-close-btn hidden" title="Κλείσιμο">✕</button>
+            <button id="event-close-btn" class="ec95-close-btn hidden" title="">✕</button>
           </div>
         </div>
         <div class="win-card-body" style="text-align:center; padding:16px;">
@@ -1244,11 +1269,11 @@
           <p id="ending-title" style="font-weight:bold; font-size:14px; margin-bottom:8px; color:var(--ec95-blue-a);"></p>
           <p id="ending-body" style="font-size:12px; line-height:1.5; margin-bottom:10px; color:#444;"></p>
           <div id="ending-cta" style="background:#e8f0fb; border:1px solid #9ab; padding:8px 10px; margin-bottom:12px; font-size:12px; line-height:1.5;">
-            Διάβασε την πλήρη έκθεση της RSA για τους αναγνωρισμένους πρόσφυγες στην Ελλάδα:<br>
+            <span id="ending-cta-text">Διάβασε την πλήρη έκθεση της RSA για τους αναγνωρισμένους πρόσφυγες στην Ελλάδα:</span><br>
             <a id="ending-report-link" href="" target="_blank" rel="noopener" style="color:var(--ec95-blue-a); font-weight:bold;"></a>
           </div>
           <div class="inline-actions">
-            <button id="ending-switch" class="primary">Αλλαγή αποστολής</button>
+            <button id="ending-switch" class="primary"><!-- set by init --></button>
             <button id="ending-close">Συνέχεια εξερεύνησης</button>
           </div>
         </div>
@@ -1258,9 +1283,9 @@
     <!-- FAIL MODAL -->
     <div id="fail-modal" class="overlay overlay-max hidden">
       <div class="win-card" id="fail-modal-wrap">
-        <div class="ec95-title"><span>✗ ΑΠΟΤΥΧΙΑ TAP TEST</span></div>
+        <div class="ec95-title"><span id="fail-header">✗ ΑΠΟΤΥΧΙΑ TAP TEST</span></div>
         <div style="padding:20px; text-align:center;">
-          <p style="font-size:1.1rem; margin-bottom:12px;">Έτρεξε ο χρόνος πριν γεμίσεις τη μπάρα.</p>
+          <p id="fail-timeout-msg" style="font-size:1.1rem; margin-bottom:12px;">Έτρεξε ο χρόνος πριν γεμίσεις τη μπάρα.</p>
           <p id="fail-summary" style="font-size:11px; margin-bottom:16px;"></p>
           <button id="fail-retry-btn" style="width:100%; padding:12px; font-size:13px;">↺ ΞΑΝΑΠΡΟΣΠΑΘΕΙΑ</button>
         </div>
@@ -1280,7 +1305,7 @@
         <div style="padding:16px;">
           <p id="denial-body" style="font-size:12px; margin-bottom:14px; line-height:1.5;"></p>
           <div style="padding:12px; border:2px solid #facc15; margin-bottom:12px;">
-            <div style="font-size:10px; text-transform:uppercase; margin-bottom:8px; font-weight:bold; letter-spacing:.05em;">Απαιτούμενα έγγραφα</div>
+            <div id="denial-req-label" style="font-size:10px; text-transform:uppercase; margin-bottom:8px; font-weight:bold; letter-spacing:.05em;">Απαιτούμενα έγγραφα</div>
             <div id="denial-routes" class="route-list"></div>
           </div>
           <div id="denial-actions" class="inline-actions" style="justify-content:center; margin-bottom:12px;"></div>
@@ -1356,7 +1381,7 @@
 
     <!-- FOOTER -->
     <div id="game-footer">
-      <span class="footer-disclaimer">Παιχνίδι βασισμένο στην <a href="${RSA_REPORT_URL}" target="_blank" style="color:var(--ec95-blue-a)">Έκθεση της RSA</a> · Δεν αποτελεί νομική συμβουλή</span>
+      <span class="footer-disclaimer">Παιχνίδι βασισμένο στην <a id="footer-rsa-link" href="https://rsaegean.org/el/anagnorismenoi-prosfyges-2026" target="_blank" style="color:var(--ec95-blue-a)">Έκθεση της RSA</a> · Δεν αποτελεί νομική συμβουλή</span>
       <button onclick="showAboutModal()">ℹ️ Σχετικά</button>
     </div>
 
@@ -1373,11 +1398,533 @@
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
 <script>
 // ─────────────────────────────────────────────
+// LANGUAGE
+// ─────────────────────────────────────────────
+const LANG = new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'el';
+document.documentElement.lang = LANG;
+function toggleLang() {
+  const u = new URL(location.href);
+  u.searchParams.set('lang', LANG === 'el' ? 'en' : 'el');
+  location.href = u.toString();
+}
+// ─────────────────────────────────────────────
+// STRINGS (bilingual UI text)
+// ─────────────────────────────────────────────
+const STRINGS = {
+  el: {
+    // Tutorial
+    tutorial_title: "Καλώς ήρθες στην Ελλάδα",
+    tutorial_p1: "Μόλις επέστρεψες αναγκαστικά. Δεν έχεις σπίτι, δεν έχεις δουλειά, και τα έγγραφά σου είναι ανεπαρκή ή ληγμένα.",
+    tutorial_goal: "<strong>Στόχος:</strong> Μάζεψε τα απαιτούμενα έγγραφα για να ολοκληρώσεις την αποστολή σου.",
+    tutorial_how: "Πώς παίζεται",
+    tutorial_move_mobile: "Tap οπουδήποτε στον χάρτη για να μετακινηθείς.",
+    tutorial_move_desktop: "Χρησιμοποίησε τα βελάκια / WASD ή click στον χάρτη για να κινηθείς.",
+    tutorial_building: "<strong>Tap / click πάνω σε κτίριο</strong> για να μπεις και να δεις τι ποια έγγραφα είναι διαθέσιμα και ποια λείπουν.",
+    tutorial_red: "Τα <span style=\"color:var(--ec95-red)\">&#10005; κόκκινα έγγραφα</span> λείπουν — click για να τα παρακολουθήσεις.",
+    tutorial_req: "Το <span style=\"color:var(--ec95-blue-a)\">📋 Απαιτούμενα</span> δείχνει τι χρειάζεσαι για την τρέχουσα αποστολή.",
+    tutorial_help: "Κάνοντας κλικ στο <strong>❓</strong> μπορείς να δεις τις πλήρεις οδηγίες.",
+    tutorial_report: "Αυτό το παιχνίδι βασίζεται σε πραγματικές υποθέσεις αναγνωρισμένων προσφύγων στην Ελλάδα το 2025-2026.",
+    tutorial_report_link: "Διάβασε την πλήρη έκθεση RSA →",
+    tutorial_btn: "Συνέχεια →",
+    // Onboarding
+    onboarding_find_job: `Κατάφερες να βρεις δουλειά! Για να υπογράψεις τη <strong>Σύμβαση Εργασίας</strong>, πρέπει πρώτα να συγκεντρώσεις τα απαραίτητα έγγραφα. Όμως αρκετά έγγραφα έχουν ως προαπαιτούμενο άλλα έγγραφα. Μάζεψέ τα όλα!`,
+    onboarding_rent_apartment: `Κατάφερες να βρεις διαμέρισμα! Για να υπογράψεις το <strong>Μισθωτήριο Κατοικίας</strong>, πρέπει πρώτα να συγκεντρώσεις τα απαραίτητα έγγραφα. Όμως αρκετά έγγραφα έχουν ως προαπαιτούμενο άλλα έγγραφα. Μάζεψέ τα όλα!`,
+    onboarding_get_rent_subsidy: `Θέλεις να εγγραφείς στο <strong>HELIOS+</strong>, το βασικό πρόγραμμα που στοχεύει στην ενίσχυση της ένταξης των πολιτών τρίτων χωρών στην ελληνική κοινωνία. Για να το κάνεις, πρέπει πρώτα να συγκεντρώσεις τα απαραίτητα έγγραφα. Όμως αρκετά έγγραφα έχουν ως προαπαιτούμενο άλλα έγγραφα. Μάζεψέ τα όλα!`,
+    onboarding_fallback: (name) => `Για να αποκτήσεις <strong>${name}</strong>, πρέπει πρώτα να συγκεντρώσεις τα απαραίτητα έγγραφα. Μάζεψέ τα όλα!`,
+    onboarding_req_label: "📋 Απαιτούμενα έγγραφα:",
+    onboarding_note: "Αν λείπει ένας κρίκος, τα επόμενα έγγραφα μπλοκάρουν. Χρησιμοποίησε το 🕸️ για να δεις τον πλήρη χάρτη εξαρτήσεων ανά πάσα στιγμή.",
+    onboarding_title: (label) => `🎯 Αποστολή: ${label}`,
+    onboarding_btn: "Ξεκινάω!",
+    // Building entries
+    bank_title: "Τράπεζα — Πριν Μπεις",
+    bank_intro: "Μεταξύ των εμποδίων που αντιμετωπίζουν οι πρόσφυγες στις επαφές τους με τράπεζες, αναφέρουμε ένα παράδειγμα:",
+    dom_blocked_title: "Μη επιλέξιμος/η για HELIOS+",
+    dom_blocked_body: "Το πρόγραμμα HELIOS+ απαιτεί η ΑΔΕΤ σου να έχει εκδοθεί πριν από λιγότερο από 2 χρόνια. Η ΑΔΕΤ σου έχει ήδη λήξει ή εκδόθηκε πάνω από 2 χρόνια πριν — δεν πληροίς τις προϋποθέσεις εγγραφής στο HELIOS+.",
+    dom_title: "ΔΟΜ — Πριν Μπεις. Πληροφορίες για το Helios+",
+    dom_body: `<div style="text-align:left;font-size:11px;line-height:1.6;"><p>Σύμφωνα με την Ευρωπαϊκή Επιτροπή, το πρόγραμμα HELIOS+ <em>«είναι το βασικό πρόγραμμα που στοχεύει στην ενίσχυση της ένταξης των πολιτών τρίτων χωρών στην ελληνική κοινωνία»</em>.</p><p style="margin-top:8px;">Ενώ ο αριθμός των ενεργών αδειών διαμονής διεθνούς και προσωρινής προστασίας ήταν <strong>134.576</strong> στα τέλη του περασμένου έτους, το HELIOS+ θέτει ως συνολικό στόχο <strong>4.323 δικαιούχοι</strong> να επωφεληθούν των υπηρεσιών υποστήριξής του από το 2025 ως το 2028.</p><p style="margin-top:8px;font-weight:bold;color:#b45309;">Δηλαδή περίπου το 3%.</p></div>`,
+    eforia_title: "Εφορία — Πριν Μπεις",
+    eforia_body: `<div style="text-align:left;font-size:11px;line-height:1.6;"><p>Για να κλείσεις ραντεβού στην Εφορία, χρειάζεσαι <strong>TAXISnet</strong>. Εφόσον δεν έχεις ακόμα TAXISnet, πρέπει να κάνεις <strong>εξουσιοδότηση σε κάποιον/α</strong> που έχει ήδη TAXISnet για να καταθέσει αίτημα εκ μέρους σου.</p><p style="margin-top:8px;">Συνήθως γίνεται από κάποιον/α λογιστή ή δικηγόρο.</p></div>`,
+    eforia_btn: "Εξουσιοδότηση τρίτου ατόμου",
+    efka_obstacle_intro: "Σε ορισμένες Τοπικές Διευθύνσεις του ΕΦΚΑ ζητούνται έγγραφα που δεν προβλέπονται από τον νόμο. Ένα παράδειγμα που έχει καταγραφεί:",
+    efka_title: "ΕΦΚΑ — Πριν Μπεις",
+    efka_body: `<div style="text-align:left;font-size:11px;line-height:1.6;"><p>Για να κλείσεις ραντεβού στον ΕΦΚΑ, χρειάζεσαι <strong>TAXISnet</strong> και <strong>ΑΜΚΑ</strong> (ενεργό ή ανενεργό). Εφόσον δεν τα έχεις, πρέπει να κλείσεις ραντεβού τηλεφωνικά στο <strong>1555</strong>.</p><p style="margin-top:8px;">Όμως το 1555 υποστηρίζει μόνο <strong>Ελληνικά και Αγγλικά</strong>. Έτσι η πρόσβαση για πολλές και πολλούς πρόσφυγες γίνεται πολύ δύσκολη.</p><p style="margin-top:8px;font-style:italic;">Μιλάς Ελληνικά ή Αγγλικά ή βρήκες κάποιο άτομο να σου μεταφράσει;</p></div>`,
+    efka_call_btn: "Κλήση 1555",
+    // Slot machines
+    third_party_title: "Αναζήτηση Εξουσιοδοτημένου Τρίτου",
+    third_party_intro: "Ψάχνεις για κάποιον/α με TAXISnet<br>να καταθέσει αίτημα εκ μέρους σου...",
+    third_party_spin: "🎰 Περιστροφή!", third_party_spinning: "⏳ Ψάχνεις...", third_party_retry: "🎰 Δοκίμασε ξανά",
+    third_party_success: (label) => `<strong>✓ Βρήκες: ${label}!</strong><br>Κάποιος/α θα καταθέσει αίτημα εκ μέρους σου.`,
+    third_party_fail: `<strong>Δυστυχώς δεν κατάφερες να βρεις τρίτο άτομο να καταθέσει το αίτημα εκ μέρους σου.</strong><br><span style="color:#fca5a5;font-size:11px;">Μπορείς να δοκιμάσεις ξανά.</span>`,
+    third_party_faces: [
+      { label:"Λογιστής/τρια", icon:"🧾", success:true,  bg:"#0d2b1a", fg:"#86efac" },
+      { label:"Δικηγόρος",     icon:"⚖️", success:true,  bg:"#0d1f33", fg:"#93c5fd" },
+      { label:"Δεν κατάφερες να βρεις Δικηγόρο",  icon:"😞", success:false, bg:"#2b0d0d", fg:"#fca5a5" },
+      { label:"Δεν κατάφερες να βρεις Λογίστρια", icon:"😞", success:false, bg:"#2b0d0d", fg:"#fca5a5" },
+    ],
+    slot_1555_title: "Κλήση 1555 — Γλωσσική Εξυπηρέτηση",
+    slot_1555_intro: "Μιλάς εσύ ή κάποιο άτομο που είναι δίπλα σου<br>για να σε βοηθήσει <strong>Ελληνικά ή Αγγλικά</strong>;",
+    slot_1555_spin: "📞 Κλήση 1555", slot_1555_spinning: "⏳ Καλεί...", slot_1555_retry: "📞 Δοκίμασε ξανά",
+    slot_1555_success: (label) => `<strong>✓ ${label}!</strong><br>Μπορείς να εξυπηρετηθείς στο 1555.`,
+    slot_1555_fail: `<strong>Δυστυχώς δεν κατάφερες να εξυπηρετηθείς στο 1555.</strong><br><span style="color:#fca5a5;font-size:11px;">Μπορείς να δοκιμάσεις ξανά.</span>`,
+    slot_1555_faces: [
+      { label:"Μιλώ Ελληνικά",                         icon:"🇬🇷", success:true,  bg:"#0d2233", fg:"#93c5fd" },
+      { label:"Μιλώ Αγγλικά",                           icon:"🇬🇧", success:true,  bg:"#0d2233", fg:"#93c5fd" },
+      { label:"Δεν μιλώ Ελληνικά ή Αγγλικά",           icon:"😞",  success:false, bg:"#2b0d0d", fg:"#fca5a5" },
+      { label:"Δεν βρήκα κάποιο άτομο να με βοηθήσει", icon:"😞",  success:false, bg:"#2b0d0d", fg:"#fca5a5" },
+    ],
+    // Shared button labels
+    btn_continue: "Συνέχεια →",
+    btn_understood: "ΚΑΤΑΛΑΒΑ",
+    btn_read_more: "↗ Διαβάστε Περισσότερα",
+    btn_restart: "↺ Επανεκκίνηση",
+    // requestDocument
+    doc_already_owned: (name) => `${name} — ήδη στον φάκελό σου.`,
+    address_hasan_title: "Δ/νση Κατοικίας",
+    address_hasan_body: "Για να έχεις διεύθυνση κατοικίας, πρέπει είτε να έχεις δική σου ιδιοκτησία (πράγμα ασυνήθιστο για πρόσφυγες/ισσες), είτε μισθωτήριο στο όνομά σου ή φιλοξενία καταχωρημένη στο Taxisnet. Κανονικά για αυτά χρειάζεσαι ΑΔΕΤ, ΑΦΜ και TAXISnet για να προχωρήσεις. Έχεις κάτι από τα παραπάνω;\n\nΕπισημαίνουμε ότι ο νόμος επιβάλλει πρόστιμο σε περίπτωση παράλειψης δήλωσης ή αναληθούς δήλωσης μισθωτηρίου στην ΑΑΔΕ. Ακόμα, η εν γνώσει δήλωση ψευδών στοιχείων ή απόκρυψη της αλήθειας κατά την εξέταση από οποιαδήποτε αρχή διώκεται ποινικά και τιμωρείται με ποινή φυλάκισης.",
+    address_hasan_btn: "Ας υποθέσουμε ότι βρήκα κάποιον τρόπο.",
+    lease_confirm_title: "Μισθωτήριο κατοικίας",
+    lease_confirm_body: "Παρότι δεν έχεις ακόμα σύμβαση εργασίας, θέλεις να υποθέσουμε ότι έχεις καταφέρει να νοικιάσεις διαμέρισμα στο όνομά σου;",
+    btn_yes: "Ναι", btn_no: "Όχι", btn_cancel: "Άκυρο",
+    ready_to_apply: "✓ Έτοιμο για αίτηση!",
+    no_req_doc: "Κανένα απαιτούμενο έγγραφο",
+    // Status badges
+    status_blocked: "Μπλοκαρισμένο",
+    status_ok: "✓ Αποκτήθηκε",
+    status_ready: "Έτοιμο",
+    status_both_ok: "✓ Και τα δύο αποκτήθηκαν",
+    status_already: "✓ Ήδη στον φάκελο",
+    // Route UI
+    route_popup_info: "Popup ενημέρωση",
+    route_no_prereq: "Χωρίς προαπαιτούμενα",
+    route_option: (id) => `Επιλογή ${id}`,
+    route_or_one: "+ ένα από τα παρακάτω:",
+    route_or_one_inline: "+ μία από τις επιλογές:",
+    // Doc UI
+    progress_docs: (owned, needed) => `<span>${owned}/${needed}</span> έγγραφα`,
+    track_click_title: (name) => `Κλικ για παρακολούθηση: ${name}`,
+    wallet_empty: "Άδειος φάκελος",
+    track_btn: (name) => `↗ Παρακολούθηση: ${name}`,
+    handle_doc: (name) => `Χειρισμός ${name}`,
+    // Mini-challenge
+    ch_skip_inline: "✕ Παράλειψη",
+    ch_start: "▶ Έναρξη",
+    ch_replay: "↺ Ξαναπαίξε",
+    ch_countdown_go: "Πάμε!",
+    ch_lost: "ΕΧΑΣΕΣ!",
+    ch_win: "ΝΙΚΗ! ✓",
+    ch_gendered_male: "αναγνωρισμένος πρόσφυγας",
+    ch_gendered_female: "αναγνωρισμένη πρόσφυγισσα",
+    ch_hint_eater: "⬆⬇⬅➡ ή WASD · σύρε οπουδήποτε ή πάτα τα βέλη · μάζεψε όλα τα έγγραφα χωρίς να σε πιάσουν",
+    ch_snake_collision: "💥 Συγκρούστηκες με τον εαυτό σου!",
+    ch_snake_collected: "✅ Τα μάζεψες όλα!",
+    tree_remote: "Απομακρυσμένες",
+    ch_hint_snake: "⬆⬇⬅➡ ή WASD · σύρε οπουδήποτε ή πάτα τα βέλη · μάζεψε 10 έγγραφα χωρίς να χτυπήσεις στο σώμα σου · τα άκρα συνδέονται",
+    // Tree panel node statuses
+    tree_status_ok: "✓ Αποκτήθηκε",
+    tree_status_ready: "⚡ Έτοιμο!",
+    tree_status_pending: "⏳ Εκκρεμεί",
+    tree_no_req_assumed: "Ας υποθέσουμε ότι έχεις βρει κάποια λύση",
+    tree_legend_html: `<span style="color:#4ade80">■ ✓ Αποκτήθηκε</span> <span style="color:#fbbf24">■ ⚡ Έτοιμο να αποκτηθεί (έχεις όλα τα προαπαιτούμενα)</span> <span style="color:#60a5fa">■ Εκκρεμεί</span> <span style="color:#22c55e">→ Έχεις το απαιτούμενο</span> <span style="color:#ef4444">→ Λείπει το απαιτούμενο</span>`,
+    ticker_text: "📊 96.438 ενεργές ΑΔΕΤ + 19.398 εκκρεμείς για πρώτη έκδοση   ◆   9.179 αιτήματα επανεισδοχής το 2025 — αύξηση 274% σε ένα χρόνο   ◆   725 απελάσεις αναγνωρισμένων προσφύγων το 2025, συμπεριλαμβανομένων οικογενειών με παιδιά   ◆   7.640 εκκρεμείς ανανεώσεις ΑΔΕΤ — 2.237 αναμένουν πάνω από 1 χρόνο   ◆   Μόνο 4.323 θέσεις στο HELIOS+ για 134.576 κατόχους ΑΔΕΤ και προσωρινής προστασίας   ◆   Οι επιστρέφοντες φτάνουν στο αεροδρόμιο χωρίς ενημέρωση, χωρίς στέγη, χωρίς έγγραφα   ◆   Τα ΚΕΠ σταμάτησαν να εκδίδουν ΑΜΚΑ από το 2024   ◆   1.515 εκκρεμείς αιτήσεις ταξιδιωτικού εγγράφου τέλη 2025   ◆   Χωρίς ενεργό ΑΜΚΑ: καμία πρόσβαση σε ΕΣΥ, επιδόματα, απασχόληση, συνταγογράφηση   ◆   Παιδιά γεννημένα στην Ελλάδα εγγράφονται συχνά με διαφορετικό Αριθμό Υπόθεσης από την οικογένεια   ◆   Οι εβδομαδιαίες λίστες παράδοσης ΑΔΕΤ υπάρχουν μόνο στα Ελληνικά, Αγγλικά και Γαλλικά   ◆   Πλήρης έκθεση RSA 2026: rsaegean.org/el/anagnorismenoi-prosfyges-2026",
+    // Day milestones & toasts
+    toast_landed: "Μόλις προσγειώθηκες στην Ελλάδα. Ξεκίνα από την Υπηρεσία Ασύλου.",
+    toast_days: (n, total) => `⏳ Πέρασαν ${n} ημέρα/ες... Σύνολο: ${total} ημέρες`,
+    day_100: "📅 100 ημέρες στη γραφειοκρατία.",
+    day_200: "📅 200 ημέρες. Συνεχίζεις ακόμα.",
+    day_365: "⚠️ Πέρασε ένας ολόκληρος χρόνος χωρίς λύση.",
+    day_500: "⚠️ 500 ημέρες. Αλλού θα ήταν άλλη ζωή.",
+    day_730: "⚠️ Δύο χρόνια. Η γραφειοκρατία δεν τελειώνει.",
+    toast_quest: (label) => `Αποστολή: "${label}".`,
+    toast_reset: "Επανεκκίνηση. Επίλεξε χαρακτήρα για να ξεκινήσεις.",
+    toast_tracking: (name) => `Παρακολούθηση: ${name}.`,
+    toast_remote: (name) => `${name} — απομακρυσμένο βήμα.`,
+    toast_unlocked: (name) => `Οδός ξεκλείδωσε: ${name}`,
+    toast_doc_added: (name) => `${name} προστέθηκε στον φάκελό σου.`,
+    // Ending
+    ending_body: (name, days) => `Κατάφερες να αποκτήσεις ${name} μετά από ${days} ημέρες. Στην πραγματικότητα, πολλοί και πολλές δεν τα καταφέρνουν. Για τις ανάγκες του παιχνιδιού απλοποιήσαμε μια σειρά από πραγματικές δυσκολίες που στην πραγματική ζωή συχνά οδηγούν τους ανθρώπους σε απόγνωση και εγκλωβισμό. Ο λαβύρινθος δεν σταματά εδώ.`,
+    ending_title: (name) => `${name} — ολοκληρώθηκε.`,
+    ending_header: "📋 Βήμα ολοκληρώθηκε",
+    ending_cta: "Διάβασε την πλήρη έκθεση της RSA για τους αναγνωρισμένους πρόσφυγες στην Ελλάδα:",
+    ending_explore: "Συνέχεια εξερεύνησης",
+    ending_next: (label) => `→ Επόμενη: ${label}`,
+    ending_switch: "Αλλαγή αποστολής",
+    ending_new_quest_btn: "Ξεκίνα νέα αποστολή",
+    // Waiting flow
+    btn_skip: "ΠΑΡΑΛΕΙΨΗ",
+    waiting_skip_body: (days) => `Αυτό θα μπορούσε να είχε διαρκέσει αρκετά μεγάλο χρονικό διάστημα. Ας υποθέσουμε οτι στην περίπτωσή σου διήρκησε ${days} ημέρες.`,
+    // Route card
+    target_label: (name) => `Στόχος: ${name}`,
+    no_prerequisites: "Χωρίς προαπαιτούμενα.",
+    common_req: "Κοινά απαιτούμενα",
+    no_extra_req: "Χωρίς επιπλέον απαιτούμενα.",
+    both_docs_note: "Συμπλήρωσε αιτήσεις και για τα 2 έγγραφα",
+    // Mini challenge
+    btn_skip_challenge: "✕ Παράλειψη",
+    fail_header: "✗ ΑΠΟΤΥΧΙΑ TAP TEST",
+    fail_timeout: "Έτρεξε ο χρόνος πριν γεμίσεις τη μπάρα.",
+    fail_retry: "↺ ΞΑΝΑΠΡΟΣΠΑΘΕΙΑ",
+    tap_fail: (pct, score, req) => `Γέμισες μόνο ${pct}% της μπάρας (${score}/${req} taps).`,
+    mini_challenge_intro: (gendered) => `Είσαι ${gendered} στην Ελλάδα, διαρκώς προκύπτουν δυσκολίες που το παιχνίδι δεν μπορεί να εξαντλήσει. Ξεπέρασε αυτή τη δοκιμασία για να μπορέσεις να συνεχίσεις την αποστολή σου`,
+    // Office
+    office_available: (names) => `Διαθέσιμα: ${names}.`,
+    office_solve_route: "Λύσε μία από τις απαιτούμενες οδούς:",
+    office_req_docs: "Απαιτούμενα έγγραφα:",
+    // Reset confirm
+    reset_title: "Επανεκκίνηση;",
+    reset_body: "Θα χάσεις όλα τα έγγραφα και θα επιστρέψεις στην αρχή.",
+    reset_confirm: "Επανεκκίνηση",
+    // Change character confirm
+    char_change_title: "Αλλαγή χαρακτήρα",
+    char_change_body: "Αν αλλάξεις χαρακτήρα, θα χαθούν τα έγγραφα που έχεις μαζέψει. Συνέχεια;",
+    char_change_confirm: "Αλλαγή",
+    // Tap success
+    tap_title: "Τα κατάφερες!",
+    tap_body: "Χρειάστηκε προσπάθεια και τύχη.",
+    tap_btn: "Είσοδος στην πόλη",
+    request_btn: (name) => `Αίτηση ${name}`,
+    // Mini-game
+    mini_success_toast: "Τα κατάφερες! Συνέχισε την αποστολή σου.",
+    toast_removed_unemployment: "Δελτίο Ανεργίας αφαιρέθηκε (ασύμβατο με σύμβαση εργασίας).",
+    // About modal
+    game_title: "Αναγνωρισμένοι Πρόσφυγες — Μεγάλη Γραφειοκρατική Περιπέτεια 2026",
+    map_title_bar: "Αναγνωρισμένοι Πρόσφυγες στην Ελλάδα — Μεγάλη Γραφειοκρατική Περιπέτεια 2026",
+    // Top bar
+    req_toggle_label: "Απαιτούμενα",
+    glossary_btn_label: "Γλωσσάρι",
+    mute_title: "Σίγαση / Ήχος",
+    reset_title_btn: "Επανεκκίνηση",
+    tree_title: "Δέντρο εξαρτήσεων εγγράφων",
+    legend_title: "Οδηγίες / Υπόμνημα",
+    glossary_corner_title: "Γλωσσάρι",
+    // Sidebar
+    sidebar_mission: "🎯 Αποστολή",
+    sidebar_req_label: "📋 Απαιτούμενα:",
+    sidebar_tracking: "🔍 Παρακολούθηση εγγράφου",
+    sidebar_wallet: "🗂 Φάκελος",
+    sidebar_glossary: "📖 Γλωσσάρι",
+    glossary_overlay: "📖 Γλωσσάρι Εγγράφων",
+    // Start screen
+    start_title: "🏛 Bureaucracy Maze — Αναγνωρισμένοι Πρόσφυγες στην Ελλάδα 2026",
+    start_intro: "Μετά από χρόνια σε άλλη ευρωπαϊκή χώρα, επιστρέφεσαι αναγκαστικά στην Ελλάδα. Μόλις προσγειώθηκες. Πρέπει να επιβιώσεις.",
+    start_intro_bold: "Επίλεξε χαρακτήρα, επίλεξε αποστολή, και ξεκίνα από το μηδέν.",
+    start_step1: "1. Επίλεξε χαρακτήρα",
+    start_step1_change: "αλλαγή",
+    start_step2: "2. Επίλεξε αποστολή",
+    start_ready: "Έτοιμος; Ακόμα και αν δεν είσαι, δεν έχεις επιλογή.",
+    start_btn: "Ξεκίνα την αποστολή",
+    // Prelim screen
+    prelim_title_bar: "Προκαταρκτική δοκιμή",
+    spin_btn: "🎲 Γύρισε τον τροχό",
+    event_default_title: "Ενημέρωση",
+    event_close_title: "Κλείσιμο",
+    office_default_title: "Γραφείο",
+    spin_got: "Πήρες",
+    spin_seconds: "δευτερόλεπτα!",
+    spin_timer_hint: "Ο χρονομετρητής δεν ξεκινά μέχρι να πατήσεις το κουμπί.",
+    tap_instructions_title: "Οδηγίες Tap Test:",
+    tap_instructions_body: "Κάνε κλικ/tap στην μπάρα από κάτω για να τη γεμίσεις πριν τελειώσει ο χρόνος.",
+    tap_start_btn: "▶ Ξεκίνα",
+    tap_click_label: "ΚΛΙΚ / TAP ΕΔΩ",
+    tap_click_label_start: "ΚΛΙΚ / TAP ΕΔΩ ΓΙΑ ΕΝΑΡΞΗ",
+    skip_btn_label: "Παράλειψη δοκιμής",
+    skip_desc_fallback: "Αν δεν μπορείς να το παλέψεις, ας υποθέσουμε ότι τα κατάφερες.",
+    legend_title: "❓ Οδηγίες & Υπόμνημα",
+    legend_body: `<div class="legend-section"><div class="legend-section-title">🕹 Κίνηση</div><div class="legend-row"><span class="legend-icon">⬆⬇⬅➡</span><span class="legend-desc">Βελάκια / WASD: κίνηση χαρακτήρα (desktop)</span></div><div class="legend-row"><span class="legend-icon">👆</span><span class="legend-desc">Tap στον χάρτη: μετακίνηση εκεί (κινητό)</span></div><div class="legend-row"><span class="legend-icon">🖱</span><span class="legend-desc">Click στον χάρτη: μετακίνηση εκεί (desktop)</span></div></div><div class="legend-section"><div class="legend-section-title">🏢 Κτίρια</div><div class="legend-row"><span class="legend-icon">👆 / 🖱</span><span class="legend-desc">Tap ή click στο κτίριο για είσοδο</span></div><div class="legend-row"><span class="legend-icon">★</span><span class="legend-desc">Αστέρι = έχεις όλα τα έγγραφα για το κτίριο</span></div><div class="legend-row"><span class="legend-icon">⬜</span><span class="legend-desc">Λευκό περίγραμμα = βρίσκεσαι κοντά</span></div></div><div class="legend-section"><div class="legend-section-title">📋 Έγγραφα</div><div class="legend-row"><span class="legend-icon">✓</span><span class="legend-desc">Πράσινο: έχεις το έγγραφο</span></div><div class="legend-row"><span class="legend-icon">✕</span><span class="legend-desc">Κόκκινο: λείπει — click για παρακολούθηση</span></div><div class="legend-row"><span class="legend-icon">↗</span><span class="legend-desc">Click → το έγγραφο προστίθεται στην παρακολούθηση</span></div><div class="legend-row"><span class="legend-icon">🔍</span><span class="legend-desc">Παρακολούθηση: δες που να πας για αυτό</span></div></div><div class="legend-section"><div class="legend-section-title">🎯 Αποστολή & Ημέρες</div><div class="legend-row"><span class="legend-icon">🎯</span><span class="legend-desc">Τρέχουσα αποστολή — click για αλλαγή</span></div><div class="legend-row"><span class="legend-icon">📅</span><span class="legend-desc">Ημέρες που πέρασαν (αυξάνονται αυτόματα)</span></div><div class="legend-row"><span class="legend-icon">↺</span><span class="legend-desc">Reset: επανεκκίνηση παιχνιδιού</span></div></div><div class="legend-section"><div class="legend-section-title">🔊 Ήχοι</div><div class="legend-row"><span class="legend-icon">🔊</span><span class="legend-desc">Κουμπί σίγασης για ήχο/μουσική</span></div><div class="legend-row"><span class="legend-icon">🎵</span><span class="legend-desc">Η μουσική επιταχύνεται κάθε 30 δευτερόλεπτα</span></div></div>`,
+    about_title: "ℹ️ Σχετικά με το παιχνίδι",
+    about_game_name: "Αναγνωρισμένοι Πρόσφυγες στην Ελλάδα — Μεγάλη Γραφειοκρατική Περιπέτεια 2026",
+    about_context: "Αυτό το παιχνίδι βασίζεται στην έκθεση Αναγνωρισμένοι Πρόσφυγες στην Ελλάδα, 2026, της Υποστήριξης Προσφύγων στο Αιγαίο - RSA. Τα κριτίρια του παιχνιδιού βασίζονται σε πραγματικές, τεκμηριωμένες υποθέσεις και απλοποιούνται για λόγους gameplay.",
+    about_disclaimer: "<strong>Αποποίηση ευθύνης:</strong> Το παιχνίδι δεν αποτελεί νομική, διοικητική ή άλλη συμβουλή. Αν αντιμετωπίζετε παρόμοια κατάσταση, ζητήστε νομική συμβουλή ή απευθευθυνθείτε σε αρμόδιο φορέα.",
+    about_report_link: "Διαβάστε την έκθεση της RSA →",
+    about_credits: "Υποστήριξη Προσφύγων στο Αιγαίο (RSA) 2026 · created with vibe coding",
+    // Location denial
+    denial_back_btn: "↩ Επιστροφή στην πόλη",
+    denial_header: "⛔ ΑΠΟΚΛΕΙΣΜΟΣ",
+    denial_req_docs: "Απαιτούμενα έγγραφα",
+    denial_title: "Πρόσβαση Αρνήθηκε",
+    denial_body: (name) => `Δεν μπορείς να μπεις στο κτίριο: <strong>${name}</strong> ακόμα. Συγκέντρωσε τα απαραίτητα έγγραφα.`,
+    // Hard blocks
+    ineligible_title: "Μη επιλέξιμος/η",
+    unemp_card_blocked: "Δεν μπορείς να βγάλεις Δελτίο Ανεργίας γιατί έχεις Σύμβαση Εργασίας. Αν το χρειάζεσαι για να ενταχθείς στο HELIOS+ προκειμένου να λάβεις επιδότηση ενοικίου, αυτό σημαίνει ότι δεν μπορείς να εγγραφείς στο HELIOS+",
+    helios_ineligible_title: "Μη επιλέξιμος/η για HELIOS+",
+    helios_ineligible_body: "Το πρόγραμμα HELIOS+ απαιτεί η ΑΔΕΤ σου να έχει εκδοθεί πριν από λιγότερο από 2 χρόνια. Η ΑΔΕΤ σου έχει ήδη λήξει ή εκδόθηκε πάνω από 2 χρόνια πριν — δεν πληροίς τις προϋποθέσεις εγγραφής στο HELIOS+.",
+    // Document denial
+    doc_denial_title: "Αίτηση Μπλοκαρισμένη",
+    doc_denial_body: (name) => `Δεν μπορείς να αποκτήσεις <strong>${name}</strong> ακόμα. Καμία διαθέσιμη οδός δεν είναι πλήρης.`,
+    stuck_hint_title: "Κόλλησες;",
+    stuck_hint_circular: (name) => `Υπάρχει κυκλική εξάρτηση με <strong>${name}</strong>.`,
+    stuck_hint_escape: (docs) => `Εναλλακτική οδός: χρησιμοποίησε <strong>${docs}</strong> για να ξεκλειδώσεις την απόφραξη.`,
+    stuck_hint_lawyer: "Ίσως χρειαστείς εξωτερική βοήθεια (δικηγόρος/λογιστής).",
+    // Tree panel
+    tree_no_location: "🔗 Χωρίς τοποθεσία",
+    // Footer
+    about_btn: "ℹ️ Σχετικά",
+    footer_disclaimer: "Παιχνίδι βασισμένο στην",
+    footer_no_advice: "· Δεν αποτελεί νομική συμβουλή",
+  },
+  en: {
+    // Tutorial
+    tutorial_title: "Welcome to Greece",
+    tutorial_p1: "You have just been forcibly returned. You have no home, no job, and your documents are insufficient or expired.",
+    tutorial_goal: "<strong>Goal:</strong> Gather the required documents to complete your mission.",
+    tutorial_how: "How to play",
+    tutorial_move_mobile: "Tap anywhere on the map to move.",
+    tutorial_move_desktop: "Use the arrow keys / WASD or click on the map to move.",
+    tutorial_building: "<strong>Tap / click on a building</strong> to enter and see which documents are available and which are missing.",
+    tutorial_red: "The <span style=\"color:var(--ec95-red)\">&#10005; red documents</span> are missing — click to track them.",
+    tutorial_req: "The <span style=\"color:var(--ec95-blue-a)\">📋 Required</span> panel shows what you need for your current mission.",
+    tutorial_help: "Click <strong>❓</strong> to see the full instructions.",
+    tutorial_report: "This game is based on real cases of recognised refugees in Greece in 2025–2026.",
+    tutorial_report_link: "Read the full RSA report →",
+    tutorial_btn: "Continue →",
+    // Onboarding
+    onboarding_find_job: `You found a job! To sign a <strong>Work Contract</strong>, you must first gather the required documents. However, many documents have other documents as prerequisites. Collect them all!`,
+    onboarding_rent_apartment: `You found an apartment! To sign a <strong>Residential Lease</strong>, you must first gather the required documents. However, many documents have other documents as prerequisites. Collect them all!`,
+    onboarding_get_rent_subsidy: `You want to enrol in <strong>HELIOS+</strong>, the main programme aimed at supporting the integration of third-country nationals in Greek society. To do so, you must first gather the required documents. However, many documents have other documents as prerequisites. Collect them all!`,
+    onboarding_fallback: (name) => `To obtain <strong>${name}</strong>, you must first gather the required documents. Collect them all!`,
+    onboarding_req_label: "📋 Required documents:",
+    onboarding_note: "If one link is missing, the subsequent documents are blocked. Use 🕸️ to view the full dependency map at any time.",
+    onboarding_title: (label) => `🎯 Mission: ${label}`,
+    onboarding_btn: "Let's go!",
+    // Building entries
+    bank_title: "Bank — Before You Enter",
+    bank_intro: "Among the obstacles refugees face in dealings with banks, here is one documented example:",
+    dom_blocked_title: "Not eligible for HELIOS+",
+    dom_blocked_body: "The HELIOS+ programme requires that your ADET was issued less than 2 years ago. Your ADET has already expired or was issued more than 2 years ago — you do not meet the enrolment conditions for HELIOS+.",
+    dom_title: "DOM — Before You Enter. Information about HELIOS+",
+    dom_body: `<div style="text-align:left;font-size:11px;line-height:1.6;"><p>According to the European Commission, the HELIOS+ programme <em>"is the main programme aimed at enhancing the integration of third-country nationals in Greek society"</em>.</p><p style="margin-top:8px;">While the number of active international and temporary protection residence permits was <strong>134,576</strong> at end of last year, HELIOS+ sets a total target of <strong>4,323 beneficiaries</strong> to benefit from its support services from 2025 to 2028.</p><p style="margin-top:8px;font-weight:bold;color:#b45309;">That is roughly 3%.</p></div>`,
+    eforia_title: "Tax Office — Before You Enter",
+    eforia_body: `<div style="text-align:left;font-size:11px;line-height:1.6;"><p>To make an appointment at the Tax Office you need <strong>TAXISnet</strong> credentials. If you do not yet have TAXISnet, you must <strong>authorise a third party</strong> who already has TAXISnet to submit an application on your behalf.</p><p style="margin-top:8px;">This is usually done through an accountant or a lawyer.</p></div>`,
+    eforia_btn: "Authorise a third party",
+    efka_obstacle_intro: "Some EFKA Local Directorates request documents not required by law. One documented example:",
+    efka_title: "EFKA — Before You Enter",
+    efka_body: `<div style="text-align:left;font-size:11px;line-height:1.6;"><p>To book an appointment at EFKA you need <strong>TAXISnet</strong> and <strong>AMKA</strong> (active or inactive). If you do not have these, you must book an appointment by phone on <strong>1555</strong>.</p><p style="margin-top:8px;">However, the 1555 line is available only in <strong>Greek and English</strong>. This makes access very difficult for many refugees.</p><p style="margin-top:8px;font-style:italic;">Do you speak Greek or English, or did you find someone to interpret for you?</p></div>`,
+    efka_call_btn: "Call 1555",
+    // Slot machines
+    third_party_title: "Finding an Authorised Third Party",
+    third_party_intro: "You are looking for someone with TAXISnet<br>to submit an application on your behalf...",
+    third_party_spin: "🎰 Spin!", third_party_spinning: "⏳ Searching...", third_party_retry: "🎰 Try again",
+    third_party_success: (label) => `<strong>✓ Found: ${label}!</strong><br>Someone will submit the application on your behalf.`,
+    third_party_fail: `<strong>Unfortunately you could not find a third party to submit the application on your behalf.</strong><br><span style="color:#fca5a5;font-size:11px;">You can try again.</span>`,
+    third_party_faces: [
+      { label:"Accountant",          icon:"🧾", success:true,  bg:"#0d2b1a", fg:"#86efac" },
+      { label:"Lawyer",              icon:"⚖️", success:true,  bg:"#0d1f33", fg:"#93c5fd" },
+      { label:"Could not find a Lawyer",      icon:"😞", success:false, bg:"#2b0d0d", fg:"#fca5a5" },
+      { label:"Could not find an Accountant", icon:"😞", success:false, bg:"#2b0d0d", fg:"#fca5a5" },
+    ],
+    slot_1555_title: "Calling 1555 — Language Support",
+    slot_1555_intro: "Do you or someone with you<br>speak <strong>Greek or English</strong> to help you?",
+    slot_1555_spin: "📞 Call 1555", slot_1555_spinning: "⏳ Calling...", slot_1555_retry: "📞 Try again",
+    slot_1555_success: (label) => `<strong>✓ ${label}!</strong><br>You can be served on 1555.`,
+    slot_1555_fail: `<strong>Unfortunately you could not be served on 1555.</strong><br><span style="color:#fca5a5;font-size:11px;">You can try again.</span>`,
+    slot_1555_faces: [
+      { label:"I speak Greek",                       icon:"🇬🇷", success:true,  bg:"#0d2233", fg:"#93c5fd" },
+      { label:"I speak English",                     icon:"🇬🇧", success:true,  bg:"#0d2233", fg:"#93c5fd" },
+      { label:"I don't speak Greek or English",      icon:"😞",  success:false, bg:"#2b0d0d", fg:"#fca5a5" },
+      { label:"Could not find anyone to help me",    icon:"😞",  success:false, bg:"#2b0d0d", fg:"#fca5a5" },
+    ],
+    // Shared button labels
+    btn_continue: "Continue →",
+    btn_understood: "GOT IT",
+    btn_read_more: "↗ Read more",
+    btn_restart: "↺ Restart",
+    // requestDocument
+    doc_already_owned: (name) => `${name} — already in your wallet.`,
+    address_hasan_title: "Proof of Residence",
+    address_hasan_body: "To have a residence address you must either own property (uncommon for refugees), have a lease in your name, or have accommodation registered in TAXISnet. Normally you need an ADET, AFM and TAXISnet to proceed. Do you have any of the above?\n\nNote that Greek law imposes fines for failure to submit or false declaration of a rental to AADE. Furthermore, knowingly declaring false information or concealing the truth before any authority is a criminal offence punishable by term of imprisonment.",
+    address_hasan_btn: "Let's assume I found a way.",
+    lease_confirm_title: "Residential Lease",
+    lease_confirm_body: "Even though you don't have a work contract yet, shall we assume you managed to rent an apartment in your name?",
+    btn_yes: "Yes", btn_no: "No", btn_cancel: "Cancel",
+    ready_to_apply: "✓ Ready to apply!",
+    no_req_doc: "No required documents",
+    // Status badges
+    status_blocked: "Blocked",
+    status_ok: "✓ Obtained",
+    status_ready: "Ready",
+    status_both_ok: "✓ Both obtained",
+    status_already: "✓ Already in wallet",
+    // Route UI
+    route_popup_info: "Popup info",
+    route_no_prereq: "No prerequisites",
+    route_option: (id) => `Option ${id}`,
+    route_or_one: "+ one of the following:",
+    route_or_one_inline: "+ one of the options:",
+    // Doc UI
+    progress_docs: (owned, needed) => `<span>${owned}/${needed}</span> documents`,
+    track_click_title: (name) => `Click to track: ${name}`,
+    wallet_empty: "Empty wallet",
+    track_btn: (name) => `↗ Track: ${name}`,
+    handle_doc: (name) => `Handle ${name}`,
+    // Mini-challenge
+    ch_skip_inline: "✕ Skip",
+    ch_start: "▶ Start",
+    ch_replay: "↺ Play again",
+    ch_countdown_go: "Go!",
+    ch_lost: "YOU LOST!",
+    ch_win: "WIN! ✓",
+    ch_gendered_male: "recognised refugee",
+    ch_gendered_female: "recognised refugee",
+    ch_hint_eater: "⬆⬇⬅➡ or WASD · drag or use arrows · collect all documents without being caught",
+    ch_snake_collision: "💥 You hit yourself!",
+    ch_snake_collected: "✅ You collected them all!",
+    tree_remote: "Remote",
+    ch_hint_snake: "⬆⬇⬅➡ or WASD · drag or use arrows · collect 10 documents without hitting yourself · edges connect",
+    // Tree panel node statuses
+    tree_status_ok: "✓ Obtained",
+    tree_status_ready: "⚡ Ready!",
+    tree_status_pending: "⏳ Pending",
+    tree_no_req_assumed: "Let's assume you've found a way",
+    tree_legend_html: `<span style="color:#4ade80">■ ✓ Obtained</span> <span style="color:#fbbf24">■ ⚡ Ready to obtain (you have all prerequisites)</span> <span style="color:#60a5fa">■ Pending</span> <span style="color:#22c55e">→ You have the prerequisite</span> <span style="color:#ef4444">→ Missing prerequisite</span>`,
+    ticker_text: "📊 96,438 active ADETs + 19,398 pending first issuance   ◆   9,179 return requests in 2025 — 274% increase in one year   ◆   725 deportations of recognised refugees in 2025, including families with children   ◆   7,640 pending ADET renewals — 2,237 waiting over 1 year   ◆   Only 4,323 places in HELIOS+ for 134,576 ADET holders   ◆   Returnees arrive at the airport without notice, without housing, without documents   ◆   KEP stopped issuing AMKA since 2024   ◆   1,515 pending travel document applications at end of 2025   ◆   Without active AMKA: no access to healthcare, benefits, employment, prescriptions   ◆   Children born in Greece are often registered with a different case number from the family   ◆   Full RSA Report 2026: rsaegean.org/en/recognised-refugees-in-greece-2026/",
+    // Day milestones & toasts
+    toast_landed: "You just arrived in Greece. Start at the Asylum Service.",
+    toast_days: (n, total) => `⏳ ${n} day(s) passed... Total: ${total} days`,
+    day_100: "📅 100 days in the bureaucratic maze.",
+    day_200: "📅 200 days. You are still going.",
+    day_365: "⚠️ A whole year has passed without a solution.",
+    day_500: "⚠️ 500 days. Elsewhere this would be a different life.",
+    day_730: "⚠️ Two years. The bureaucracy never ends.",
+    toast_quest: (label) => `Mission: "${label}".`,
+    toast_reset: "Restart. Choose a character to begin.",
+    toast_tracking: (name) => `Tracking: ${name}.`,
+    toast_remote: (name) => `${name} — remote step.`,
+    toast_unlocked: (name) => `Route unlocked: ${name}`,
+    toast_doc_added: (name) => `${name} added to your wallet.`,
+    // Ending
+    ending_body: (name, days) => `You managed to obtain ${name} after ${days} days. In reality, many people do not. For the purposes of the game we simplified a number of real-life difficulties that in real life often drive people to despair and entrapment. The maze does not end here.`,
+    ending_title: (name) => `${name} — completed.`,
+    ending_header: "📋 Step completed",
+    ending_cta: "Read the full RSA report on recognised refugees in Greece:",
+    ending_explore: "Continue exploring",
+    ending_next: (label) => `→ Next: ${label}`,
+    ending_switch: "Change mission",
+    ending_new_quest_btn: "Start new mission",
+    // Waiting flow
+    btn_skip: "SKIP",
+    waiting_skip_body: (days) => `This could have taken a very long time. Let's assume that in your case it lasted ${days} days.`,
+    // Route card
+    target_label: (name) => `Target: ${name}`,
+    no_prerequisites: "No prerequisites.",
+    common_req: "Common requirements",
+    no_extra_req: "No additional requirements.",
+    both_docs_note: "Submit applications for both documents",
+    // Mini challenge
+    btn_skip_challenge: "✕ Skip",
+    fail_header: "✗ FAILED TAP TEST",
+    fail_timeout: "Time ran out before you filled the bar.",
+    fail_retry: "↺ TRY AGAIN",
+    tap_fail: (pct, score, req) => `You only filled ${pct}% of the bar (${score}/${req} taps).`,
+    mini_challenge_intro: (gendered) => `You are ${gendered} in Greece — challenges keep arising that the game cannot fully capture. Pass this challenge to continue your mission`,
+    // Office
+    office_available: (names) => `Available: ${names}.`,
+    office_solve_route: "Fulfil one of the required routes:",
+    office_req_docs: "Required documents:",
+    // Reset confirm
+    reset_title: "Restart?",
+    reset_body: "You will lose all your documents and return to the beginning.",
+    reset_confirm: "Restart",
+    // Change character confirm
+    char_change_title: "Change character",
+    char_change_body: "If you change character, the documents you have collected will be lost. Continue?",
+    char_change_confirm: "Change",
+    // Tap success
+    tap_title: "You did it!",
+    tap_body: "It took effort and luck.",
+    tap_btn: "Enter the city",
+    request_btn: (name) => `Request ${name}`,
+    // Mini-game
+    mini_success_toast: "You did it! Continue your mission.",
+    toast_removed_unemployment: "Unemployment Card removed (incompatible with work contract).",
+    // About modal
+    game_title: "Recognised Refugees — The Great Bureaucratic Adventure 2026",
+    map_title_bar: "Recognised Refugees in Greece — The Great Bureaucratic Adventure 2026",
+    // Top bar
+    req_toggle_label: "Required",
+    glossary_btn_label: "Glossary",
+    mute_title: "Mute / Sound",
+    reset_title_btn: "Restart",
+    tree_title: "Document dependency tree",
+    legend_title: "Instructions / Legend",
+    glossary_corner_title: "Glossary",
+    // Sidebar
+    sidebar_mission: "🎯 Mission",
+    sidebar_req_label: "📋 Required:",
+    sidebar_tracking: "🔍 Tracking document",
+    sidebar_wallet: "🗂 Document Wallet",
+    sidebar_glossary: "📖 Glossary",
+    glossary_overlay: "📖 Document Glossary",
+    // Start screen
+    start_title: "🏛 Bureaucracy Maze — Recognised Refugees in Greece 2026",
+    start_intro: "After years in another European country, you are forcibly returned to Greece. You just landed. You must survive.",
+    start_intro_bold: "Choose a character, choose a mission, and start from zero.",
+    start_step1: "1. Choose character",
+    start_step1_change: "change",
+    start_step2: "2. Choose mission",
+    start_ready: "Ready? Even if you're not, you have no choice.",
+    start_btn: "Start mission",
+    // Prelim screen
+    prelim_title_bar: "Preliminary challenge",
+    spin_btn: "🎲 Spin the wheel",
+    event_default_title: "Information",
+    event_close_title: "Close",
+    office_default_title: "Office",
+    spin_got: "You got",
+    spin_seconds: "seconds!",
+    spin_timer_hint: "The timer doesn't start until you press the button.",
+    tap_instructions_title: "Tap Test Instructions:",
+    tap_instructions_body: "Click/tap the bar below to fill it before time runs out.",
+    tap_start_btn: "▶ Start",
+    tap_click_label: "CLICK / TAP HERE",
+    tap_click_label_start: "CLICK / TAP HERE TO START",
+    skip_btn_label: "Skip challenge",
+    skip_desc_fallback: "If you can't face the challenge, let's assume you managed.",
+    legend_title: "❓ Instructions & Legend",
+    legend_body: `<div class="legend-section"><div class="legend-section-title">🕹 Movement</div><div class="legend-row"><span class="legend-icon">⬆⬇⬅➡</span><span class="legend-desc">Arrow keys / WASD: move character (desktop)</span></div><div class="legend-row"><span class="legend-icon">👆</span><span class="legend-desc">Tap on the map: move there (mobile)</span></div><div class="legend-row"><span class="legend-icon">🖱</span><span class="legend-desc">Click on the map: move there (desktop)</span></div></div><div class="legend-section"><div class="legend-section-title">🏢 Buildings</div><div class="legend-row"><span class="legend-icon">👆 / 🖱</span><span class="legend-desc">Tap or click on building to enter</span></div><div class="legend-row"><span class="legend-icon">★</span><span class="legend-desc">Star = you have all documents for this building</span></div><div class="legend-row"><span class="legend-icon">⬜</span><span class="legend-desc">White outline = you are nearby</span></div></div><div class="legend-section"><div class="legend-section-title">📋 Documents</div><div class="legend-row"><span class="legend-icon">✓</span><span class="legend-desc">Green: you have the document</span></div><div class="legend-row"><span class="legend-icon">✕</span><span class="legend-desc">Red: missing — click to track</span></div><div class="legend-row"><span class="legend-icon">↗</span><span class="legend-desc">Click → document added to tracking</span></div><div class="legend-row"><span class="legend-icon">🔍</span><span class="legend-desc">Tracking: see where to go for it</span></div></div><div class="legend-section"><div class="legend-section-title">🎯 Mission & Days</div><div class="legend-row"><span class="legend-icon">🎯</span><span class="legend-desc">Current mission — click to change</span></div><div class="legend-row"><span class="legend-icon">📅</span><span class="legend-desc">Days passed (increase automatically)</span></div><div class="legend-row"><span class="legend-icon">↺</span><span class="legend-desc">Reset: restart game</span></div></div><div class="legend-section"><div class="legend-section-title">🔊 Sound</div><div class="legend-row"><span class="legend-icon">🔊</span><span class="legend-desc">Mute button for sound/music</span></div><div class="legend-row"><span class="legend-icon">🎵</span><span class="legend-desc">Music speeds up every 30 seconds</span></div></div>`,
+    about_title: "ℹ️ About this game",
+    about_game_name: "Recognised Refugees in Greece — The Great Bureaucratic Adventure 2026",
+    about_context: "This game is based on the report Recognised Refugees in Greece, 2026, by Refugee Support Aegean (RSA). The game's criteria are based on real, documented cases and are simplified for gameplay purposes.",
+    about_disclaimer: "<strong>Disclaimer:</strong> This game does not constitute legal, administrative or other advice. If you face a similar situation, seek legal advice or contact a competent authority.",
+    about_report_link: "Read the RSA report →",
+    about_credits: "Refugee Support Aegean (RSA) 2026 · created with vibe coding",
+    // Location denial
+    denial_back_btn: "↩ Back to city",
+    denial_header: "⛔ BLOCKED",
+    denial_req_docs: "Required documents",
+    denial_title: "Access Denied",
+    denial_body: (name) => `You cannot enter <strong>${name}</strong> yet. Gather the required documents first.`,
+    // Hard blocks
+    ineligible_title: "Ineligible",
+    unemp_card_blocked: "You cannot obtain an Unemployment Card because you have a Work Contract. If you need it to join HELIOS+ in order to receive a rental subsidy, this means you cannot register for HELIOS+.",
+    helios_ineligible_title: "Ineligible for HELIOS+",
+    helios_ineligible_body: "The HELIOS+ programme requires your Residence Permit (ADET) to have been issued less than 2 years ago. Your ADET has already expired or was issued more than 2 years ago — you do not meet the eligibility criteria for HELIOS+.",
+    // Document denial
+    doc_denial_title: "Application Blocked",
+    doc_denial_body: (name) => `You cannot obtain <strong>${name}</strong> yet. No available route is complete.`,
+    stuck_hint_title: "Stuck?",
+    stuck_hint_circular: (name) => `There is a circular dependency with <strong>${name}</strong>.`,
+    stuck_hint_escape: (docs) => `Alternative route: use <strong>${docs}</strong> to unblock.`,
+    stuck_hint_lawyer: "You may need external help (lawyer / accountant).",
+    // Tree panel
+    tree_no_location: "🔗 No location",
+    // Footer
+    about_btn: "ℹ️ About",
+    footer_disclaimer: "Game based on the",
+    footer_no_advice: "· Not legal advice",
+  }
+};
+const S = (key) => {
+  const v = STRINGS[LANG]?.[key] ?? STRINGS.el[key];
+  return v;
+};
+
+// ─────────────────────────────────────────────
 // DATA
 // ─────────────────────────────────────────────
-const RSA_REPORT_URL = "https://rsaegean.org/el/anagnorismenoi-prosfyges-2026";
+const RSA_REPORT_URL = LANG === 'en'
+  ? "https://rsaegean.org/en/recognised-refugees-in-greece-2026/"
+  : "https://rsaegean.org/el/anagnorismenoi-prosfyges-2026";
 
-const DATA = {
+const DATA_EL = {
   characters: [
     {
       id: "mariam",
@@ -1513,6 +2060,141 @@ const DATA = {
   ]
 };
 
+const DATA_EN = {
+  characters: [
+    {
+      id: "mariam",
+      name: "Mariam",
+      description: "Returned with an expired ADET, expired Passport and no Tax Number (AFM). More than 2 years have passed since her ADET was issued.",
+      under2YearAdet: false,
+      startingDocs: [],
+      specialRequests: {
+        adet: {
+          title: "ADET & PASSPORT RENEWAL",
+          message: "Waiting times for renewals can be lengthy. At the end of 2025, 7,640 ADET renewal applications were pending, of which 2,237 for more than one year. Without an ADET, you can do almost nothing.",
+          alsoGrants: ["passport"]
+        },
+        passport: { mergedInto: "adet" }
+      }
+    },
+    {
+      id: "hasan",
+      name: "Hasan",
+      description: "Returned with ADET and Passport withheld by the returning country. Has a Tax Number (AFM). Less than 2 years have passed since his ADET was issued.",
+      under2YearAdet: true,
+      startingDocs: ["afm"],
+      specialRequests: {
+        adet: {
+          title: "RETRIEVAL OF ADET & PASSPORT",
+          storyTitle: "Real case — Ahmed*, Afghanistan",
+          storySubtitle: "Update during the wait",
+          message: "Ahmed*, a recognised refugee from Afghanistan, was deported from Germany in late December 2025, without his valid ADET and Travel Document being handed over by the German authorities.\n\nFrom mid-January 2026, RSA lawyers have been in contact with the Piraeus RAO of the Asylum Service, requesting retrieval of the documents from Germany.\n\nIn mid-March 2026, the Piraeus RAO informed them that the documents had not been received and requested a declaration of loss — while the documents have not been lost.",
+          link: { href: RSA_REPORT_URL, label: "Read more in the RSA annual report →" },
+          alsoGrants: ["passport"]
+        },
+        passport: { mergedInto: "adet" }
+      }
+    }
+  ],
+  quests: {
+    find_job: {
+      id: "find_job", label: "Find a job", target: "work_contract",
+      description: "Gather the documents required to obtain an official work contract.",
+      prelim: { title: "Job search...", desc: "Finding work is extremely difficult, especially for recognised refugees. In 2025, unemployment among returnees was near-total. To simplify, we created the challenge below. Pass it and we'll assume you found a job. And the Great Bureaucratic Journey begins...", skipDesc: "If you can't face the challenge, let's assume you found a job." }
+    },
+    rent_apartment: {
+      id: "rent_apartment", label: "Rent an apartment", target: "lease_contract",
+      description: "Navigate the bureaucratic obstacles that lead to a residential lease.",
+      followUpQuest: "get_rent_subsidy",
+      prelim: { title: "Apartment search...", desc: "Finding an apartment is extremely difficult for everyone, but far more so for refugees. Many returnees end up homeless. To simplify, we created the challenge below. Pass it and we'll assume you found an apartment. And the Great Bureaucratic Journey begins...", skipDesc: "If you can't face the challenge, let's assume you found an apartment." }
+    },
+    get_rent_subsidy: {
+      id: "get_rent_subsidy", label: "Rental subsidy", target: "rent_subsidy",
+      description: "Secure a rental subsidy through the HELIOS+ programme.",
+      prelim: null
+    }
+  },
+  documents: {
+    adet: { id:"adet", name:"ADET", short:"Residence Permit (Άδεια Διαμονής Ενιαίου Τύπου) from the Asylum Service. Valid for three years for refugees, one year for subsidiary protection." },
+    passport: { id:"passport", name:"Passport", short:"Valid travel document." },
+    afm: { id:"afm", name:"Tax Number (AFM)", short:"Tax Identification Number — required for almost every transaction with the Greek state." },
+    taxisnet: { id:"taxisnet", name:"TAXISnet", short:"Access credentials for the AADE tax portal. Required for online update of personal details." },
+    updated_data: { id:"updated_data", name:"Updated personal details", short:"Update of personal details on the AADE tax registry." },
+    tax_clearance: { id:"tax_clearance", name:"Tax Clearance Certificate", short:"Tax declaration/assessment notice. Required for bank account and social welfare benefits." },
+    bank_account: { id:"bank_account", name:"Bank Account", short:"Personal bank account. Many banks refuse to serve refugees or require additional documentation." },
+    inactive_amka: { id:"inactive_amka", name:"Inactive AMKA", short:"Social Security Number (inactive). Activated only upon signing a work contract." },
+    amka: { id:"amka", name:"AMKA (active)", short:"Active Social Security Number. Required for healthcare, benefits, employment." },
+    ama: { id:"ama", name:"AMA", short:"Insured Person Number (EFKA). Required for formal employment." },
+    address: { id:"address", name:"Proof of Residence", short:"Proof of residence address. Without a fixed address, access to many documents is blocked." },
+    lease_contract: { id:"lease_contract", name:"Residential Lease", short:"Rental lease agreement. Requires AFM, ADET and TAXISnet for registration in the system." },
+    unemployment_card: { id:"unemployment_card", name:"Unemployment Card", short:"Registration with DYPA as unemployed. Required for the HELIOS+ programme. Incompatible with a work contract." },
+    helios_plus: { id:"helios_plus", name:"Helios+", short:"DOM integration support programme. Provides rental subsidy but only if you already have a lease in your name." },
+    rent_subsidy: { id:"rent_subsidy", name:"Rental subsidy", short:"Rental subsidy through HELIOS+." },
+    work_contract: { id:"work_contract", name:"Work Contract", short:"Official work contract." },
+    third_party_authorization: { id:"third_party_authorization", name:"Third-party authorisation (accountant/lawyer)", short:"A third party with TAXISnet submits an application on your behalf.", wallet:false, remoteActionLabel:"Use third-party authorisation" },
+    speak_greek_or_english: { id:"speak_greek_or_english", name:"Speak Greek or English?", short:"Language support for the 1555 line.", wallet:false, remoteActionLabel:"Confirm I speak Greek or English" },
+    phone_1555: { id:"phone_1555", name:"Call 1555", short:"Phone access to EFKA.", wallet:false, remoteActionLabel:"Call 1555" },
+  },
+  rules: {
+    adet: { location:"asylum_service", routes:[{id:"1",requires:[]}] },
+    passport: { location:"asylum_service", routes:[{id:"1",requires:[]}] },
+    helios_plus: { location:"dom", routes:[{id:"1",requires:["afm","taxisnet","unemployment_card"]}] },
+    taxisnet: { location:"eforia", routes:[{id:"1",requires:["afm","updated_data"]}] },
+    unemployment_card: { location:"dypa", routes:[{id:"1",requires:["adet","afm","inactive_amka"]}] },
+    updated_data: { location:"eforia", routes:[{id:"1",requires:["taxisnet","adet"]},{id:"2",requires:["third_party_authorization"]}] },
+    ama: { location:"efka", routes:[{id:"1",requires:["adet","inactive_amka","address"]}] },
+    inactive_amka: { location:"efka", routes:[{id:"1",requires:["adet","afm"]}] },
+    address: { location:"apartment", routes:[{id:"Pop",requires:[],popup:{title:"Proof of Residence",body:"You are probably here because you need a Proof of Residence Address to obtain a Tax Number (AFM). However, to have a residence address you must either own property (uncommon for refugees), have a lease in your name, or have accommodation registered in TAXISnet. Normally you need an ADET, AFM and TAXISnet to proceed. Do you have any of the above? Note that Greek law imposes fines for failure to submit or false declaration of a rental to AADE. Furthermore, knowingly declaring false information or concealing the truth before any authority is a criminal offence punishable by term of imprisonment.",confirmLabel:"Let's assume I found a way.",reportLink:true}}] },
+    amka: { location:"efka", routes:[{id:"1",requires:["adet","work_contract","address"]}] },
+    afm: { location:"eforia", routes:[{id:"1",requires:["adet","address","passport"]}] },
+    tax_clearance: { location:"eforia", routes:[{id:"1",requires:["taxisnet"]}] },
+    rent_subsidy: { location:"dom", routes:[{id:"1",requires:["helios_plus","bank_account","lease_contract"]},{id:"Pop",requires:["helios_plus","bank_account","lease_contract"],popup:{title:"Residential Lease",body:"To receive a rental subsidy you must be an unemployed refugee and, at the same time, while unemployed, have a residential lease in your name. The difficulty is obvious.",confirmLabel:"Let's assume I found a way.",reportLink:true}}] },
+    phone_1555: { location:null, routes:[{id:"1",requires:["speak_greek_or_english"]}] },
+    speak_greek_or_english: { location:null, routes:[{id:"1",requires:[]}] },
+    third_party_authorization: { location:null, routes:[{id:"1",requires:[]}] },
+    lease_contract: { location:"apartment", routes:[{id:"1",requires:["afm","adet","taxisnet"]}] },
+    work_contract: { location:"work", routes:[{id:"1",requires:["amka","afm","bank_account","ama"]},{id:"2",requires:["inactive_amka","afm","bank_account","ama"]}] },
+    bank_account: { location:"bank", routes:[{id:"1",requires:["adet","afm","tax_clearance","address"]}] }
+  },
+  locationAccess: {},
+  locations: [
+    { id:"asylum_service", name:"Asylum Service", x:148, y:138, w:210, h:126, color:0x8aad98, docs:["adet","passport"] },
+    { id:"eforia", name:"Tax Office", x:525, y:138, w:200, h:130, color:0xd4c5e2, docs:["afm","taxisnet","updated_data","tax_clearance"] },
+    { id:"efka", name:"EFKA", x:755, y:138, w:200, h:130, color:0xbf8f00, docs:["inactive_amka","amka","ama"] },
+    { id:"dom", name:"DOM", x:1138, y:138, w:185, h:126, color:0x9b8ed8, docs:["helios_plus","rent_subsidy"] },
+    { id:"apartment", name:"Apartment", x:148, y:570, w:225, h:130, color:0xcdc1c1, docs:["address","lease_contract"] },
+    { id:"dypa", name:"DYPA", x:525, y:570, w:200, h:126, color:0x5f9ea0, docs:["unemployment_card"] },
+    { id:"work", name:"Work", x:755, y:570, w:200, h:126, color:0x7291bf, docs:["work_contract"] },
+    { id:"bank", name:"Bank", x:1138, y:570, w:205, h:130, color:0x9ab8b5, docs:["bank_account"] }
+  ],
+  npcs: [
+    { id:"npc1", x:360, y:40,  label:"Farzaneh*",          bubble:"Deportation of a lone woman from Sweden: Farzaneh*, a recognised refugee from Afghanistan, was deported from Sweden to Greece in July 2025. RSA lawyers approached the Reception and Identification Service, among other authorities, requesting urgent accommodation and support. The reply was: 'The aforementioned third-country national cannot be housed in a facility under the responsibility of this Service as she is not eligible due to her legal status.' Following intervention by the National Emergency Response Mechanism (EMEA), Farzaneh* was referred to emergency accommodation in a shelter outside the Ministry of Migration and Asylum's remit.", color:0xd4879a },
+    { id:"npc2", x:190, y:310, label:"Mariella*",           bubble:"Deportation of a lone woman from Germany: Mariella*, a recognised trans refugee from Iran, was deported from Germany to Greece in mid-April 2025. She submitted an ADET renewal application in mid-May, which was registered by the Beneficiaries of International Protection Unit 19 days later and its processing remains pending to date.", color:0xa07ab8 },
+    { id:"npc3", x:1080, y:370, label:"Nilab*",             bubble:"Deportation of a single-parent family from Germany: Nilab*, a single mother with a disability from Afghanistan, was deported with her four children to Greece in late January 2026 after seven years in Germany, without valid Residence Permits and Travel Documents, and having lost the AFM and AMKA previously assigned to her before the family left Greece. In March 2026, RSA lawyers approached a KEP (Citizens Service Centre) to recover Nilab*'s AFM and AMKA, but the KEP was unable to locate her details.", color:0x8aad98 },
+    { id:"npc4", x:820, y:310,  label:"Homeless Refugee",   bubble:"Many homeless refugees, especially those returned to Greece from other countries, are unable to obtain a homelessness certificate, which they need as Proof of Residence Address for a series of procedures and to obtain essential documents.", color:0xb0905a },
+    { id:"npc6", x:920, y:460,  label:"Zakia*",             bubble:"ECHR interim measures for a young woman with disability and chronic illness: Zakia*, a young recognised refugee from Syria, has a disability and serious chronic illness requiring regular hospitalisation and medication, which she had been receiving at an Athens hospital since autumn 2024. After receiving her Residence Permit, her PAAUPA as an asylum seeker was deactivated in January 2026 and she needed an Active AMKA to continue her treatment. Zakia* had to take her case all the way to the European Court of Human Rights (ECHR) to be able to continue receiving treatment necessary for her survival (Omar v. Greece, 4827/26).", color:0xb0905a },
+    { id:"npc7", x:170, y:390, label:"Refugee with disability", bubble:"To obtain an Unemployment Card from the Public Employment Service (DYPA), recognised refugees with disabilities must already hold a Disability Certification to be registered as unemployed persons with a disability. To request a disability certification, however, they must have an Active AMKA, for which a prerequisite is secured lawful Employment and a work contract or recruitment certificate from an employer. 🤷‍♀️", color:0x6a9ab0 },
+  ],
+  glossary: [
+    { term:"ADET (Residence Permit)", def:"Άδεια Διαμονής Ενιαίου Τύπου. Issued by the Asylum Service. Valid for three years for refugees, one year for subsidiary protection. Renewals handled by the Beneficiaries of International Protection Unit (AAU). At end of 2025, 7,640 renewal applications were pending." },
+    { term:"AMKA (Social Security Number)", def:"Social Security Number. Inactive until signing a work contract or obtaining a recruitment certificate. Without an active AMKA there is no access to the NHS, benefits such as the Guaranteed Minimum Income (GMI)." },
+    { term:"AMA (Insured Person Number)", def:"EFKA registration number. Required for formal employment. Issued by EFKA; requires ADET, inactive AMKA and Proof of Residence Address." },
+    { term:"AFM (Tax Identification Number)", def:"Unique number required for every transaction with the Greek state. Issued by AADE. Assigned automatically upon full registration of an asylum application." },
+    { term:"Beneficiary Certificate (Βεβαίωση Δικαιούχου)", def:"Issued by the Asylum Service upon request after submission of a renewal application. Does not replace the ADET — most authorities do not accept it. Ignored even for legal transactions." },
+    { term:"Unemployment Card (DYPA)", def:"Registration as unemployed with DYPA. Requires ADET, AFM, inactive AMKA. Incompatible with a work contract. Prerequisite for HELIOS+." },
+    { term:"GMI (Guaranteed Minimum Income — ΕΕΕ)", def:"Basic benefit of €216/month per household + €108 per additional adult. Requires ADET, AFM, TAXISnet, active AMKA and a bank account. Incompatible with HELIOS+ rental subsidy." },
+    { term:"EMEp (National Communications Registry)", def:"Mandatory registration of phone, email and address for transactions with the public sector. Requires a valid ADET. In some KEPs, ADETs are not recognised as a valid document type in the system." },
+    { term:"Tax Clearance Certificate", def:"Issued after submission of a tax declaration — at least 3–4 months after the end of the tax year. Required for bank account and social welfare benefits." },
+    { term:"Readmission", def:"Return of recognised refugees from other European countries to Greece. In 2025: 9,179 requests (+274% from 2024), 725 deportations. Returnees arrive without information, without housing, without documents." },
+    { term:"HELIOS+", def:"Integration support programme (DOM, 2025–2028). Prerequisite: grant of asylum within the last 24 months. Provides rental subsidy — but only if you already have a lease in your name. Only 4,323 places for 134,576 ADET holders." },
+    { term:"PAAUPA", def:"Temporary Insurance and Healthcare Number for Foreign Nationals. Issued to asylum seekers. Must be converted to AMKA within one month of receiving an ADET — but this does not happen automatically." },
+    { term:"TAXISnet (Kleidarithmos)", def:"Access credentials for the AADE tax portal. Without credentials, personal details cannot be updated. Without updated details, credentials cannot be issued — a classic 'Catch-22'." },
+    { term:"Refugee Support Aegean (RSA)", def:`Provides free legal assistance and support to recognised refugees. Supported 50+ people returned to Greece in 2025. 2026 Report: <a href="${RSA_REPORT_URL}" target="_blank" style="color:var(--ec95-blue-a)">rsaegean.org/en/recognised-refugees-in-greece-2026/</a>.` },
+  ]
+};
+
+const DATA = LANG === 'en' ? DATA_EN : DATA_EL;
+
 // ─────────────────────────────────────────────
 // STATE
 // ─────────────────────────────────────────────
@@ -1584,7 +2266,6 @@ const els = {
   spinResult: document.getElementById("spin-result"),
   tapPanel: document.getElementById("tap-panel"),
   resultSeconds: document.getElementById("result-seconds"),
-  startTapBtn: document.getElementById("start-tap-btn"),
   gameStage: document.getElementById("game-stage"),
   wheel: document.getElementById("wheel"),
   spinBtn: document.getElementById("spin-btn"),
@@ -1653,11 +2334,7 @@ function _applyDayUrgency(days) {
 function _maybeShowDayMilestone(days) {
   if (!state.shownMilestones) state.shownMilestones = [];
   const labels = {
-    100: "📅 100 ημέρες στη γραφειοκρατία.",
-    200: "📅 200 ημέρες. Συνεχίζεις ακόμα.",
-    365: "⚠️ Πέρασε ένας ολόκληρος χρόνος χωρίς λύση.",
-    500: "⚠️ 500 ημέρες. Αλλού θα ήταν άλλη ζωή.",
-    730: "⚠️ Δύο χρόνια. Η γραφειοκρατία δεν τελειώνει."
+    100: S('day_100'), 200: S('day_200'), 365: S('day_365'), 500: S('day_500'), 730: S('day_730')
   };
   if (labels[days] && !state.shownMilestones.includes(days)) {
     state.shownMilestones.push(days);
@@ -1669,7 +2346,7 @@ function addDays(n, silent=false) {
   els.dayCounter.textContent = state.dayCount;
   _applyDayUrgency(state.dayCount);
   _maybeShowDayMilestone(state.dayCount);
-  if (!silent) showToast(`⏳ Πέρασαν ${n} ημέρα/ες... Σύνολο: ${state.dayCount} ημέρες`);
+  if (!silent) showToast(S('toast_days')(n, state.dayCount));
 }
 
 // ─── AUDIO ───
@@ -1754,11 +2431,11 @@ function buildGlossary() {
 function confirmReset() {
   if (!state.started) { resetGame(); return; }
   showEventModal({
-    title: "Επανεκκίνηση;",
-    body: "Θα χάσεις όλα τα έγγραφα και την πρόοδό σου. Συνέχεια;",
+    title: S('reset_title'),
+    body: S('reset_body'),
     actions: [
-      { label: "↺ Ναι, επανεκκίνηση", className: "warn", onClick: () => { closeEventModal(); resetGame(); } },
-      { label: "Άκυρο", className: "", onClick: closeEventModal }
+      { label: S('reset_confirm'), className: "warn", onClick: () => { closeEventModal(); resetGame(); } },
+      { label: S('btn_cancel'), className: "", onClick: closeEventModal }
     ]
   });
 }
@@ -1780,10 +2457,10 @@ function resetGame() {
   els.startScreen.classList.remove("hidden");
   els.glossaryPanel.classList.add("hidden");
   closeOffice({ skipDay: true }); hideEnding();
-  els.startButton.textContent = "Ξεκίνα την αποστολή";
+  els.startButton.textContent = S('start_btn');
   expandStep1();
   renderStartChoices(); updateStartButton();
-  showToast("Επανεκκίνηση. Επίλεξε χαρακτήρα για να ξεκινήσεις.");
+  showToast(S('toast_reset'));
   if (state.scene) { state.scene.updatePlayerLabel(); state.scene.resetPlayer(); }
 }
 
@@ -1831,12 +2508,12 @@ function renderStartChoices() {
       };
       if (state.questSelectMode && state.inventory.size > 0 && ch.id !== state.selectedCharacter) {
         showEventModal({
-          title: "Αλλαγή χαρακτήρα",
-          body: `Αν αλλάξεις χαρακτήρα, θα χαθούν τα ${state.inventory.size} έγγραφα που έχεις ήδη συγκεντρώσει. Θέλεις να συνεχίσεις;`,
+          title: S('char_change_title'),
+          body: S('char_change_body'),
           closeable: false,
           actions: [
-            { label: "Ναι, αλλαγή", className: "warn", onClick: () => { closeEventModal(); applyCharChange(); } },
-            { label: "Άκυρο", className: "", onClick: () => closeEventModal() }
+            { label: S('char_change_confirm'), className: "warn", onClick: () => { closeEventModal(); applyCharChange(); } },
+            { label: S('btn_cancel'), className: "", onClick: () => closeEventModal() }
           ]
         });
         return;
@@ -1866,31 +2543,31 @@ function switchQuest(id) {
       els.prelimScreen.classList.add("hidden");
       state.trackedDoc = null;
       updateUI();
-      showToast(`Αποστολή: "${getQuest().label}".`);
+      showToast(S('toast_quest')(getQuest().label));
       checkQuestCompletion();
     };
     showPreliminaryScreen();
   } else {
     state.trackedDoc = null;
-    updateUI(); showToast(`Αποστολή: "${getQuest().label}".`);
+    updateUI(); showToast(S('toast_quest')(getQuest().label));
     checkQuestCompletion();
   }
 }
 
 function trackDocument(id) {
   const rule = getRule(id);
-  if (!rule.location) { showToast(`${getDoc(id).name} — απομακρυσμένο βήμα.`); return; }
+  if (!rule.location) { showToast(S('toast_remote')(getDoc(id).name)); return; }
   state.trackedDoc = id; updateUI(); closeOffice();
   if (window.matchMedia("(max-width: 1023px)").matches) {
     const panel = document.getElementById("req-collapse");
     if (panel && !panel.classList.contains("open")) {
       panel.classList.add("open");
       const btn = document.getElementById("req-toggle-btn");
-      if (btn) { btn.textContent = "📋 Απαιτούμενα ▴"; btn.classList.add("active"); }
+      if (btn) { btn.innerHTML = `📋 <span id="req-toggle-label">${S('req_toggle_label')}</span> ▴`; btn.classList.add("active"); }
 
     }
   }
-  showToast(`Παρακολούθηση: ${getDoc(id).name}.`);
+  showToast(S('toast_tracking')(getDoc(id).name));
 }
 function toggleRequirementsPanel() {
   const panel = document.getElementById("req-collapse");
@@ -1898,7 +2575,7 @@ function toggleRequirementsPanel() {
   if (!panel) return;
   const isOpen = panel.classList.toggle("open");
   if (btn) {
-    btn.textContent = isOpen ? "📋 Απαιτούμενα ▴" : "📋 Απαιτούμενα ▾";
+    btn.innerHTML = `📋 <span id="req-toggle-label">${S('req_toggle_label')}</span> ${isOpen ? "▴" : "▾"}`;
     btn.classList.toggle("active", isOpen);
   }
 }
@@ -1912,7 +2589,7 @@ function buildRequirementList(docId, container) {
   const visibleRoutes = getDisplayRoutes(docId);
   if (!visibleRoutes.length) {
     const span = document.createElement("span"); span.className = "small";
-    span.textContent = getReadyRoute(docId) ? "✓ Έτοιμο για αίτηση!" : "Κανένα απαιτούμενο έγγραφο";
+    span.textContent = getReadyRoute(docId) ? S('ready_to_apply') : S('no_req_doc');
     container.appendChild(span); return;
   }
   // Find common requirements
@@ -1925,14 +2602,14 @@ function buildRequirementList(docId, container) {
   // Progress indicator
   if (neededCount > 1) {
     const prog = document.createElement("div"); prog.className = "req-progress";
-    prog.innerHTML = `<span>${ownedCount}/${neededCount}</span> έγγραφα`;
+    prog.innerHTML = S('progress_docs')(ownedCount, neededCount);
     list.appendChild(prog);
   }
   // Quest target label (shown when called from mobile bar with showTarget:true)
   if (container._showQuestTarget) {
     const lbl = document.createElement("div");
     lbl.style.cssText = "font-size:10px;color:var(--ec95-blue-a);font-weight:bold;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;";
-    lbl.textContent = `Στόχος: ${getDoc(docId).name}`;
+    lbl.textContent = S('target_label')(getDoc(docId).name);
     list.prepend(lbl);
   }
   // Common docs
@@ -1940,7 +2617,7 @@ function buildRequirementList(docId, container) {
     common.forEach(id => list.appendChild(makeReqItem(id)));
     if (visibleRoutes.length > 1) {
       const sep = document.createElement("div"); sep.className = "req-section-label";
-      sep.textContent = "+ μία από τις επιλογές:"; list.appendChild(sep);
+      sep.textContent = S('route_or_one_inline'); list.appendChild(sep);
     }
   }
   // Per-route unique docs (with "ή" between)
@@ -1973,7 +2650,7 @@ function makeReqItem(docId) {
     if (rule.location) {
       item.innerHTML += `<span style="font-size:9px; color:var(--ec95-blue-a);">↗</span>`;
       item.onclick = () => { trackDocument(docId); closeDropdowns(); };
-      item.title = `Κλικ για παρακολούθηση: ${doc.name}`;
+      item.title = S('track_click_title')(doc.name);
     }
   }
   return item;
@@ -1985,7 +2662,7 @@ function buildWalletPills(container) {
   container.innerHTML = "";
   if (!state.inventoryOrder.length) {
     const span = document.createElement("span"); span.className = "small";
-    span.textContent = "Άδειος φάκελος"; container.appendChild(span);
+    span.textContent = S('wallet_empty'); container.appendChild(span);
   } else {
     state.inventoryOrder.forEach(id => {
       const pill = document.createElement("span");
@@ -2102,8 +2779,8 @@ function updateUI() {
 // ROUTE HELPERS
 // ─────────────────────────────────────────────
 function describeRoute(route) {
-  if (route.popup) return "Popup ενημέρωση";
-  if (!route.requires || !route.requires.length) return "Χωρίς προαπαιτούμενα";
+  if (route.popup) return S('route_popup_info');
+  if (!route.requires || !route.requires.length) return S('route_no_prereq');
   return route.requires.map(id => getDoc(id).name).join(" + ");
 }
 function collectMissingFromRoutes(routes) {
@@ -2119,7 +2796,7 @@ function createRouteCard(route, opts={}) {
   if (showRouteLabel) {
     const title = document.createElement("div");
     title.className = "route-title";
-    title.textContent = route.id === "Pop" ? "Popup" : `Επιλογή ${route.id}`;
+    title.textContent = route.id === "Pop" ? "Popup" : S('route_option')(route.id);
     card.appendChild(title);
   }
   if (route.popup) {
@@ -2127,7 +2804,7 @@ function createRouteCard(route, opts={}) {
     card.appendChild(b); return card;
   }
   if (!route.requires || !route.requires.length) {
-    const n = document.createElement("div"); n.className = "small"; n.textContent = "Χωρίς προαπαιτούμενα.";
+    const n = document.createElement("div"); n.className = "small"; n.textContent = S('no_prerequisites');
     card.appendChild(n); return card;
   }
   const ul = document.createElement("ul");
@@ -2155,8 +2832,13 @@ function showEventModal({ title, body, bodyHtml=null, showSpinner=false, closeab
   else { els.eventBody.textContent = body; }
   els.eventActions.innerHTML = "";
   els.eventSpinnerShell.classList.toggle("hidden", !showSpinner);
-  if (closeable) { els.eventCloseBtn.classList.remove("hidden"); els.eventCloseBtn.onclick = closeEventModal; }
-  else { els.eventCloseBtn.classList.add("hidden"); els.eventCloseBtn.onclick = null; }
+  if (closeable) {
+    els.eventCloseBtn.classList.remove("hidden"); els.eventCloseBtn.onclick = closeEventModal;
+    els.eventModal.onclick = (e) => { if (e.target === els.eventModal) closeEventModal(); };
+  } else {
+    els.eventCloseBtn.classList.add("hidden"); els.eventCloseBtn.onclick = null;
+    els.eventModal.onclick = null;
+  }
   actions.forEach(a => {
     const btn = document.createElement("button");
     btn.textContent = a.label; btn.className = a.className || "primary";
@@ -2165,14 +2847,14 @@ function showEventModal({ title, body, bodyHtml=null, showSpinner=false, closeab
   els.eventModal.classList.remove("hidden");
 }
 function showInfoMessage(title, body, opts={}, extraActions=[]) {
-  const actions = [{ label:"ΚΑΤΑΛΑΒΑ", className:"primary", onClick:() => {
+  const actions = [{ label:S('btn_understood'), className:"primary", onClick:() => {
     closeEventModal();
     if (opts.returnToLocationId && canAccessLocation(opts.returnToLocationId)) openOffice(opts.returnToLocationId);
   }}, ...extraActions];
   showEventModal({ title, body, actions });
 }
 function showTapSuccessMessage() {
-  showEventModal({ title:"Τα κατάφερες!", body:"Χρειάστηκε προσπάθεια και τύχη.", actions:[{ label:"Είσοδος στην πόλη", className:"primary", onClick:() => {
+  showEventModal({ title:S('tap_title'), body:S('tap_body'), actions:[{ label:S('tap_btn'), className:"primary", onClick:() => {
     closeEventModal();
     const cb = state._prelimOnSuccess; state._prelimOnSuccess = null;
     if (cb) cb(); else enterCity();
@@ -2190,21 +2872,21 @@ function maybeResumeRequest(opts={}) {
 }
 function getRequestButtonText(id) {
   const sr = getSpecialRequest(id);
-  return sr ? sr.title : `Αίτηση ${getDoc(id).name}`;
+  return sr ? sr.title : S('request_btn')(getDoc(id).name);
 }
 function getHardRequestBlock(id) {
   const ch = getCharacter();
   // Note: <2 years ΑΔΕΤ condition applies to HELIOS+ eligibility, not to Δελτίο Ανεργίας
   if (id === "unemployment_card" && hasDoc("work_contract")) {
-    return { title:"Μη επιλέξιμος/η", body:"Δεν μπορείς να βγάλεις Δελτίο Ανεργίας γιατί έχεις Σύμβαση Εργασίας. Αν το χρειάζεσαι για να ενταχθείς στο HELIOS+ προκειμένου να λάβεις επιδότηση ενοικίου, αυτό σημαίνει ότι δεν μπορείς να εγγραφείς στο HELIOS+",
+    return { title:S('ineligible_title'), body:S('unemp_card_blocked'),
       extraActions:[
-        { label:"↗ Διαβάστε Περισσότερα", className:"btn-track", onClick:() => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") },
-        { label:"↺ Επανεκκίνηση", className:"warn", onClick:() => { closeEventModal(); confirmReset(); } }
+        { label:S('btn_read_more'), className:"btn-track", onClick:() => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") },
+        { label:S('btn_restart'), className:"warn", onClick:() => { closeEventModal(); confirmReset(); } }
       ]
     };
   }
   if (id === "helios_plus" && ch && !ch.under2YearAdet) {
-    return { title:"Μη επιλέξιμος/η για HELIOS+", body:"Το πρόγραμμα HELIOS+ απαιτεί η ΑΔΕΤ σου να έχει εκδοθεί πριν από λιγότερο από 2 χρόνια. Η ΑΔΕΤ σου έχει ήδη λήξει ή εκδόθηκε πάνω από 2 χρόνια πριν — δεν πληροίς τις προϋποθέσεις εγγραφής στο HELIOS+." };
+    return { title:S('helios_ineligible_title'), body:S('helios_ineligible_body') };
   }
   return null;
 }
@@ -2217,8 +2899,8 @@ function finalizeRequest(id, opts={}) {
   const removedUnemploymentCard = id === "work_contract" && removeDocument("unemployment_card");
   updateUI();
   showToast([
-    getDoc(id).wallet === false ? `Οδός ξεκλείδωσε: ${getDoc(id).name}.` : `${getDoc(id).name} προστέθηκε στον φάκελό σου.`,
-    removedUnemploymentCard ? "Δελτίο Ανεργίας αφαιρέθηκε (ασύμβατο με σύμβαση εργασίας)." : ""
+    getDoc(id).wallet === false ? S('toast_unlocked')(getDoc(id).name) : S('toast_doc_added')(getDoc(id).name),
+    removedUnemploymentCard ? S('toast_removed_unemployment') : ""
   ].filter(Boolean).join(" "));
   checkQuestCompletion();
   if (maybeResumeRequest(opts)) return;
@@ -2226,10 +2908,10 @@ function finalizeRequest(id, opts={}) {
   else if (state.currentLocationId && canAccessLocation(state.currentLocationId)) openOffice(state.currentLocationId);
 }
 function showPopupRoute(id, route, opts={}) {
-  const confirmLabel = route.popup.confirmLabel || "ΚΑΤΑΛΑΒΑ";
+  const confirmLabel = route.popup.confirmLabel || S('btn_understood');
   const actions = [{ label: confirmLabel, className:"primary", onClick:() => finalizeRequest(id, opts) }];
   if (route.popup.reportLink) {
-    actions.push({ label:"↗ Διαβάστε Περισσότερα", className:"btn-track", onClick:() => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") });
+    actions.push({ label:S('btn_read_more'), className:"btn-track", onClick:() => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") });
   }
   showEventModal({ title: route.popup.title || getDoc(id).name, body: route.popup.body, closeable: true, actions });
 }
@@ -2257,11 +2939,11 @@ function buildStoryHtml(sr) {
 
 function showWaitingFlow(id, sr, opts={}) {
   showEventModal({ title: sr.title, bodyHtml: buildStoryHtml(sr), showSpinner: true,
-    actions:[{ label:"ΠΑΡΑΛΕΙΨΗ", className:"warn", onClick:() => {
+    actions:[{ label:S('btn_skip'), className:"warn", onClick:() => {
       const days = Math.floor(Math.random() * 400) + 40;
       showEventModal({ title: sr.title,
-        body: `Αυτό θα μπορούσε να είχε διαρκέσει αρκετά μεγάλο χρονικό διάστημα. Ας υποθέσουμε οτι στην περίπτωσή σου διήρκησε ${days} ημέρες.`,
-        actions:[{ label:"ΚΑΤΑΛΑΒΑ", className:"primary", onClick:() => { addDays(days); finalizeRequest(id, opts); }}]
+        body: S('waiting_skip_body')(days),
+        actions:[{ label:S('btn_understood'), className:"primary", onClick:() => { addDays(days); finalizeRequest(id, opts); }}]
       });
     }}]
   });
@@ -2274,18 +2956,18 @@ function createRequirementActionButton(id, ctx={}) {
     if (doc.requestable === false) return null;
     const btn = document.createElement("button");
     // Remote actions (ΚΛΗΣΗ 1555, εξουσιοδότηση, etc.) are direct actions
-    btn.className = "btn-action"; btn.textContent = doc.remoteActionLabel || `Χειρισμός ${doc.name}`;
+    btn.className = "btn-action"; btn.textContent = doc.remoteActionLabel || S('handle_doc')(doc.name);
     btn.onclick = () => { els.denialModal.classList.add("hidden"); requestDocument(id, ctx); };
     return btn;
   }
   if (ctx.currentLocationId && ctx.currentLocationId === rule.location && canIssue(id)) {
     const btn = document.createElement("button");
-    btn.className = "btn-action"; btn.textContent = `Αίτηση ${doc.name}`;
+    btn.className = "btn-action"; btn.textContent = S('request_btn')(doc.name);
     btn.onclick = () => requestDocument(id, ctx); return btn;
   }
   const btn = document.createElement("button");
   // Track button: navigate to go get this doc
-  btn.className = "btn-track"; btn.textContent = `↗ Παρακολούθηση: ${doc.name}`;
+  btn.className = "btn-track"; btn.textContent = S('track_btn')(doc.name);
   btn.onclick = () => { els.denialModal.classList.add("hidden"); trackDocument(id); };
   return btn;
 }
@@ -2335,26 +3017,27 @@ function getStuckHint(id) {
 
 function showDocumentDenial(id, opts={}) {
   const hint = getStuckHint(id);
+  const _orWord = LANG === 'en' ? ' or ' : ' ή ';
   const hintHtml = hint
     ? `<div style="margin-top:10px;padding:8px;background:#fffbe6;border:2px solid #d97706;font-size:11px;">
-        💡 <strong>Κόλλησες;</strong> ${hint.circularWith
-          ? `Υπάρχει κυκλική εξάρτηση με <strong>${getDoc(hint.circularWith).name}</strong>.`
+        💡 <strong>${S('stuck_hint_title')}</strong> ${hint.circularWith
+          ? S('stuck_hint_circular')(getDoc(hint.circularWith).name)
           : ""}
         ${hint.escapeDocs.length
-          ? ` Εναλλακτική οδός: χρησιμοποίησε <strong>${hint.escapeDocs.map(d => getDoc(d).name).join(" ή ")}</strong> για να ξεκλειδώσεις την απόφραξη.`
-          : " Ίσως χρειαστείς εξωτερική βοήθεια (δικηγόρος/λογιστής)."}
+          ? ` ${S('stuck_hint_escape')(hint.escapeDocs.map(d => getDoc(d).name).join(_orWord))}`
+          : ` ${S('stuck_hint_lawyer')}`}
       </div>`
     : "";
-  showDenial({ title:"Αίτηση Μπλοκαρισμένη",
-    body:`Δεν μπορείς να αποκτήσεις <strong>${getDoc(id).name}</strong> ακόμα. Καμία διαθέσιμη οδός δεν είναι πλήρης.${hintHtml}`,
+  showDenial({ title:S('doc_denial_title'),
+    body:`${S('doc_denial_body')(getDoc(id).name)}${hintHtml}`,
     routes: getRoutes(id),
     context: { currentLocationId: state.currentLocationId, returnToDocId: id, returnToLocationId: opts.returnToLocationId || getRule(id).location }
   });
 }
 function showLocationDenial(id) {
   const loc = getLocation(id);
-  showDenial({ title:"Πρόσβαση Αρνήθηκε",
-    body:`Δεν μπορείς να μπεις στο κτίριο: <strong>${loc.name}</strong> ακόμα. Συγκέντρωσε τα απαραίτητα έγγραφα.`,
+  showDenial({ title:S('denial_title'),
+    body:S('denial_body')(loc.name),
     routes: getLocationAccess(id), context: { returnToLocationId: id }
   });
 }
@@ -2377,7 +3060,7 @@ function renderRoutesGrouped(routes, container) {
     const commonCard = document.createElement("div");
     commonCard.className = "route-card";
     const commonTitle = document.createElement("div");
-    commonTitle.className = "route-title"; commonTitle.textContent = "Κοινά απαιτούμενα";
+    commonTitle.className = "route-title"; commonTitle.textContent = S('common_req');
     commonCard.appendChild(commonTitle);
     const commonUl = document.createElement("ul");
     common.forEach(id => {
@@ -2390,7 +3073,7 @@ function renderRoutesGrouped(routes, container) {
     container.appendChild(commonCard);
 
     const orLabel = document.createElement("div");
-    orLabel.className = "route-options-label"; orLabel.textContent = "+ ένα από τα παρακάτω:";
+    orLabel.className = "route-options-label"; orLabel.textContent = S('route_or_one');
     container.appendChild(orLabel);
   }
 
@@ -2411,7 +3094,7 @@ function renderRoutesGrouped(routes, container) {
     card.style.marginBottom = "0";
     const displayItems = common.length > 0 ? unique : (r.requires || []);
     if (!displayItems.length) {
-      const n = document.createElement("div"); n.className = "small"; n.textContent = "Χωρίς επιπλέον απαιτούμενα.";
+      const n = document.createElement("div"); n.className = "small"; n.textContent = S('no_extra_req');
       card.appendChild(n);
     } else {
       const ul = document.createElement("ul");
@@ -2435,13 +3118,13 @@ function renderDocumentCard(id, locId) {
   const acquired = hasDoc(id), readyRoute = getReadyRoute(id);
   const missing = collectMissingFromRoutes(getRoutes(id));
   const card = document.createElement("div"); card.className = "doc-card";
-  let statusHtml = `<span class="status-badge blocked">Μπλοκαρισμένο</span>`;
-  if (acquired) statusHtml = `<span class="status-badge ok">✓ Αποκτήθηκε</span>`;
-  else if (readyRoute) statusHtml = `<span class="status-badge waiting">Έτοιμο</span>`;
+  let statusHtml = `<span class="status-badge blocked">${S('status_blocked')}</span>`;
+  if (acquired) statusHtml = `<span class="status-badge ok">${S('status_ok')}</span>`;
+  else if (readyRoute) statusHtml = `<span class="status-badge waiting">${S('status_ready')}</span>`;
   card.innerHTML = `<div class="doc-card-head"><div><div class="doc-card-title">${doc.name}</div><div class="small">${doc.short}</div></div>${statusHtml}</div>`;
   const actions = document.createElement("div"); actions.className = "doc-actions";
   if (acquired) {
-    const btn = document.createElement("button"); btn.textContent = "✓ Ήδη στον φάκελο"; btn.disabled = true; btn.className = "success";
+    const btn = document.createElement("button"); btn.textContent = S('status_already'); btn.disabled = true; btn.className = "success";
     actions.appendChild(btn);
   } else {
     const btn = document.createElement("button");
@@ -2449,14 +3132,14 @@ function renderDocumentCard(id, locId) {
     btn.onclick = () => requestDocument(id, { returnToLocationId: locId }); actions.appendChild(btn);
     if (missing.length) {
       const t = document.createElement("div"); t.className = "small"; t.style.width="100%"; t.style.marginTop="8px";
-      t.textContent = "Λύσε μία από τις απαιτούμενες οδούς:"; actions.appendChild(t);
+      t.textContent = S('office_solve_route'); actions.appendChild(t);
       renderMissingActions(actions, missing, { currentLocationId:locId, returnToDocId:id, returnToLocationId:locId });
     }
   }
   card.appendChild(actions);
   if (routes.length) {
     const sec = document.createElement("div");
-    const t = document.createElement("div"); t.className = "small"; t.style.margin = "10px 0 4px"; t.textContent = "Απαιτούμενα έγγραφα:";
+    const t = document.createElement("div"); t.className = "small"; t.style.margin = "10px 0 4px"; t.textContent = S('office_req_docs');
     sec.appendChild(t);
     const rl = document.createElement("div"); rl.className = "route-list";
     renderRoutesGrouped(routes, rl);
@@ -2471,15 +3154,15 @@ function renderUnifiedAsylumCard(locId) {
   const bothHave = hasDoc("adet") && hasDoc("passport");
   const card = document.createElement("div"); card.className = "doc-card";
   const status = bothHave
-    ? `<span class="status-badge ok">✓ Και τα δύο αποκτήθηκαν</span>`
+    ? `<span class="status-badge ok">${S('status_both_ok')}</span>`
     : canIssue("adet")
-      ? `<span class="status-badge waiting">Έτοιμο</span>`
-      : `<span class="status-badge blocked">Μπλοκαρισμένο</span>`;
+      ? `<span class="status-badge waiting">${S('status_ready')}</span>`
+      : `<span class="status-badge blocked">${S('status_blocked')}</span>`;
   const title = adetSr ? adetSr.title : `${adetDoc.name} & ${passDoc.name}`;
   card.innerHTML = `<div class="doc-card-head"><div><div class="doc-card-title">${title}</div><div class="small">${adetDoc.short}</div></div>${status}</div>`;
   const actions = document.createElement("div"); actions.className = "doc-actions";
   if (bothHave) {
-    const btn = document.createElement("button"); btn.textContent = "✓ Ήδη στον φάκελο"; btn.disabled = true; btn.className = "success";
+    const btn = document.createElement("button"); btn.textContent = S('status_already'); btn.disabled = true; btn.className = "success";
     actions.appendChild(btn);
   } else if (!hasDoc("adet") || !hasDoc("passport")) {
     const btn = document.createElement("button");
@@ -2487,14 +3170,14 @@ function renderUnifiedAsylumCard(locId) {
     btn.onclick = () => requestDocument("adet", { returnToLocationId: locId });
     actions.appendChild(btn);
     const note = document.createElement("div"); note.className = "small"; note.style.width="100%"; note.style.marginTop="4px";
-    note.textContent = "Συμπλήρωσε αιτήσεις και για τα 2 έγγραφα";
+    note.textContent = S('both_docs_note');
     actions.appendChild(note);
   }
   card.appendChild(actions);
   return card;
 }
 
-const BANK_OBSTACLES = [
+const BANK_OBSTACLES_EL = [
   "Απαίτηση συγκεκριμένου σκοπού λογαριασμού (πχ. μόνο για μισθοδοσία ή παροχές ΕΦΚΑ), χωρίς να αποδέχεται καταθέσεις γενικής χρήσης.",
   "Μη αποδοχή του πιστοποιητικού αστεγίας ή της βεβαίωσης φιλοξενίας ως αποδεικτικό διεύθυνσης.",
   "Μη αποδοχή της «βεβαίωσης δικαιούχου» ή άλλων εγγράφων που εκδίδονται από φορείς υποδοχής ως επαρκή ταυτοποίηση.",
@@ -2502,6 +3185,24 @@ const BANK_OBSTACLES = [
   "Άρνηση ορισμένων τραπεζών να χορηγήσουν κωδικούς e-banking σε δικαιούχους διεθνούς προστασίας.",
   "Άρνηση ορισμένων τραπεζών να εξυπηρετήσουν πρόσφυγες παρά μόνο σε συγκεκριμένα υποκαταστήματα — συχνά μακριά από τον τόπο κατοικίας τους."
 ];
+const BANK_OBSTACLES_EN = [
+  "Requirement of a specific account purpose (e.g. only for payroll or EFKA benefits), refusing to accept general-use deposits.",
+  "Non-acceptance of a homelessness certificate or hospitality declaration as proof of residence address.",
+  "Non-acceptance of the 'beneficiary certificate' or other documents issued by reception bodies as sufficient identification.",
+  "Refusal by some banks to accept a statutory declaration for the residence address in lieu of a residence certificate.",
+  "Refusal by some banks to issue e-banking credentials to beneficiaries of international protection.",
+  "Refusal by some banks to serve refugees except at specific branches — often far from their place of residence."
+];
+const BANK_OBSTACLES = LANG === 'en' ? BANK_OBSTACLES_EN : BANK_OBSTACLES_EL;
+const EFKA_OBSTACLES_EL = [
+  "Ορισμένες Τοπικές Διευθύνσεις ΕΦΚΑ αρνούνται να ολοκληρώσουν τη μετάπτωση ΠΑΑΥΠΑ σε ΑΜΚΑ χωρίς σύμβαση εργασίας ή βεβαίωση πρόσληψης από εργοδότη, παρότι δεν υπάρχει σχετική νομική πρόβλεψη.",
+  "Ορισμένες υπηρεσίες του ΕΦΚΑ ζητούν έγγραφα όπως Ταξιδιωτικό Έγγραφο ή πιστοποιητικό οικογενειακής κατάστασης, παρότι οι δικαιούχοι διεθνούς προστασίας εξαιρούνται κατά νόμο από την προσκόμιση τέτοιων δικαιολογητικών."
+];
+const EFKA_OBSTACLES_EN = [
+  "Some Local EFKA Directorates refuse to complete the PAAUPA-to-AMKA transition without a work contract or recruitment certificate from an employer, even though no such legal requirement exists.",
+  "Some EFKA offices request documents such as a Travel Document or family status certificate, even though beneficiaries of international protection are legally exempt from submitting such documents."
+];
+const EFKA_OBSTACLES = LANG === 'en' ? EFKA_OBSTACLES_EN : EFKA_OBSTACLES_EL;
 // ─────────────────────────────────────────────
 // SLOT MACHINE MINI-CHALLENGE (shared engine)
 // ─────────────────────────────────────────────
@@ -2564,7 +3265,7 @@ function _showSlotMachine({ title, faces, introHtml, spinLabel, spinningLabel, r
         resultEl.innerHTML = makeSuccessHtml(result);
         spinBtn.style.background = "linear-gradient(180deg,#16a34a,#15803d)";
         spinBtn.style.borderBottom = "3px solid #14532d";
-        spinBtn.textContent = "Συνέχεια →";
+        spinBtn.textContent = S('btn_continue');
         spinBtn.disabled = false;
         spinBtn.onclick = () => { closeEventModal(); onSuccess(); };
       } else {
@@ -2581,48 +3282,38 @@ function _showSlotMachine({ title, faces, introHtml, spinLabel, spinningLabel, r
 
 function showThirdPartySlot(onSuccess) {
   _showSlotMachine({
-    title: "Αναζήτηση Εξουσιοδοτημένου Τρίτου",
-    faces: [
-      { label:"Λογιστής/τρια",                    icon:"🧾", success:true,  bg:"#0d2b1a", fg:"#86efac" },
-      { label:"Δικηγόρος",                         icon:"⚖️", success:true,  bg:"#0d1f33", fg:"#93c5fd" },
-      { label:"Δεν κατάφερες να βρεις Δικηγόρο",  icon:"😞", success:false, bg:"#2b0d0d", fg:"#fca5a5" },
-      { label:"Δεν κατάφερες να βρεις Λογίστρια", icon:"😞", success:false, bg:"#2b0d0d", fg:"#fca5a5" },
-    ],
-    introHtml: "Ψάχνεις για κάποιον/α με TAXISnet<br>να καταθέσει αίτημα εκ μέρους σου...",
-    spinLabel: "🎰 Περιστροφή!", spinningLabel: "⏳ Ψάχνεις...", retryLabel: "🎰 Δοκίμασε ξανά",
-    makeSuccessHtml: r => `<strong>✓ Βρήκες: ${r.label}!</strong><br>Κάποιος/α θα καταθέσει αίτημα εκ μέρους σου.`,
-    failHtml: `<strong>Δυστυχώς δεν κατάφερες να βρεις τρίτο άτομο να καταθέσει το αίτημα εκ μέρους σου.</strong><br><span style="color:#fca5a5;font-size:11px;">Μπορείς να δοκιμάσεις ξανά.</span>`,
+    title: S('third_party_title'),
+    faces: S('third_party_faces'),
+    introHtml: S('third_party_intro'),
+    spinLabel: S('third_party_spin'), spinningLabel: S('third_party_spinning'), retryLabel: S('third_party_retry'),
+    makeSuccessHtml: r => S('third_party_success')(r.label),
+    failHtml: S('third_party_fail'),
     onSuccess, onRetry: showThirdPartySlot
   });
 }
 
 function show1555Slot(onSuccess) {
   _showSlotMachine({
-    title: "Κλήση 1555 — Γλωσσική Εξυπηρέτηση",
-    faces: [
-      { label:"Μιλώ Ελληνικά",                         icon:"🇬🇷", success:true,  bg:"#0d2233", fg:"#93c5fd" },
-      { label:"Μιλώ Αγγλικά",                           icon:"🇬🇧", success:true,  bg:"#0d2233", fg:"#93c5fd" },
-      { label:"Δεν μιλώ Ελληνικά ή Αγγλικά",           icon:"😞",  success:false, bg:"#2b0d0d", fg:"#fca5a5" },
-      { label:"Δεν βρήκα κάποιο άτομο να με βοηθήσει", icon:"😞",  success:false, bg:"#2b0d0d", fg:"#fca5a5" },
-    ],
-    introHtml: "Μιλάς εσύ ή κάποιο άτομο που είναι δίπλα σου<br>για να σε βοηθήσει <strong>Ελληνικά ή Αγγλικά</strong>;",
-    spinLabel: "📞 Κλήση 1555", spinningLabel: "⏳ Καλεί...", retryLabel: "📞 Δοκίμασε ξανά",
-    makeSuccessHtml: r => `<strong>✓ ${r.label}!</strong><br>Μπορείς να εξυπηρετηθείς στο 1555.`,
-    failHtml: `<strong>Δυστυχώς δεν κατάφερες να εξυπηρετηθείς στο 1555.</strong><br><span style="color:#fca5a5;font-size:11px;">Μπορείς να δοκιμάσεις ξανά.</span>`,
+    title: S('slot_1555_title'),
+    faces: S('slot_1555_faces'),
+    introHtml: S('slot_1555_intro'),
+    spinLabel: S('slot_1555_spin'), spinningLabel: S('slot_1555_spinning'), retryLabel: S('slot_1555_retry'),
+    makeSuccessHtml: r => S('slot_1555_success')(r.label),
+    failHtml: S('slot_1555_fail'),
     onSuccess, onRetry: show1555Slot
   });
 }
 
 const BUILDING_ENTRY_INFO = {
   bank: {
-    title: "Τράπεζα — Πριν Μπεις",
+    title: () => S('bank_title'),
     getBodyHtml: () => {
       const obs = BANK_OBSTACLES[Math.floor(Math.random() * BANK_OBSTACLES.length)];
-      return `<div style="text-align:left;font-size:11px;line-height:1.6;"><p style="margin-bottom:10px;color:#555;">Μεταξύ των εμποδίων που αντιμετωπίζουν οι πρόσφυγες στις επαφές τους με τράπεζες, αναφέρουμε ένα παράδειγμα:</p><p style="color:#1a1a2e;font-weight:bold;">${obs}</p></div>`;
+      return `<div style="text-align:left;font-size:11px;line-height:1.6;"><p style="margin-bottom:10px;color:#555;">${S('bank_intro')}</p><p style="color:#1a1a2e;font-weight:bold;">${obs}</p></div>`;
     },
     actions: (onContinue) => [
-      { label: "Συνέχεια →", className: "primary", onClick: () => { closeEventModal(); onContinue(); } },
-      { label: "↗ Διαβάστε Περισσότερα", className: "btn-track", onClick: () => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") }
+      { label: S('btn_continue'), className: "primary", onClick: () => { closeEventModal(); onContinue(); } },
+      { label: S('btn_read_more'), className: "btn-track", onClick: () => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") }
     ]
   },
   dom: {
@@ -2630,21 +3321,21 @@ const BUILDING_ENTRY_INFO = {
       const ch = getCharacter();
       const heliosBlocked = ch && !ch.under2YearAdet;
       if (heliosBlocked) {
-        showEventModal({ title:"Μη επιλέξιμος/η για HELIOS+",
-          body:"Το πρόγραμμα HELIOS+ απαιτεί η ΑΔΕΤ σου να έχει εκδοθεί πριν από λιγότερο από 2 χρόνια. Η ΑΔΕΤ σου έχει ήδη λήξει ή εκδόθηκε πάνω από 2 χρόνια πριν — δεν πληροίς τις προϋποθέσεις εγγραφής στο HELIOS+.",
+        showEventModal({ title: S('dom_blocked_title'),
+          body: S('dom_blocked_body'),
           closeable: true,
           actions:[
-            { label:"↗ Διαβάστε Περισσότερα", className:"btn-track", onClick:() => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") },
-            { label:"↺ Επανεκκίνηση", className:"warn", onClick:() => { closeEventModal(); confirmReset(); } }
+            { label: S('btn_read_more'), className:"btn-track", onClick:() => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") },
+            { label: S('btn_restart'), className:"warn", onClick:() => { closeEventModal(); confirmReset(); } }
           ]
         });
       } else {
-        showEventModal({ title:"ΔΟΜ — Πριν Μπεις. Πληροφορίες για το Helios+",
-          bodyHtml:`<div style="text-align:left;font-size:11px;line-height:1.6;"><p>Σύμφωνα με την Ευρωπαϊκή Επιτροπή, το πρόγραμμα HELIOS+ <em>«είναι το βασικό πρόγραμμα που στοχεύει στην ενίσχυση της ένταξης των πολιτών τρίτων χωρών στην ελληνική κοινωνία»</em>.</p><p style="margin-top:8px;">Ενώ ο αριθμός των ενεργών αδειών διαμονής διεθνούς και προσωρινής προστασίας ήταν <strong>134.576</strong> στα τέλη του περασμένου έτους, το HELIOS+ θέτει ως συνολικό στόχο <strong>4.323 δικαιούχοι</strong> να επωφεληθούν των υπηρεσιών υποστήριξής του από το 2025 ως το 2028.</p><p style="margin-top:8px;font-weight:bold;color:#b45309;">Δηλαδή περίπου το 3%.</p></div>`,
+        showEventModal({ title: S('dom_title'),
+          bodyHtml: S('dom_body'),
           closeable: true,
           actions:[
-            { label:"Συνέχεια →", className:"primary", onClick:() => { closeEventModal(); onContinue(); } },
-            { label:"↗ Διαβάστε Περισσότερα", className:"btn-track", onClick:() => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") }
+            { label: S('btn_continue'), className:"primary", onClick:() => { closeEventModal(); onContinue(); } },
+            { label: S('btn_read_more'), className:"btn-track", onClick:() => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") }
           ]
         });
       }
@@ -2652,21 +3343,42 @@ const BUILDING_ENTRY_INFO = {
   },
   eforia: {
     skip: () => hasDoc("taxisnet"),
-    title: "Εφορία — Πριν Μπεις",
-    bodyHtml: `<div style="text-align:left;font-size:11px;line-height:1.6;"><p>Για να κλείσεις ραντεβού στην Εφορία, χρειάζεσαι <strong>TAXISnet</strong>. Εφόσον δεν έχεις ακόμα TAXISnet, πρέπει να κάνεις <strong>εξουσιοδότηση σε κάποιον/α</strong> που έχει ήδη TAXISnet για να καταθέσει αίτημα εκ μέρους σου.</p><p style="margin-top:8px;">Συνήθως γίνεται από κάποιον/α λογιστή ή δικηγόρο.</p></div>`,
+    title: () => S('eforia_title'),
+    bodyHtml: () => S('eforia_body'),
     actions: (onContinue) => [
-      { label: "Εξουσιοδότηση τρίτου ατόμου", className: "primary", onClick: () => { closeEventModal(); showThirdPartySlot(onContinue); } },
-      { label: "↗ Διαβάστε Περισσότερα", className: "btn-track", onClick: () => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") }
+      { label: S('eforia_btn'), className: "primary", onClick: () => { closeEventModal(); showThirdPartySlot(onContinue); } },
+      { label: S('btn_read_more'), className: "btn-track", onClick: () => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") }
     ]
   },
   efka: {
-    skip: () => hasDoc("taxisnet") && (hasDoc("amka") || hasDoc("inactive_amka")),
-    title: "ΕΦΚΑ — Πριν Μπεις",
-    bodyHtml: `<div style="text-align:left;font-size:11px;line-height:1.6;"><p>Για να κλείσεις ραντεβού στον ΕΦΚΑ, χρειάζεσαι <strong>TAXISnet</strong> και <strong>ΑΜΚΑ</strong> (ενεργό ή ανενεργό). Εφόσον δεν τα έχεις, πρέπει να κλείσεις ραντεβού τηλεφωνικά στο <strong>1555</strong>.</p><p style="margin-top:8px;">Όμως το 1555 υποστηρίζει μόνο <strong>Ελληνικά και Αγγλικά</strong>. Έτσι η πρόσβαση για πολλές και πολλούς πρόσφυγες γίνεται πολύ δύσκολη.</p><p style="margin-top:8px;font-style:italic;">Μιλάς Ελληνικά ή Αγγλικά ή βρήκες κάποιο άτομο να σου μεταφράσει;</p></div>`,
-    actions: (onContinue) => [
-      { label: "Κλήση 1555", className: "primary", onClick: () => { closeEventModal(); show1555Slot(onContinue); } },
-      { label: "↗ Διαβάστε Περισσότερα", className: "btn-track", onClick: () => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") }
-    ]
+    customShow: (onContinue) => {
+      const obs = EFKA_OBSTACLES[Math.floor(Math.random() * EFKA_OBSTACLES.length)];
+      const bodyHtml = `<div style="text-align:left;font-size:11px;line-height:1.6;"><p style="margin-bottom:10px;color:#555;">${S('efka_obstacle_intro')}</p><p style="color:#1a1a2e;font-weight:bold;">${obs}</p></div>`;
+      const proceed = () => {
+        if (hasDoc("taxisnet") && (hasDoc("amka") || hasDoc("inactive_amka"))) {
+          onContinue();
+        } else {
+          showEventModal({
+            title: S('efka_title'),
+            bodyHtml: S('efka_body'),
+            closeable: true,
+            actions: [
+              { label: S('efka_call_btn'), className: "primary", onClick: () => { closeEventModal(); show1555Slot(onContinue); } },
+              { label: S('btn_read_more'), className: "btn-track", onClick: () => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") }
+            ]
+          });
+        }
+      };
+      showEventModal({
+        title: S('efka_title'),
+        bodyHtml,
+        closeable: true,
+        actions: [
+          { label: S('btn_continue'), className: "primary", onClick: () => { closeEventModal(); proceed(); } },
+          { label: S('btn_read_more'), className: "btn-track", onClick: () => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") }
+        ]
+      });
+    }
   }
 };
 function showBuildingEntryPopup(id, onContinue) {
@@ -2674,8 +3386,9 @@ function showBuildingEntryPopup(id, onContinue) {
   if (!info) { onContinue(); return; }
   if (info.customShow) { info.customShow(onContinue); return; }
   if (info.skip && info.skip()) { onContinue(); return; }
-  const html = info.getBodyHtml ? info.getBodyHtml() : info.bodyHtml;
-  showEventModal({ title: info.title, bodyHtml: html, closeable: true, actions: info.actions(onContinue) });
+  const html = info.getBodyHtml ? info.getBodyHtml() : (typeof info.bodyHtml === 'function' ? info.bodyHtml() : info.bodyHtml);
+  const titleStr = typeof info.title === 'function' ? info.title() : info.title;
+  showEventModal({ title: titleStr, bodyHtml: html, closeable: true, actions: info.actions(onContinue) });
 }
 
 function openOffice(id) {
@@ -2683,7 +3396,7 @@ function openOffice(id) {
   if (!canAccessLocation(id)) { showLocationDenial(id); return; }
   state.currentLocationId = id;
   els.officeTitleBar.textContent = `🏢 ${loc.name}`;
-  els.officeSubtitle.textContent = `Διαθέσιμα: ${loc.docs.map(d => getDoc(d).name).join(", ")}.`;
+  els.officeSubtitle.textContent = S('office_available')(loc.docs.map(d => getDoc(d).name).join(", "));
   els.officeDocuments.innerHTML = "";
   // Asylum service: unified ΑΔΕΤ+Διαβατήριο card when character has merged specialRequests
   if (id === "asylum_service") {
@@ -2708,29 +3421,29 @@ function closeOffice({ skipDay = false } = {}) {
 // REQUEST
 // ─────────────────────────────────────────────
 function requestDocument(id, opts={}) {
-  if (hasDoc(id)) { showToast(`${getDoc(id).name} — ήδη στον φάκελό σου.`); return; }
+  if (hasDoc(id)) { showToast(S('doc_already_owned')(getDoc(id).name)); return; }
   // Address: if player already has a lease contract, it proves their address — skip popup
   if (id === "address" && hasDoc("lease_contract")) { finalizeRequest(id, opts); return; }
   // Address: Hasan-specific popup text
   if (id === "address" && getCharacter()?.id === "hasan") {
     showEventModal({
-      title: "Δ/νση Κατοικίας",
-      body: "Για να έχεις διεύθυνση κατοικίας, πρέπει είτε να έχεις δική σου ιδιοκτησία (πράγμα ασυνήθιστο για πρόσφυγες/ισσες), είτε μισθωτήριο στο όνομά σου ή φιλοξενία καταχωρημένη στο Taxisnet. Κανονικά για αυτά χρειάζεσαι ΑΔΕΤ, ΑΦΜ και TAXISnet για να προχωρήσεις. Έχεις κάτι από τα παραπάνω;\n\nΕπισημαίνουμε ότι ο νόμος επιβάλλει πρόστιμο σε περίπτωση παράλειψης δήλωσης ή αναληθούς δήλωσης μισθωτηρίου στην ΑΑΔΕ. Ακόμα, η εν γνώσει δήλωση ψευδών στοιχείων ή απόκρυψη της αλήθειας κατά την εξέταση από οποιαδήποτε αρχή διώκεται ποινικά και τιμωρείται με ποινή φυλάκισης.",
+      title: S('address_hasan_title'),
+      body: S('address_hasan_body'),
       closeable: true,
       actions: [
-        { label: "Ας υποθέσουμε ότι βρήκα κάποιον τρόπο.", className: "primary", onClick: () => finalizeRequest(id, opts) },
-        { label: "↗ Διαβάστε Περισσότερα", className: "btn-track", onClick: () => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") }
+        { label: S('address_hasan_btn'), className: "primary", onClick: () => finalizeRequest(id, opts) },
+        { label: S('btn_read_more'), className: "btn-track", onClick: () => window.open(RSA_REPORT_URL, "_blank", "noopener,noreferrer") }
       ]
     });
     return;
   }
   // Lease contract without work contract: confirm the real-life contradiction
   if (id === "lease_contract" && !hasDoc("work_contract") && getReadyRoute("lease_contract")) {
-    showEventModal({ title:"Μισθωτήριο κατοικίας", body:"Παρότι δεν έχεις ακόμα σύμβαση εργασίας, θέλεις να υποθέσουμε ότι έχεις καταφέρει να νοικιάσεις διαμέρισμα στο όνομά σου;",
+    showEventModal({ title: S('lease_confirm_title'), body: S('lease_confirm_body'),
       closeable: false,
       actions:[
-        { label:"Ναι", className:"primary", onClick:() => { closeEventModal(); finalizeRequest(id, opts); } },
-        { label:"Όχι", className:"", onClick:() => closeEventModal() }
+        { label: S('btn_yes'), className:"primary", onClick:() => { closeEventModal(); finalizeRequest(id, opts); } },
+        { label: S('btn_no'), className:"", onClick:() => closeEventModal() }
       ]
     });
     return;
@@ -2782,13 +3495,13 @@ function checkQuestCompletion() {
   const q = getQuest();
   if (!hasDoc(q.target)) return;
   launchConfetti();
-  showEnding(`${getDoc(q.target).name} — ολοκληρώθηκε.`, `Κατάφερες να αποκτήσεις ${getDoc(q.target).name} μετά από ${state.dayCount} ημέρες. Στην πραγματικότητα, πολλοί και πολλές δεν τα καταφέρνουν. Για τις ανάγκες του παιχνιδιού απλοποιήσαμε μια σειρά από πραγματικές δυσκολίες που στην πραγματική ζωή συχνά οδηγούν τους ανθρώπους σε απόγνωση και εγκλωβισμό. Ο λαβύρινθος δεν σταματά εδώ.`);
+  showEnding(S('ending_title')(getDoc(q.target).name), S('ending_body')(getDoc(q.target).name, state.dayCount));
   if (q.followUpQuest && DATA.quests[q.followUpQuest]) {
     const fq = DATA.quests[q.followUpQuest];
-    els.endingSwitch.textContent = `→ Επόμενη: ${fq.label}`;
+    els.endingSwitch.textContent = S('ending_next')(fq.label);
     els.endingSwitch.dataset.followup = fq.id;
   } else {
-    els.endingSwitch.textContent = "Αλλαγή αποστολής";
+    els.endingSwitch.textContent = S('ending_switch');
     delete els.endingSwitch.dataset.followup;
   }
 }
@@ -2803,7 +3516,7 @@ function startPrototype() {
   if (state.questSelectMode) {
     state.questSelectMode = false;
     els.startScreen.classList.add("hidden");
-    els.startButton.textContent = "Ξεκίνα την αποστολή";
+    els.startButton.textContent = S('start_btn');
     switchQuest(state.selectedQuest);
     return;
   }
@@ -2819,13 +3532,11 @@ function showPreliminaryScreen() {
   tapActive = false; clearInterval(state.prelimTimer);
   els.prelimTitleBar.textContent = quest.prelim.title;
   els.prelimDesc.textContent = quest.prelim.desc;
-  els.skipDesc.textContent = quest.prelim.skipDesc || "Αν δεν μπορείς να το παλέψεις, ας υποθέσουμε ότι τα κατάφερες.";
+  els.skipDesc.textContent = quest.prelim.skipDesc || S('skip_desc_fallback');
   els.spinControls.classList.remove("hidden");
   els.spinResult.classList.add("hidden");
   els.tapPanel.classList.add("hidden");
   els.gameStage.classList.add("hidden");
-  els.tapArea.classList.add("hidden");
-  els.startTapBtn.classList.remove("hidden");
   els.failModal.classList.add("hidden");
   els.failSummary.textContent = "";
   els.progressBar.style.width = "0%";
@@ -2855,12 +3566,10 @@ els.spinBtn.onclick = () => {
   }, 3100);
 };
 
-els.startTapBtn.onclick = () => startTapGame(currentSeconds);
-
 function startTapGame(seconds) {
   els.gameStage.classList.remove("hidden");
-  els.startTapBtn.classList.add("hidden");
-  els.tapArea.classList.remove("hidden");
+  const tapLbl = document.getElementById("tap-click-label");
+  if (tapLbl) tapLbl.textContent = S('tap_click_label');
   tapActive = true; tapScore = 0;
   els.progressBar.style.width = "0%";
   els.timerDisplay.textContent = `${seconds.toFixed(2)}s`;
@@ -2872,7 +3581,7 @@ function startTapGame(seconds) {
     if (rem <= 0) {
       clearInterval(state.prelimTimer); tapActive = false;
       if (tapScore < REQUIRED_TAPS) {
-        els.failSummary.textContent = `Γέμισες μόνο ${Math.round(tapScore/REQUIRED_TAPS*100)}% της μπάρας (${tapScore}/${REQUIRED_TAPS} taps).`;
+        els.failSummary.textContent = S('tap_fail')(Math.round(tapScore/REQUIRED_TAPS*100), tapScore, REQUIRED_TAPS);
         playFail();
         els.failModal.classList.remove("hidden");
       }
@@ -2882,7 +3591,7 @@ function startTapGame(seconds) {
 
 els.tapArea.addEventListener("click", e => {
   e.preventDefault();
-  if (!tapActive) return;
+  if (!tapActive) { startTapGame(currentSeconds); return; }
   tapScore++;
   els.progressBar.style.width = `${Math.min(100, tapScore/REQUIRED_TAPS*100)}%`;
   if (tapScore >= REQUIRED_TAPS) {
@@ -2892,7 +3601,7 @@ els.tapArea.addEventListener("click", e => {
 });
 els.tapArea.addEventListener("touchstart", e => {
   e.preventDefault();
-  if (!tapActive) return;
+  if (!tapActive) { startTapGame(currentSeconds); return; }
   tapScore++;
   els.progressBar.style.width = `${Math.min(100, tapScore/REQUIRED_TAPS*100)}%`;
   if (tapScore >= REQUIRED_TAPS) {
@@ -2910,25 +3619,24 @@ els.skipBtn.onclick = () => {
 function showTutorial() {
   const ch = getCharacter();
   const isMobile = window.matchMedia("(max-width: 1023px)").matches;
-  const moveHint = isMobile
-    ? "Tap οπουδήποτε στον χάρτη για να μετακινηθείς."
-    : "Χρησιμοποίησε τα βελάκια / WASD ή click στον χάρτη για να κινηθείς.";
+  const moveHint = isMobile ? S('tutorial_move_mobile') : S('tutorial_move_desktop');
   showEventModal({
-    title: "Καλώς ήρθες στην Ελλάδα",
+    title: S('tutorial_title'),
     bodyHtml: `<div style="text-align:left; font-size:12px; line-height:1.6;">
-      <p style="margin-bottom:10px;">Μόλις επέστρεψες αναγκαστικά. Δεν έχεις σπίτι, δεν έχεις δουλειά, και τα έγγραφά σου είναι ανεπαρκή ή ληγμένα.</p>
-      <p style="margin-bottom:10px;"><strong>Στόχος:</strong> Μάζεψε τα απαιτούμενα έγγραφα για να ολοκληρώσεις την αποστολή σου.</p>
+      <p style="margin-bottom:10px;">${S('tutorial_p1')}</p>
+      <p style="margin-bottom:10px;">${S('tutorial_goal')}</p>
       <div style="background:#f0f4ff; border:1px solid #aac; padding:8px 10px; margin-bottom:10px;">
-        <div style="font-weight:bold; margin-bottom:4px; color:var(--ec95-blue-a);">Πώς παίζεται</div>
+        <div style="font-weight:bold; margin-bottom:4px; color:var(--ec95-blue-a);">${S('tutorial_how')}</div>
         <div style="margin-bottom:3px;">&#9654; ${moveHint}</div>
-        <div style="margin-bottom:3px;">&#9654; <strong>Tap / click πάνω σε κτίριο</strong> για να μπεις και να δεις τι ποια έγγραφα είναι διαθέσιμα και ποια λείπουν.</div>
-        <div style="margin-bottom:3px;">&#9654; Τα <span style="color:var(--ec95-red)">&#10005; κόκκινα έγγραφα</span> λείπουν — click για να τα παρακολουθήσεις.</div>
-        <div style="margin-bottom:3px;">&#9654; Το <span style="color:var(--ec95-blue-a)">📋 Απαιτούμενα</span> δείχνει τι χρειάζεσαι για την τρέχουσα αποστολή.</div>
-        <div>&#9654; Κάνοντας κλικ στο <strong>❓</strong> μπορείς να δεις τις πλήρεις οδηγίες.</div>
+        <div style="margin-bottom:3px;">&#9654; ${S('tutorial_building')}</div>
+        <div style="margin-bottom:3px;">&#9654; ${S('tutorial_red')}</div>
+        <div style="margin-bottom:3px;">&#9654; ${S('tutorial_req')}</div>
+        <div>&#9654; ${S('tutorial_help')}</div>
       </div>
-      <p style="font-size:11px; color:var(--muted);">Αυτό το παιχνίδι βασίζεται σε πραγματικές υποθέσεις αναγνωρισμένων προσφύγων στην Ελλάδα το 2025-2026. <a href="${RSA_REPORT_URL}" target="_blank" rel="noopener" style="color:var(--ec95-blue-a); font-weight:bold;">Διάβασε την πλήρη έκθεση RSA →</a></p>
+      <p style="font-size:11px; color:var(--muted);">${S('tutorial_report')} <a href="${RSA_REPORT_URL}" target="_blank" rel="noopener" style="color:var(--ec95-blue-a); font-weight:bold;">${S('tutorial_report_link')}</a></p>
     </div>`,
-    actions: [{ label: "Συνέχεια →", className: "primary", onClick: () => { closeEventModal(); _showDocumentGraphOnboarding(); } }]
+    closeable: true,
+    actions: [{ label: S('tutorial_btn'), className: "primary", onClick: () => { closeEventModal(); _showDocumentGraphOnboarding(); } }]
   });
 }
 
@@ -2940,12 +3648,11 @@ function _showDocumentGraphOnboarding() {
   const targetDoc = getDoc(quest.target);
 
   const introByQuest = {
-    find_job:        `Κατάφερες να βρεις δουλειά! Για να υπογράψεις τη <strong>Σύμβαση Εργασίας</strong>, πρέπει πρώτα να συγκεντρώσεις τα απαραίτητα έγγραφα. Όμως αρκετά έγγραφα έχουν ως προαπαιτούμενο άλλα έγγραφα. Μάζεψέ τα όλα!`,
-    rent_apartment:  `Κατάφερες να βρεις διαμέρισμα! Για να υπογράψεις το <strong>Μισθωτήριο Κατοικίας</strong>, πρέπει πρώτα να συγκεντρώσεις τα απαραίτητα έγγραφα. Όμως αρκετά έγγραφα έχουν ως προαπαιτούμενο άλλα έγγραφα. Μάζεψέ τα όλα!`,
-    get_rent_subsidy:`Θέλεις να εγγραφείς στο <strong>HELIOS+</strong>, το βασικό πρόγραμμα που στοχεύει στην ενίσχυση της ένταξης των πολιτών τρίτων χωρών στην ελληνική κοινωνία. Για να το κάνεις, πρέπει πρώτα να συγκεντρώσεις τα απαραίτητα έγγραφα. Όμως αρκετά έγγραφα έχουν ως προαπαιτούμενο άλλα έγγραφα. Μάζεψέ τα όλα!`,
+    find_job:        S('onboarding_find_job'),
+    rent_apartment:  S('onboarding_rent_apartment'),
+    get_rent_subsidy: S('onboarding_get_rent_subsidy'),
   };
-  const introHtml = introByQuest[quest.id]
-    || `Για να αποκτήσεις <strong>${targetDoc.name}</strong>, πρέπει πρώτα να συγκεντρώσεις τα απαραίτητα έγγραφα. Μάζεψέ τα όλα!`;
+  const introHtml = introByQuest[quest.id] || S('onboarding_fallback')(targetDoc.name);
 
   // Build the requirements list as a DOM node, then serialize to HTML for bodyHtml
   const reqDiv = document.createElement("div");
@@ -2960,7 +3667,7 @@ function _showDocumentGraphOnboarding() {
 
   const reqLabel = document.createElement("div");
   reqLabel.style.cssText = "font-weight:bold;margin-bottom:5px;color:var(--ec95-blue-a);";
-  reqLabel.textContent = "📋 Απαιτούμενα έγγραφα:";
+  reqLabel.textContent = S('onboarding_req_label');
 
   const reqWrap = document.createElement("div");
   reqWrap.style.cssText = "background:#f0f4ff;border:1px solid #aac;padding:6px 10px;margin-bottom:10px;";
@@ -2968,15 +3675,16 @@ function _showDocumentGraphOnboarding() {
 
   const notePara = document.createElement("p");
   notePara.style.cssText = "font-size:11px;color:var(--muted);";
-  notePara.textContent = "Αν λείπει ένας κρίκος, τα επόμενα έγγραφα μπλοκάρουν. Χρησιμοποίησε το 🕸️ για να δεις τον πλήρη χάρτη εξαρτήσεων ανά πάσα στιγμή.";
+  notePara.textContent = S('onboarding_note');
 
   bodyEl.append(introPara, reqLabel, reqWrap, notePara);
 
   // Use showEventModal so it appears identically to the tutorial
   showEventModal({
-    title: `🎯 Αποστολή: ${quest.label}`,
+    title: S('onboarding_title')(quest.label),
     bodyHtml: bodyEl.outerHTML,
-    actions: [{ label: "Ξεκινάω!", className: "primary", onClick: closeEventModal }]
+    closeable: true,
+    actions: [{ label: S('onboarding_btn'), className: "primary", onClick: closeEventModal }]
   });
 }
 
@@ -2994,7 +3702,7 @@ function enterCity() {
   updateUI();
   startDayTimer();
   if (!state._tutorialShown) { state._tutorialShown = true; showTutorial(); }
-  else showToast("Μόλις προσγειώθηκες στην Ελλάδα. Ξεκίνα από την Υπηρεσία Ασύλου.");
+  else showToast(S('toast_landed'));
 }
 
 // ─────────────────────────────────────────────
@@ -3064,7 +3772,7 @@ class CityScene extends Phaser.Scene {
       tickerEl.id = "stats-ticker";
       const inner = document.createElement("div");
       inner.id = "stats-ticker-inner";
-      inner.innerHTML = `<a href="${RSA_REPORT_URL}" target="_blank">📊 96.438 ενεργές ΑΔΕΤ + 19.398 εκκρεμείς για πρώτη έκδοση   ◆   9.179 αιτήματα επανεισδοχής το 2025 — αύξηση 274% σε ένα χρόνο   ◆   725 απελάσεις αναγνωρισμένων προσφύγων το 2025, συμπεριλαμβανομένων οικογενειών με παιδιά   ◆   7.640 εκκρεμείς ανανεώσεις ΑΔΕΤ — 2.237 αναμένουν πάνω από 1 χρόνο   ◆   Μόνο 4.323 θέσεις στο HELIOS+ για 134.576 κατόχους ΑΔΕΤ και προσωρινής προστασίας   ◆   Οι επιστρέφοντες φτάνουν στο αεροδρόμιο χωρίς ενημέρωση, χωρίς στέγη, χωρίς έγγραφα   ◆   Τα ΚΕΠ σταμάτησαν να εκδίδουν ΑΜΚΑ από το 2024   ◆   1.515 εκκρεμείς αιτήσεις ταξιδιωτικού εγγράφου τέλη 2025   ◆   Χωρίς ενεργό ΑΜΚΑ: καμία πρόσβαση σε ΕΣΥ, επιδόματα, απασχόληση, συνταγογράφηση   ◆   Παιδιά γεννημένα στην Ελλάδα εγγράφονται συχνά με διαφορετικό Αριθμό Υπόθεσης από την οικογένεια   ◆   Οι εβδομαδιαίες λίστες παράδοσης ΑΔΕΤ υπάρχουν μόνο στα Ελληνικά, Αγγλικά και Γαλλικά   ◆   Πλήρης έκθεση RSA 2026: rsaegean.org/el/anagnorismenoi-prosfyges-2026</a>`;
+      inner.innerHTML = `<a href="${RSA_REPORT_URL}" target="_blank">${S('ticker_text')}</a>`;
       tickerEl.appendChild(inner);
       // Touch: first tap pauses; second tap resumes (allows link clicks while paused)
       let tickerTouchPaused = false;
@@ -3130,11 +3838,12 @@ class CityScene extends Phaser.Scene {
       });
 
       // Building name: floating label above the building exterior (dynamic height)
+      const _dpr = window.devicePixelRatio || 1;
       const title = this.add.text(0, 0, loc.name, {
         fontFamily:"Arial, Helvetica, sans-serif", fontStyle:"bold", fontSize:this.fontPx(14),
-        align:"center", color:"#ffffff", stroke:"#000000", strokeThickness:this.ss(2.5),
+        align:"center", color:"#ffffff", stroke:"#000000", strokeThickness:Math.round(this.ss(2.5)),
         wordWrap:{ width:w }
-      }).setOrigin(0.5);
+      }).setOrigin(0.5).setResolution(_dpr);
       const bgH = title.height + this.sy(6);
       const labelY = -h/2 - bgH/2 - this.sy(3);
       title.setY(labelY);
@@ -3143,9 +3852,9 @@ class CityScene extends Phaser.Scene {
       const docsText = loc.docs.map(d => getDoc(d).name).join("\n");
       const docs = this.add.text(0, 0, docsText, {
         fontFamily:"Arial, Helvetica, sans-serif", fontSize:this.fontPx(12),
-        align:"center", color:"#fff9c4", stroke:"#000000", strokeThickness:this.ss(2.5),
+        align:"center", color:"#fff9c4", stroke:"#000000", strokeThickness:Math.round(this.ss(2.5)),
         wordWrap:{ width:w-this.sx(14) }, lineSpacing:this.sy(3)
-      }).setOrigin(0.5);
+      }).setOrigin(0.5).setResolution(_dpr);
       // Lamp: bright glow circle + emoji — placed at top-right corner of building
       const lampGlow = this.add.circle(w/2 + this.sx(2), -h/2 - this.sy(2), this.ss(14), 0xffff00, 0.85);
       const lamp = this.add.text(w/2 + this.sx(2), -h/2 - this.sy(2), "★", {
@@ -3177,18 +3886,19 @@ class CityScene extends Phaser.Scene {
       g.lineStyle(this.ss(1.5), 0xffffff, 0.7);
       g.strokeCircle(x, y, radius + this.ss(4));
 
+      const _dpr = window.devicePixelRatio || 1;
       const label = this.add.text(x, y - this.ss(20), npc.label, {
         fontFamily:"Courier, monospace", fontSize:this.fontPx(10),
-        color:"#ffffff", stroke:"#000000", strokeThickness:this.ss(3),
+        color:"#ffffff", stroke:"#000000", strokeThickness:Math.round(this.ss(3)),
         backgroundColor:"rgba(0,0,0,0.65)", padding:{ x:3, y:2 }
-      }).setOrigin(0.5).setDepth(50);
+      }).setOrigin(0.5).setDepth(50).setResolution(_dpr);
 
       // Tap hint text (hidden by default, shows when player is near)
       const tapHint = this.add.text(x, y - this.ss(34), "[ Tap ]", {
         fontFamily:"Courier, monospace", fontSize:this.fontPx(9),
-        color:"#facc15", stroke:"#000000", strokeThickness:this.ss(2),
+        color:"#facc15", stroke:"#000000", strokeThickness:Math.round(this.ss(2)),
         backgroundColor:"rgba(0,0,0,0.5)", padding:{ x:2, y:1 }
-      }).setOrigin(0.5).setDepth(55).setVisible(false);
+      }).setOrigin(0.5).setDepth(55).setVisible(false).setResolution(_dpr);
 
       return { npc, x, y, label, tapHint, bubble:npc.bubble, shown:false };
     });
@@ -3549,6 +4259,7 @@ function initGame() {
     height: GAME_CANVAS.height,
     backgroundColor: "#e2e8f0",
     resolution: window.devicePixelRatio || 1,
+    roundPixels: true,
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
     scene: [CityScene]
   });
@@ -3581,14 +4292,14 @@ function _challengeOverlay(gendered, hint) {
 
   // Permanent skip — always visible
   const skipPerm = document.createElement("button");
-  skipPerm.textContent = "✕ Παράλειψη";
+  skipPerm.textContent = S('btn_skip_challenge');
   skipPerm.className = "ch-skip-btn";
   skipPerm.onclick = () => { _miniChallengeActive=false; _activeDirHandler=null; overlay.remove(); _scheduleMiniChallenge(); };
   overlay.appendChild(skipPerm);
 
   const titleEl = document.createElement("div");
   titleEl.className = "ch-title";
-  titleEl.textContent = `Είσαι ${gendered} στην Ελλάδα, διαρκώς προκύπτουν δυσκολίες που το παιχνίδι δεν μπορεί να εξαντλήσει. Ξεπέρασε αυτή τη δοκιμασία για να μπορέσεις να συνεχίσεις την αποστολή σου`;
+  titleEl.textContent = S('mini_challenge_intro')(gendered);
 
   const canvas = document.createElement("canvas");
   canvas.className = "ch-canvas";
@@ -3649,7 +4360,7 @@ function _challengeOverlay(gendered, hint) {
 }
 function _makeSkipInlineBtn(overlay) {
   const sk = document.createElement("button");
-  sk.className = "ch-skip-inline"; sk.textContent = "✕ Παράλειψη";
+  sk.className = "ch-skip-inline"; sk.textContent = S('ch_skip_inline');
   sk.onclick = () => { _miniChallengeActive=false; _activeDirHandler=null; overlay.remove(); _scheduleMiniChallenge(); };
   return sk;
 }
@@ -3660,7 +4371,7 @@ function _addStartBtns(overlay, canvas, statusEl, launchFn) {
   const panel = document.createElement("div");
   panel.className = "mc-btn-panel";
   const go = document.createElement("button");
-  go.className = "primary"; go.textContent = "▶ Έναρξη";
+  go.className = "primary"; go.textContent = S('ch_start');
   go.onclick = () => { row.remove(); canvas.focus(); launchFn(); };
   panel.appendChild(go);
   panel.appendChild(_makeSkipInlineBtn(overlay));
@@ -3676,7 +4387,7 @@ function _addLoseBtns(overlay, canvas, statusEl, launchFn) {
   const panel = document.createElement("div");
   panel.className = "mc-btn-panel";
   const rb = document.createElement("button");
-  rb.className = "primary"; rb.textContent = "↺ Ξαναπαίξε";
+  rb.className = "primary"; rb.textContent = S('ch_replay');
   rb.onclick = () => { row.remove(); statusEl.textContent = ""; canvas.focus(); launchFn(); };
   panel.appendChild(rb);
   panel.appendChild(_makeSkipInlineBtn(overlay));
@@ -3767,12 +4478,12 @@ function _drawDocEaterPreview(canvas) {
 
 function _showDocEaterOverlay() {
   const ch=getCharacter();
-  const gendered=(ch&&ch.id==="hasan")?"αναγνωρισμένος πρόσφυγας":"αναγνωρισμένη πρόσφυγισσα";
-  const {overlay,canvas,statusEl}=_challengeOverlay(gendered,"⬆⬇⬅➡ ή WASD · σύρε οπουδήποτε ή πάτα τα βέλη · μάζεψε όλα τα έγγραφα χωρίς να σε πιάσουν");
+  const gendered=(ch&&ch.id==="hasan")?S('ch_gendered_male'):S('ch_gendered_female');
+  const {overlay,canvas,statusEl}=_challengeOverlay(gendered,S('ch_hint_eater'));
   _drawDocEaterPreview(canvas);
   function launchRound() {
     launchDocEaterGame(canvas,statusEl,
-      ()=>{_miniChallengeActive=false;overlay.remove();_scheduleMiniChallenge();showToast("Τα κατάφερες! Συνέχισε την αποστολή σου.");},
+      ()=>{_miniChallengeActive=false;overlay.remove();_scheduleMiniChallenge();showToast(S('mini_success_toast'));},
       ()=>_addLoseBtns(overlay,canvas,statusEl,launchRound)
     );
   }
@@ -3898,7 +4609,7 @@ function launchDocEaterGame(canvas, statusEl, onWin, onLose) {
       ctx.fillStyle="#facc15";
       ctx.font=`bold ${Math.round(CELL*2)}px Arial`;
       ctx.textAlign="center"; ctx.textBaseline="middle";
-      ctx.fillText(countdown>0?String(Math.ceil(countdown)):"Πάμε!",canvas.width/2,canvas.height/2);
+      ctx.fillText(countdown>0?String(Math.ceil(countdown)):S('ch_countdown_go'),canvas.width/2,canvas.height/2);
       animId=requestAnimationFrame(loop); return;
     }
     for (const g of ghosts) if(g.delay>0) g.delay-=dt;
@@ -3933,14 +4644,14 @@ function launchDocEaterGame(canvas, statusEl, onWin, onLose) {
       ctx.fillStyle="rgba(160,0,0,0.55)"; ctx.fillRect(0,0,canvas.width,canvas.height);
       ctx.fillStyle="#fff"; ctx.font=`bold ${Math.round(CELL*1.3)}px Arial`;
       ctx.textAlign="center"; ctx.textBaseline="middle";
-      ctx.fillText("ΕΧΑΣΕΣ!",canvas.width/2,canvas.height/2);
+      ctx.fillText(S('ch_lost'),canvas.width/2,canvas.height/2);
       cleanup(); setTimeout(onLose,900); return;
     }
     if (docs.size===0) {
       ctx.fillStyle="rgba(0,80,0,0.55)"; ctx.fillRect(0,0,canvas.width,canvas.height);
       ctx.fillStyle="#facc15"; ctx.font=`bold ${Math.round(CELL*1.3)}px Arial`;
       ctx.textAlign="center"; ctx.textBaseline="middle";
-      ctx.fillText("ΝΙΚΗ! ✓",canvas.width/2,canvas.height/2);
+      ctx.fillText(S('ch_win'),canvas.width/2,canvas.height/2);
       cleanup(); setTimeout(onWin,1200); return;
     }
     animId=requestAnimationFrame(loop);
@@ -3981,12 +4692,12 @@ function _drawSnakePreview(canvas){
 
 function _showSnakeOverlay(){
   const ch=getCharacter();
-  const gendered=(ch&&ch.id==="hasan")?"αναγνωρισμένος πρόσφυγας":"αναγνωρισμένη πρόσφυγισσα";
-  const {overlay,canvas,statusEl}=_challengeOverlay(gendered,"⬆⬇⬅➡ ή WASD · σύρε οπουδήποτε ή πάτα τα βέλη · μάζεψε 10 έγγραφα χωρίς να χτυπήσεις στο σώμα σου · τα άκρα συνδέονται");
+  const gendered=(ch&&ch.id==="hasan")?S('ch_gendered_male'):S('ch_gendered_female');
+  const {overlay,canvas,statusEl}=_challengeOverlay(gendered,S('ch_hint_snake'));
   _drawSnakePreview(canvas);
   function launchRound(){
     launchSnakeGame(canvas,statusEl,
-      ()=>{_miniChallengeActive=false;overlay.remove();_scheduleMiniChallenge();showToast("Τα κατάφερες! Συνέχισε την αποστολή σου.");},
+      ()=>{_miniChallengeActive=false;overlay.remove();_scheduleMiniChallenge();showToast(S('mini_success_toast'));},
       ()=>_addLoseBtns(overlay,canvas,statusEl,launchRound)
     );
   }
@@ -4042,7 +4753,7 @@ function launchSnakeGame(canvas,statusEl,onWin,onLose){
       const ctx=canvas.getContext("2d"); drawScene(ctx);
       ctx.fillStyle="rgba(0,0,24,0.72)"; ctx.fillRect(0,0,canvas.width,canvas.height);
       ctx.textAlign="center"; ctx.textBaseline="middle";
-      const _msg1="💥 Συγκρούστηκες με τον εαυτό σου!";
+      const _msg1=S('ch_snake_collision');
       let _fs1=Math.round(CELL*1.6);
       ctx.font=`bold ${_fs1}px Arial`;
       while(ctx.measureText(_msg1).width>canvas.width*0.92&&_fs1>10){_fs1--;ctx.font=`bold ${_fs1}px Arial`;}
@@ -4060,7 +4771,7 @@ function launchSnakeGame(canvas,statusEl,onWin,onLose){
         ctx.fillStyle="rgba(0,0,24,0.72)"; ctx.fillRect(0,0,canvas.width,canvas.height);
         ctx.fillStyle="#22c55e"; ctx.font=`bold ${CELL*1.4}px Arial`;
         ctx.textAlign="center"; ctx.textBaseline="middle";
-        ctx.fillText("✅ Τα μάζεψες όλα!",canvas.width/2,canvas.height/2);
+        ctx.fillText(S('ch_snake_collected'),canvas.width/2,canvas.height/2);
         setTimeout(onWin,1200); return;
       }
       if(docs.length===0) placeDoc();
@@ -4081,7 +4792,7 @@ function launchSnakeGame(canvas,statusEl,onWin,onLose){
       ctx.fillStyle="rgba(0,0,24,0.65)"; ctx.fillRect(0,0,canvas.width,canvas.height);
       ctx.fillStyle="#facc15"; ctx.font=`bold ${Math.round(CELL*2)}px Arial`;
       ctx.textAlign="center"; ctx.textBaseline="middle";
-      ctx.fillText(countdown>0?String(Math.ceil(countdown)):"Πάμε!",canvas.width/2,canvas.height/2);
+      ctx.fillText(countdown>0?String(Math.ceil(countdown)):S('ch_countdown_go'),canvas.width/2,canvas.height/2);
       animId=requestAnimationFrame(loop); return;
     }
     if(ts-lastStep>=STEP_MS){step();lastStep=ts;}
@@ -4122,7 +4833,7 @@ els.endingSwitch.addEventListener("click", () => {
   }
   hideEnding();
   state.questSelectMode = true;
-  els.startButton.textContent = "Ξεκίνα νέα αποστολή";
+  els.startButton.textContent = S('ending_new_quest_btn');
   els.startScreen.classList.remove("hidden");
   renderStartChoices(); updateStartButton();
 });
@@ -4197,7 +4908,7 @@ function buildMapView() {
     section.style.marginBottom = "14px";
     const header = document.createElement("div");
     header.style.cssText = "font-weight:bold; font-size:12px; background:linear-gradient(90deg,#000080,#1084d0); color:white; padding:4px 8px; margin-bottom:6px;";
-    header.textContent = loc ? `🏢 ${loc.name}` : "🔗 Χωρίς τοποθεσία";
+    header.textContent = loc ? `🏢 ${loc.name}` : S('tree_no_location');
     section.appendChild(header);
     const grid = document.createElement("div"); grid.className = "tree-grid";
     ids.forEach(docId => {
@@ -4209,11 +4920,11 @@ function buildMapView() {
       node.className = `tree-node${owned ? " has-node" : ready ? " ready-node" : ""}`;
       const allReqs = [...new Set((rule.routes||[]).flatMap(r => r.requires||[]))].filter(id => DATA.documents[id]);
       const noReqs = allReqs.length === 0;
-      const statusLabel = owned ? "✓ Αποκτήθηκε" : ready ? "⚡ Έτοιμο!" : "⏳ Εκκρεμεί";
+      const statusLabel = owned ? S('tree_status_ok') : ready ? S('tree_status_ready') : S('tree_status_pending');
       node.innerHTML = `<div class="tree-node-name">${owned?"✓ ":""}${doc.name}</div>
         <div class="tree-node-loc">${statusLabel}</div>
         <div class="tree-node-reqs">${noReqs
-          ? `<div class="tree-node-loc" style="font-style:italic;">Ας υποθέσουμε ότι έχεις βρει κάποια λύση</div>`
+          ? `<div class="tree-node-loc" style="font-style:italic;">${S('tree_no_req_assumed')}</div>`
           : allReqs.map(rid => {
               const rdoc = DATA.documents[rid];
               const rowned = hasDoc(rid);
@@ -4292,7 +5003,7 @@ function renderNetworkGraph() {
     tx.setAttribute("text-anchor", "middle");
     tx.setAttribute("fill", "#94a3b8"); tx.setAttribute("font-size", "11");
     tx.setAttribute("font-family", "Arial, sans-serif");
-    tx.textContent = loc ? loc.name : "Απομακρυσμένες";
+    tx.textContent = loc ? loc.name : S('tree_remote');
     svg.appendChild(tx);
   });
 
@@ -4365,7 +5076,7 @@ function renderNetworkGraph() {
   // Legend
   const legend = document.createElement("div");
   legend.style.cssText = "padding:8px 12px; color:#94a3b8; font-size:10px; display:flex; gap:16px; flex-wrap:wrap;";
-  legend.innerHTML = `<span style="color:#4ade80">■ ✓ Αποκτήθηκε</span> <span style="color:#fbbf24">■ ⚡ Έτοιμο να αποκτηθεί (έχεις όλα τα προαπαιτούμενα)</span> <span style="color:#60a5fa">■ Εκκρεμεί</span> <span style="color:#22c55e">→ Έχεις το απαιτούμενο</span> <span style="color:#ef4444">→ Λείπει το απαιτούμενο</span>`;
+  legend.innerHTML = S('tree_legend_html');
   container.appendChild(legend);
 }
 
@@ -4382,7 +5093,7 @@ function showAboutModal() {
   box.style.cssText = "max-width:400px;width:100%;";
   const titleBar = document.createElement("div");
   titleBar.className = "ec95-title";
-  titleBar.innerHTML = '<span>ℹ️ Σχετικά με το παιχνίδι</span>';
+  titleBar.innerHTML = `<span>${S('about_title')}</span>`;
   const closeBtn = document.createElement("button");
   closeBtn.className = "ec95-close-btn";
   closeBtn.textContent = "✕";
@@ -4391,19 +5102,19 @@ function showAboutModal() {
   const body = document.createElement("div");
   body.className = "about-body";
   const rsa = document.createElement("p");
-  rsa.innerHTML = '<strong>Αναγνωρισμένοι Πρόσφυγες στην Ελλάδα — Μεγάλη Γραφειοκρατική Περιπέτεια 2026</strong>';
+  rsa.innerHTML = `<strong>${S('about_game_name')}</strong>`;
   const context = document.createElement("p");
-  context.textContent = 'Αυτό το παιχνίδι βασίζεται στην έκθεση Αναγνωρισμένοι Πρόσφυγες στην Ελλάδα , 2026, της Υποστήριξης Προσφύγων στο Αιγαίο - RSA. Τα κριτίρια του παιχνιδιού βασίζονται σε πραγματικές, τεκμηριωμένες υποθέσεις και απλοποιούνται για λόγους gameplay.';
+  context.textContent = S('about_context');
   const disclaimer = document.createElement("p");
-  disclaimer.innerHTML = '<strong>Αποποίηση ευθύνης:</strong> Το παιχνίδι δεν αποτελεί νομική, διοικητική ή άλλη συμβουλή. Αν αντιμετωπίζετε παρόμοια κατάσταση, ζητήστε νομική συμβουλή ή απευθευθυνθείτε σε αρμόδιο φορέα.';
+  disclaimer.innerHTML = S('about_disclaimer');
   const link = document.createElement("p");
   const a = document.createElement("a");
   a.href = RSA_REPORT_URL; a.target = "_blank"; a.rel = "noopener noreferrer";
-  a.textContent = "Διαβάστε την έκθεση της RSA →";
+  a.textContent = S('about_report_link');
   link.appendChild(a);
   const license = document.createElement("p");
   license.style.cssText = "color:var(--muted);font-size:11px;";
-  license.textContent = "Υποστήριξη Προσφύγων στο Αιγαίο (RSA) 2026 · created with vibe coding";
+  license.textContent = S('about_credits');
   body.append(rsa, context, disclaimer, link, license);
   box.append(titleBar, body);
   overlay.appendChild(box);
@@ -4414,6 +5125,102 @@ function showAboutModal() {
 // ─────────────────────────────────────────────
 // INIT
 // ─────────────────────────────────────────────
+// Set language toggle button label
+(function() {
+  const langBtnLabel = LANG === 'el' ? '🇬🇧 EN' : '🇬🇷 EL';
+  ["lang-btn", "start-lang-btn", "prelim-lang-btn"].forEach(id => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.textContent = langBtnLabel;
+    btn.title = LANG === 'el' ? 'Switch language' : 'Αλλαγή γλώσσας';
+  });
+  // Update footer RSA link to correct language URL
+  const footerLink = document.getElementById("footer-rsa-link");
+  if (footerLink) {
+    footerLink.href = RSA_REPORT_URL;
+    footerLink.textContent = LANG === 'en' ? 'RSA Report' : 'Έκθεση της RSA';
+    const footerSpan = footerLink.closest('.footer-disclaimer');
+    if (footerSpan) footerSpan.innerHTML = `${S('footer_disclaimer')} <a href="${RSA_REPORT_URL}" id="footer-rsa-link" target="_blank" style="color:var(--ec95-blue-a)">${LANG === 'en' ? 'RSA Report' : 'Έκθεση της RSA'}</a> ${S('footer_no_advice')}`;
+  }
+  const aboutBtn = document.querySelector('#game-footer button[onclick="showAboutModal()"]');
+  if (aboutBtn) aboutBtn.textContent = S('about_btn');
+  if (els.denialClose) els.denialClose.textContent = S('denial_back_btn');
+  // Ending modal
+  const endingHeader = document.querySelector('#ending-modal-wrap .ec95-title > span');
+  if (endingHeader) endingHeader.textContent = S('ending_header');
+  const endingCtaText = document.getElementById('ending-cta-text');
+  if (endingCtaText) endingCtaText.textContent = S('ending_cta');
+  const endingClose = document.getElementById('ending-close');
+  if (endingClose) endingClose.textContent = S('ending_explore');
+  // Fail modal
+  const failHeader = document.getElementById('fail-header');
+  if (failHeader) failHeader.textContent = S('fail_header');
+  const failTimeout = document.getElementById('fail-timeout-msg');
+  if (failTimeout) failTimeout.textContent = S('fail_timeout');
+  const failRetry = document.getElementById('fail-retry-btn');
+  if (failRetry) failRetry.textContent = S('fail_retry');
+
+  // Phase 3: Static HTML i18n
+  const _t = (id, key) => { const el = document.getElementById(id); if (el) el.textContent = S(key); };
+  const _ti = (id, key) => { const el = document.getElementById(id); if (el) el.title = S(key); };
+  // Map title bar
+  _t('map-title-bar', 'map_title_bar');
+  // Top bar
+  _t('req-toggle-label', 'req_toggle_label');
+  _t('glossary-btn-label', 'glossary_btn_label');
+  _ti('mute-btn', 'mute_title');
+  _ti('float-mute-btn', 'mute_title');
+  _ti('bar-reset', 'reset_title_btn');
+  _ti('tree-btn', 'tree_title');
+  _ti('legend-btn', 'legend_title');
+  _ti('glossary-corner-btn', 'glossary_corner_title');
+  // Sidebar
+  _t('sidebar-mission-title', 'sidebar_mission');
+  _t('sidebar-req-label', 'sidebar_req_label');
+  _t('sidebar-tracking-title', 'sidebar_tracking');
+  _t('sidebar-wallet-title', 'sidebar_wallet');
+  _t('sidebar-glossary-title', 'sidebar_glossary');
+  _t('glossary-overlay-title', 'glossary_overlay');
+  // Start screen
+  _t('start-screen-title', 'start_title');
+  const startIntroEl = document.getElementById('start-intro');
+  if (startIntroEl) startIntroEl.innerHTML = `${S('start_intro')}<br><strong id="start-intro-bold">${S('start_intro_bold')}</strong>`;
+  else _t('start-intro-bold', 'start_intro_bold');
+  const step1Title = document.getElementById('start-step1-title');
+  if (step1Title && step1Title.firstChild && step1Title.firstChild.nodeType === 3) {
+    step1Title.firstChild.textContent = S('start_step1') + ' ';
+  }
+  _t('step1-change-link', 'start_step1_change');
+  _t('start-step2-title', 'start_step2');
+  _t('start-ready-label', 'start_ready');
+  const startBtn = document.getElementById('start-button');
+  if (startBtn) startBtn.textContent = S('start_btn');
+  // Prelim screen
+  _t('prelim-title-bar', 'prelim_title_bar');
+  _t('spin-got-label', 'spin_got');
+  _t('spin-seconds-label', 'spin_seconds');
+  _t('spin-timer-hint', 'spin_timer_hint');
+  _t('tap-instructions-title', 'tap_instructions_title');
+  _t('tap-instructions-body', 'tap_instructions_body');
+  _t('tap-click-label', 'tap_click_label_start');
+  _t('skip-btn-label', 'skip_btn_label');
+  // Other static HTML
+  _t('spin-btn-label', 'spin_btn');
+  _t('event-title-bar', 'event_default_title');
+  _ti('event-close-btn', 'event_close_title');
+  _t('office-title-bar', 'office_default_title');
+  _t('ending-switch', 'ending_switch');
+  // Legend panel
+  const legendTitleEl = document.querySelector('#legend-inner .ec95-title > span');
+  if (legendTitleEl) legendTitleEl.textContent = S('legend_title');
+  const legendBody = document.getElementById('legend-body');
+  if (legendBody) legendBody.innerHTML = S('legend_body');
+  const denialHeader = document.querySelector('#denial-modal-wrap .ec95-title > span');
+  if (denialHeader) denialHeader.textContent = S('denial_header');
+  const denialReqLabel = document.getElementById('denial-req-label');
+  if (denialReqLabel) denialReqLabel.textContent = S('denial_req_docs');
+  document.title = S('game_title');
+})();
 renderStartChoices();
 updateStartButton();
 buildGlossary();
