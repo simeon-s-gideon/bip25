@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Αναγνωρισμένοι Πρόσφυγες στην Ελλάδα — Μεγάλη Γραφειοκρατική Περιπέτεια 2026</title>
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; img-src data: blob:; media-src data: blob:; font-src data:; connect-src 'none';" />
+    content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; img-src data: blob:; media-src 'self' data: blob:; font-src data:; connect-src 'none';" />
   <style>
     :root {
       --ec95-bg: #c0c0c0;
@@ -976,10 +976,10 @@
     }
     .mc-btn-panel {
       display:flex; align-items:center; gap:10px;
-      background:rgba(0,0,30,0.88); border:2px solid rgba(120,160,255,0.75);
+      background:rgba(15,25,80,0.96); border:2px solid rgba(140,180,255,0.85);
       border-radius:6px; padding:8px 14px;
-      box-shadow:0 0 12px rgba(80,120,255,0.4), inset 0 0 6px rgba(0,0,40,0.5);
-      backdrop-filter:blur(3px);
+      box-shadow:0 0 16px rgba(80,120,255,0.55), inset 0 0 8px rgba(0,10,60,0.6);
+      backdrop-filter:blur(4px);
       pointer-events:auto;
     }
     .ch-status  { color:#88aaff; font-size:12px; text-align:center; min-height:18px; }
@@ -1176,7 +1176,7 @@
 
           <div id="tap-panel" class="hidden" style="margin-top:14px;">
             <div class="ec95-inset" style="text-align:left; margin-bottom:10px; font-size:11px; line-height:1.5;">
-              <strong>Οδηγίες Tap Test:</strong> Κάνε κλικ/tap στην μπάρα για να τη γεμίσεις πριν τελειώσει ο χρόνος.
+              <strong>Οδηγίες Tap Test:</strong> Κάνε κλικ/tap στην μπάρα από κάτω για να τη γεμίσεις πριν τελειώσει ο χρόνος.
             </div>
             <div id="tap-action-slot">
               <button id="start-tap-btn" class="success" style="width:100%; padding:10px; font-size:13px;">▶ Ξεκίνα</button>
@@ -1503,6 +1503,7 @@ const DATA = {
     { term:"Βεβαίωση Δικαιούχου", def:"Εκδίδεται από την Υπηρεσία Ασύλου αν ζητηθεί μετά την κατάθεση αίτησης ανανέωσης. Δεν αντικαθιστά την ΑΔΕΤ - οι περισσότερες αρχές δεν την αποδέχονται. Αγνοείται ακόμα και για νομικές πράξεις." },
     { term:"Δελτίο Ανεργίας (ΔΥΠΑ)", def:"Εγγραφή ως άνεργου στη ΔΥΠΑ. Απαιτεί ΑΔΕΤ, ΑΦΜ, ανενεργό ΑΜΚΑ. Ασύμβατο με σύμβαση εργασίας. Προϋποτίθεται για το HELIOS+." },
     { term:"ΕΕΕ (Ελάχιστο Εγγυημένο Εισόδημα)", def:"Βασικό επίδομα 216€/μήνα ανά νοικοκυριό + 108€ ανά επιπλέον ενήλικα. Απαιτεί ΑΔΕΤ, ΑΦΜ, TAXISnet, ενεργό ΑΜΚΑ και τραπεζικό λογαριασμό. Ασύμβατο με επιδότηση ενοικίου HELIOS+." },
+    { term:"ΕΜΕπ (Εθνικό Μητρώο Επικοινωνίας)", def:"Υποχρεωτική καταχώρηση τηλεφώνου, email και διεύθυνσης για συναλλαγές με το Δημόσιο. Απαιτεί ΑΔΕΤ σε ισχύ. Σε ορισμένα ΚΕΠ οι ΑΔΕΤ δεν αναγνωρίζονται ως έγκυρος τύπος εγγράφου στο σύστημα." },
     { term:"Εκκαθαριστικό σημείωμα", def:"Εκδίδεται μετά υποβολή φορολογικής δήλωσης — τουλάχιστον 3-4 μήνες μετά το τέλος φορολογικού έτους. Απαιτείται για τράπεζα και κοινωνικά επιδόματα." },
     { term:"Επανεισδοχή", def:"Επιστροφή αναγνωρισμένων προσφύγων από άλλες ευρωπαϊκές χώρες στην Ελλάδα. Το 2025: 9.179 αιτήματα (+274% από το 2024), 725 απελάσεις. Επιστρέφοντες φτάνουν χωρίς ενημέρωση, χωρίς στέγη, χωρίς έγγραφα." },
     { term:"HELIOS+", def:"Πρόγραμμα ενταξιακής υποστήριξης (ΔΟΜ, 2025–2028). Προϋπόθεση: Χορήγηση ασύλου εντός των τελευταίων 24 μηνών. Παρέχει επιδότηση ενοικίου — αλλά μόνο αν έχεις ήδη μισθωτήριο στο όνομά σου. Μόνο 4.323 θέσεις για 134.576 κατόχους ΑΔΕΤ." },
