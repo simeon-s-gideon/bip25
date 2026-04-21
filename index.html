@@ -1639,7 +1639,7 @@ const STRINGS = {
     about_context: "Αυτό το παιχνίδι βασίζεται στην έκθεση Αναγνωρισμένοι Πρόσφυγες στην Ελλάδα, 2026, της Υποστήριξης Προσφύγων στο Αιγαίο - RSA. Τα κριτίρια του παιχνιδιού βασίζονται σε πραγματικές, τεκμηριωμένες υποθέσεις και απλοποιούνται για λόγους gameplay.",
     about_disclaimer: "<strong>Αποποίηση ευθύνης:</strong> Το παιχνίδι δεν αποτελεί νομική, διοικητική ή άλλη συμβουλή. Αν αντιμετωπίζετε παρόμοια κατάσταση, ζητήστε νομική συμβουλή ή απευθευθυνθείτε σε αρμόδιο φορέα.",
     about_report_link: "Διαβάστε την έκθεση της RSA →",
-    about_credits: "Υποστήριξη Προσφύγων στο Αιγαίο (RSA) 2026 · created with vibe coding",
+    about_credits: `Υποστήριξη Προσφύγων στο Αιγαίο (RSA) 2026 · created with vibe coding<br>Μουσική: <a href="https://pixabay.com/users/gregorquendel-19912121/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=185592" target="_blank" style="color:var(--ec95-blue-a)">Gregor Quendel</a> από το <a href="https://pixabay.com/music//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=185592" target="_blank" style="color:var(--ec95-blue-a)">Pixabay</a> · Ήχος game over: <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6435" target="_blank" style="color:var(--ec95-blue-a)">freesound_community</a> από το <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6435" target="_blank" style="color:var(--ec95-blue-a)">Pixabay</a>`,
     // Location denial
     denial_back_btn: "↩ Επιστροφή στην πόλη",
     denial_header: "⛔ ΑΠΟΚΛΕΙΣΜΟΣ",
@@ -1893,7 +1893,7 @@ const STRINGS = {
     about_context: "This game is based on the report Recognised Refugees in Greece, 2026, by Refugee Support Aegean (RSA). The game's criteria are based on real, documented cases and are simplified for gameplay purposes.",
     about_disclaimer: "<strong>Disclaimer:</strong> This game does not constitute legal, administrative or other advice. If you face a similar situation, seek legal advice or contact a competent authority.",
     about_report_link: "Read the RSA report →",
-    about_credits: "Refugee Support Aegean (RSA) 2026 · created with vibe coding",
+    about_credits: `Refugee Support Aegean (RSA) 2026 · created with vibe coding<br>Music by <a href="https://pixabay.com/users/gregorquendel-19912121/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=185592" target="_blank" style="color:var(--ec95-blue-a)">Gregor Quendel</a> from <a href="https://pixabay.com/music//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=185592" target="_blank" style="color:var(--ec95-blue-a)">Pixabay</a> · Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6435" target="_blank" style="color:var(--ec95-blue-a)">freesound_community</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6435" target="_blank" style="color:var(--ec95-blue-a)">Pixabay</a>`,
     // Location denial
     denial_back_btn: "↩ Back to city",
     denial_header: "⛔ BLOCKED",
@@ -5125,7 +5125,7 @@ function showAboutModal() {
   link.appendChild(a);
   const license = document.createElement("p");
   license.style.cssText = "color:var(--muted);font-size:11px;";
-  license.textContent = S('about_credits');
+  license.innerHTML = S('about_credits').replace(/\n/g, '<br>');
   body.append(rsa, context, disclaimer, link, license);
   box.append(titleBar, body);
   overlay.appendChild(box);
