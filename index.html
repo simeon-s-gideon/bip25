@@ -1497,8 +1497,10 @@ const STRINGS = {
     route_popup_info: "Popup ενημέρωση",
     route_no_prereq: "Χωρίς προαπαιτούμενα",
     route_option: (id) => `Επιλογή ${id}`,
+    req_or: "ή",
     route_or_one: "+ ένα από τα παρακάτω:",
     route_or_one_inline: "+ μία από τις επιλογές:",
+
     // Doc UI
     progress_docs: (owned, needed) => `<span>${owned}/${needed}</span> έγγραφα`,
     track_click_title: (name) => `Κλικ για παρακολούθηση: ${name}`,
@@ -1659,6 +1661,7 @@ const STRINGS = {
     // Footer
     about_btn: "ℹ️ Σχετικά",
     footer_disclaimer: "Παιχνίδι βασισμένο στην",
+    footer_rsa_link: "Έκθεση της RSA",
     footer_no_advice: "· Δεν αποτελεί νομική συμβουλή",
   },
   en: {
@@ -1747,6 +1750,7 @@ const STRINGS = {
     route_popup_info: "Popup info",
     route_no_prereq: "No prerequisites",
     route_option: (id) => `Option ${id}`,
+    req_or: "or",
     route_or_one: "+ one of the following:",
     route_or_one_inline: "+ one of the options:",
     // Doc UI
@@ -1909,6 +1913,7 @@ const STRINGS = {
     // Footer
     about_btn: "ℹ️ About",
     footer_disclaimer: "Game based on the",
+    footer_rsa_link: "RSA Report",
     footer_no_advice: "· Not legal advice",
   }
 };
@@ -2626,7 +2631,7 @@ function buildRequirementList(docId, container) {
     // Flatten unique items but mark alternates with "ή"
     uniqueSets.forEach((set, i) => {
       if (i > 0 && set.length > 0) {
-        const sep = document.createElement("div"); sep.className = "req-or-sep"; sep.textContent = "ή"; list.appendChild(sep);
+        const sep = document.createElement("div"); sep.className = "req-or-sep"; sep.textContent = S('req_or'); list.appendChild(sep);
       }
       set.forEach(id => list.appendChild(makeReqItem(id)));
     });
@@ -3084,7 +3089,7 @@ function renderRoutesGrouped(routes, container) {
     if (common.length > 0 && unique.length === 0) return; // fully covered by common
     if (!firstShown) {
       const orSep = document.createElement("div");
-      orSep.className = "req-or-sep"; orSep.textContent = "ή";
+      orSep.className = "req-or-sep"; orSep.textContent = S('req_or');
       container.appendChild(orSep);
     }
     firstShown = false;
@@ -5140,9 +5145,8 @@ function showAboutModal() {
   const footerLink = document.getElementById("footer-rsa-link");
   if (footerLink) {
     footerLink.href = RSA_REPORT_URL;
-    footerLink.textContent = LANG === 'en' ? 'RSA Report' : 'Έκθεση της RSA';
     const footerSpan = footerLink.closest('.footer-disclaimer');
-    if (footerSpan) footerSpan.innerHTML = `${S('footer_disclaimer')} <a href="${RSA_REPORT_URL}" id="footer-rsa-link" target="_blank" style="color:var(--ec95-blue-a)">${LANG === 'en' ? 'RSA Report' : 'Έκθεση της RSA'}</a> ${S('footer_no_advice')}`;
+    if (footerSpan) footerSpan.innerHTML = `${S('footer_disclaimer')} <a href="${RSA_REPORT_URL}" id="footer-rsa-link" target="_blank" style="color:var(--ec95-blue-a)">${S('footer_rsa_link')}</a> ${S('footer_no_advice')}`;
   }
   const aboutBtn = document.querySelector('#game-footer button[onclick="showAboutModal()"]');
   if (aboutBtn) aboutBtn.textContent = S('about_btn');
