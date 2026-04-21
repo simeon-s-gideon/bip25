@@ -3538,6 +3538,8 @@ function showPreliminaryScreen() {
   els.tapPanel.classList.add("hidden");
   els.gameStage.classList.add("hidden");
   els.failModal.classList.add("hidden");
+  const tapLbl = document.getElementById("tap-click-label");
+  if (tapLbl) tapLbl.textContent = S('tap_click_label_start');
   els.failSummary.textContent = "";
   els.progressBar.style.width = "0%";
   els.wheel.style.transform = "rotate(0deg)";
