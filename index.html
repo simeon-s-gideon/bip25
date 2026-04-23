@@ -1058,8 +1058,10 @@
         <span id="bar-arrow-label" class="bar-label" style="margin-left:4px;">→</span>
         <strong id="bar-target" style="color:var(--ec95-blue-a); font-size:12px;"></strong>
         <span style="flex-grow:1"></span>
-        <span class="bar-label">📅</span>
-        <span id="day-counter" style="font-weight:bold; font-size:12px; color:var(--ec95-blue-a);">1</span>
+        <span style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0;">
+          <span class="bar-label">📅</span>
+          <span id="day-counter" style="font-weight:bold; font-size:12px; color:var(--ec95-blue-a);">1</span>
+        </span>
         <button id="glossary-btn" style="font-size:11px; padding:2px 6px;">📖 <span id="glossary-btn-label">Γλωσσάρι</span></button>
         <button id="mute-btn" title="Σίγαση / Ήχος" onclick="toggleMute()">🔊</button>
         <button id="lang-btn" onclick="toggleLang()" title="Switch language / Εναλλαγή γλώσσας" style="font-size:11px; padding:2px 6px;"></button>
@@ -1420,6 +1422,7 @@ const STRINGS = {
     tutorial_move_mobile: "Tap οπουδήποτε στον χάρτη για να μετακινηθείς.",
     tutorial_move_desktop: "Χρησιμοποίησε τα βελάκια / WASD ή click στον χάρτη για να κινηθείς.",
     tutorial_building: "<strong>Tap / click πάνω σε κτίριο</strong> για να μπεις και να δεις τι ποια έγγραφα είναι διαθέσιμα και ποια λείπουν.",
+    tutorial_lamp: "Το ⭐ πάνω σε ένα κτίριο σημαίνει ότι υπάρχει έγγραφο που μπορείς να παραλάβεις τώρα.",
     tutorial_red: "Τα <span style=\"color:var(--ec95-red)\">&#10005; κόκκινα έγγραφα</span> λείπουν — click για να τα παρακολουθήσεις.",
     tutorial_req: "Το <span style=\"color:var(--ec95-blue-a)\">📋 Απαιτούμενα</span> δείχνει τι χρειάζεσαι για την τρέχουσα αποστολή.",
     tutorial_help: "Κάνοντας κλικ στο <strong>❓</strong> μπορείς να δεις τις πλήρεις οδηγίες.",
@@ -1439,7 +1442,7 @@ const STRINGS = {
     bank_title: "Τράπεζα — Πριν Μπεις",
     bank_intro: "Μεταξύ των εμποδίων που αντιμετωπίζουν οι πρόσφυγες στις επαφές τους με τράπεζες, αναφέρουμε ένα παράδειγμα:",
     dom_blocked_title: "Μη επιλέξιμος/η για HELIOS+",
-    dom_blocked_body: "Το πρόγραμμα HELIOS+ απαιτεί η ΑΔΕΤ σου να έχει εκδοθεί πριν από λιγότερο από 2 χρόνια. Η ΑΔΕΤ σου έχει ήδη λήξει ή εκδόθηκε πάνω από 2 χρόνια πριν — δεν πληροίς τις προϋποθέσεις εγγραφής στο HELIOS+.",
+    dom_blocked_body: "Το πρόγραμμα HELIOS+ απαιτεί η ΑΔΕΤ σου να έχει εκδοθεί τα τελευταία 2 χρόνια. Η ΑΔΕΤ σου έχει ήδη λήξει ή εκδόθηκε περισσότερο από 2 χρόνια πριν — δεν πληροίς τις προϋποθέσεις εγγραφής στο HELIOS+.",
     dom_title: "ΔΟΜ — Πριν Μπεις. Πληροφορίες για το Helios+",
     dom_body: `<div style="text-align:left;font-size:11px;line-height:1.6;"><p>Σύμφωνα με την Ευρωπαϊκή Επιτροπή, το πρόγραμμα HELIOS+ <em>«είναι το βασικό πρόγραμμα που στοχεύει στην ενίσχυση της ένταξης των πολιτών τρίτων χωρών στην ελληνική κοινωνία»</em>.</p><p style="margin-top:8px;">Ενώ ο αριθμός των ενεργών αδειών διαμονής διεθνούς και προσωρινής προστασίας ήταν <strong>134.576</strong> στα τέλη του περασμένου έτους, το HELIOS+ θέτει ως συνολικό στόχο <strong>4.323 δικαιούχοι</strong> να επωφεληθούν των υπηρεσιών υποστήριξής του από το 2025 ως το 2028.</p><p style="margin-top:8px;font-weight:bold;color:#b45309;">Δηλαδή περίπου το 3%.</p></div>`,
     eforia_title: "Εφορία — Πριν Μπεις",
@@ -1675,6 +1678,7 @@ const STRINGS = {
     tutorial_move_mobile: "Tap anywhere on the map to move.",
     tutorial_move_desktop: "Use the arrow keys / WASD or click on the map to move.",
     tutorial_building: "<strong>Tap / click on a building</strong> to enter and see which documents are available and which are missing.",
+    tutorial_lamp: "A ⭐ on a building means there is a document you can collect right now.",
     tutorial_red: "The <span style=\"color:var(--ec95-red)\">&#10005; red documents</span> are missing — click to track them.",
     tutorial_req: "The <span style=\"color:var(--ec95-blue-a)\">📋 Required</span> panel shows what you need for your current mission.",
     tutorial_help: "Click <strong>❓</strong> to see the full instructions.",
@@ -3640,6 +3644,7 @@ function showTutorial() {
         <div style="font-weight:bold; margin-bottom:4px; color:var(--ec95-blue-a);">${S('tutorial_how')}</div>
         <div style="margin-bottom:3px;">&#9654; ${moveHint}</div>
         <div style="margin-bottom:3px;">&#9654; ${S('tutorial_building')}</div>
+        <div style="margin-bottom:3px;">&#9654; ${S('tutorial_lamp')}</div>
         <div style="margin-bottom:3px;">&#9654; ${S('tutorial_red')}</div>
         <div style="margin-bottom:3px;">&#9654; ${S('tutorial_req')}</div>
         <div>&#9654; ${S('tutorial_help')}</div>
@@ -4603,6 +4608,18 @@ function launchDocEaterGame(canvas, statusEl, onWin, onLose) {
     if(m[e.key]){player.nDir=m[e.key];e.preventDefault();}
   };
   _activeDirHandler = (d) => { player.nDir = d; };
+  canvas.addEventListener('click', e => {
+    if (!_activeDirHandler) return;
+    const rect = canvas.getBoundingClientRect();
+    const cx = (e.clientX - rect.left) * (canvas.width / rect.width);
+    const cy = (e.clientY - rect.top) * (canvas.height / rect.height);
+    const px = (player.fC + 0.5) * CELL, py = (player.fR + 0.5) * CELL;
+    const dx = cx - px, dy = cy - py;
+    if (Math.abs(dx) < 4 && Math.abs(dy) < 4) return;
+    _activeDirHandler(Math.abs(dx) > Math.abs(dy)
+      ? (dx > 0 ? {dc:1,dr:0} : {dc:-1,dr:0})
+      : (dy > 0 ? {dc:0,dr:1} : {dc:0,dr:-1}));
+  });
   document.addEventListener("keydown",keyH);
   function cleanup(){
     document.removeEventListener("keydown",keyH);
@@ -4822,6 +4839,18 @@ function launchSnakeGame(canvas,statusEl,onWin,onLose){
     }
   };
   _activeDirHandler = (nd) => { if(nd.dc!==-dir.dc||nd.dr!==-dir.dr) nextDir=nd; };
+  canvas.addEventListener('click', e => {
+    if (!_activeDirHandler) return;
+    const rect = canvas.getBoundingClientRect();
+    const cx = (e.clientX - rect.left) * (canvas.width / rect.width);
+    const cy = (e.clientY - rect.top) * (canvas.height / rect.height);
+    const hx = (snake[0].c + 0.5) * CELL, hy = (snake[0].r + 0.5) * CELL;
+    const dx = cx - hx, dy = cy - hy;
+    if (Math.abs(dx) < 4 && Math.abs(dy) < 4) return;
+    _activeDirHandler(Math.abs(dx) > Math.abs(dy)
+      ? (dx > 0 ? {dc:1,dr:0} : {dc:-1,dr:0})
+      : (dy > 0 ? {dc:0,dr:1} : {dc:0,dr:-1}));
+  });
   document.addEventListener("keydown",keyH);
   const origOnWin=onWin, origOnLose=onLose;
   onWin=()=>{document.removeEventListener("keydown",keyH);_activeDirHandler=null;if(animId)cancelAnimationFrame(animId);origOnWin();};
